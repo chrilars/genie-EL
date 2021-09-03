@@ -8,10 +8,11 @@
 
 #ifndef SYLVANUBDDMINTERMITERATOR_HH_
 #define SYLVANUBDDMINTERMITERATOR_HH_
+#include <vector>
 
 #include "UBDDMintermIterator.hh"
+
 #include "sylvan_obj.hpp"
-#include <vector>
 
 #include "sylvan_bdd.h"
 
