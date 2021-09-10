@@ -2,9 +2,11 @@
 // Created by mrychlicki on 7/26/21.
 //
 
-#include "CuddUBDD.hh"
+#include "ubdd/CuddUBDD.hh"
 #include "UBDDMintermIteratorTests.h"
 #include <gtest/gtest.h>
+
+using namespace fairsyn;
 
 struct CuddUBDDMintermIteratorTests : UBDDMintermIteratorTests<CuddUBDD> {
 };

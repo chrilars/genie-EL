@@ -5,38 +5,10 @@
  *      author: Mateusz Rychlicki
  */
 
-#ifndef CUDDUBDDMINTERMITERATOR_HH_
-#define CUDDUBDDMINTERMITERATOR_HH_
+#include "ubdd/CuddUBDDMintermIterator.hh"
 
-#include <algorithm>
-#include <bitset>
-#include <cassert>
-#include <iostream>
-#include <sstream>
-#include <stdexcept>
-#include <vector>
-
-#include "UBDDMintermIterator.hh"
-
-#include "cudd.h"
-#include "cuddObj.hh"
-#include "dddmp.h"
-
-typedef BDD BDDcudd;
-
-class CuddUBDDMintermIterator : public UBDDMintermIterator {
-private:
-    BDDcudd bdd_;
-    int *cube_;
-    DdGen *gen_;
-    CUDD_VALUE_TYPE value_;
-    std::vector<size_t> idontcares_;
-    size_t ndontcares_;
-    size_t iterator_;
-    size_t nexpand_;
-
-public:
-    CuddUBDDMintermIterator(BDDcudd bdd, const std::vector<size_t> &ivars) {
+namespace fairsyn {
+    CuddUBDDMintermIterator::CuddUBDDMintermIterator(BDDcudd bdd, const std::vector<size_t> &ivars) {
         ivars_.assign(ivars.begin(), ivars.end());
         nvars_ = ivars.size();
         done_ = false;
@@ -71,12 +43,11 @@ public:
         begin();
     }
 
-    ~CuddUBDDMintermIterator() {
+    CuddUBDDMintermIterator::~CuddUBDDMintermIterator() {
         Cudd_GenFree(gen_);
     }
 
-private:
-    void begin() {
+    void CuddUBDDMintermIterator::begin() {
         /* initialize gen_ and grab first cube */
         DdManager *manager = bdd_.manager();
         DdNode *node = bdd_.getNode();
@@ -113,7 +84,7 @@ private:
             minterm_[ivars_[i]] = cube_[ivars_[i]];
     }
 
-    void next() {
+    void CuddUBDDMintermIterator::next() {
         iterator_++;
         progress_++;
         /* get new cube or expand cube further */
@@ -154,7 +125,4 @@ private:
         for (size_t i = 0; i < ivars_.size(); i++)
             minterm_[ivars_[i]] = cube_[ivars_[i]];
     }
-};
-
-
-#endif /* CUDDUBDDMINTERMITERATOR_HH_ */
+}// namespace fairsyn

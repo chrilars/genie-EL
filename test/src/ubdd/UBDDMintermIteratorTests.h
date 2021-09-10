@@ -2,11 +2,13 @@
 // Created by mrychlicki on 7/26/21.
 //
 
-#include "BaseUBDD.hh"
-#include "UBDDMintermIterator.hh"
+#include "ubdd/BaseUBDD.hh"
+#include "ubdd/UBDDMintermIterator.hh"
 #include <algorithm>
 #include <gtest/gtest.h>
 #include <vector>
+
+using namespace fairsyn;
 
 template <class UBDD>
 struct UBDDMintermIteratorTests : testing::Test {

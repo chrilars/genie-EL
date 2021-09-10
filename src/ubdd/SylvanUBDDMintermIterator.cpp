@@ -6,27 +6,10 @@
  *
  */
 
-#ifndef SYLVANUBDDMINTERMITERATOR_HH_
-#define SYLVANUBDDMINTERMITERATOR_HH_
-#include <vector>
+#include "ubdd/SylvanUBDDMintermIterator.hh"
 
-#include "UBDDMintermIterator.hh"
-
-#include "sylvan_obj.hpp"
-
-#include "sylvan_bdd.h"
-
-typedef sylvan::Bdd BDDsylvan;
-
-class SylvanUBDDMintermIterator : public UBDDMintermIterator {
-    sylvan::MTBDD leaf_;
-    sylvan::MTBDD dd_;
-    sylvan::MTBDD variables_;
-    std::vector<size_t> sorted_ivars_;
-    uint8_t *arr_;
-
-public:
-    SylvanUBDDMintermIterator(sylvan::MTBDD dd, sylvan::MTBDD variables, const std::vector<size_t> &ivars) {
+namespace fairsyn {
+    SylvanUBDDMintermIterator::SylvanUBDDMintermIterator(sylvan::MTBDD dd, sylvan::MTBDD variables, const std::vector<size_t> &ivars) {
         dd_ = dd;
         variables_ = variables;
         sylvan::sylvan_protect(&dd_);
@@ -50,13 +33,12 @@ public:
         begin();
     }
 
-    ~SylvanUBDDMintermIterator() {
+    SylvanUBDDMintermIterator::~SylvanUBDDMintermIterator() {
         sylvan::sylvan_unprotect(&dd_);
         sylvan::sylvan_unprotect(&variables_);
     }
 
-protected:
-    void begin() {
+    void SylvanUBDDMintermIterator::begin() {
         nminterm_ = BDDsylvan(dd_).SatCount(sylvan::BddSet(sylvan::Bdd(variables_)));
         leaf_ = sylvan::mtbdd_enum_all_first(dd_, variables_, arr_, NULL);
         done_ = (leaf_ == sylvan::mtbdd_false);
@@ -64,13 +46,10 @@ protected:
             minterm_[sorted_ivars_[i]] = arr_[i];
     }
 
-    void next() {
+    void SylvanUBDDMintermIterator::next() {
         leaf_ = sylvan::mtbdd_enum_all_next(dd_, variables_, arr_, NULL);
         done_ = (leaf_ == sylvan::mtbdd_false);
         for (size_t i = 0; i < ivars_.size(); i++)
             minterm_[sorted_ivars_[i]] = arr_[i];
     }
-};
-
-
-#endif /* SYLVANUBDDMINTERMITERATOR_HH_ */
+}// namespace fairsyn

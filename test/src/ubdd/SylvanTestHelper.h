@@ -4,7 +4,9 @@
 
 #ifndef MASCOTSDS_SYLVANTESTHELPER_H
 #define MASCOTSDS_SYLVANTESTHELPER_H
-#include "SylvanUBDD.hh"
+#include "ubdd/SylvanUBDD.hh"
+
+using namespace fairsyn;
 
 struct SylvanTestHelper {
     SylvanTestHelper() {

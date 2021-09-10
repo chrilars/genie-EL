@@ -5,52 +5,44 @@
  *      author: Mateusz Rychlicki
  *
  */
-#include "BaseUBDD.hh"
-#include "SylvanUBDDMintermIterator.hh"
+#include "ubdd/SylvanUBDD.hh"
+#include "ubdd/SylvanUBDDMintermIterator.hh"
+#include "ubdd/BaseUBDD.hh"
 #include <cfloat>
 #include <cmath>
 #include <map>
 #include <memory>
 
-#ifndef SYLVANUBDD_HH_
-#    define SYLVANUBDD_HH_
-typedef sylvan::Bdd BDDsylvan;
 
 using namespace sylvan;
 
-class SylvanUBDD : public BaseUBDD<SylvanUBDD> {
-
-public:
-    inline static size_t size_ = 0;
-    inline static std::map<size_t, SylvanUBDD *> nodes_map = std::map<size_t, SylvanUBDD *>();
-    BDDsylvan bdd_;
-
-    SylvanUBDD() {
+namespace fairsyn {
+    SylvanUBDD::SylvanUBDD() {
     }
 
-    SylvanUBDD(BDDsylvan const &from) {
+    SylvanUBDD::SylvanUBDD(BDDsylvan const &from) {
         bdd_ = BDDsylvan(from);
     }
 
-    SylvanUBDD(SylvanUBDD const &from) {
+    SylvanUBDD::SylvanUBDD(SylvanUBDD const &from) {
         bdd_ = BDDsylvan(from.bdd_);
     }
 
-    SylvanUBDD zero() const override {
+    SylvanUBDD SylvanUBDD::zero() const  {
         return SylvanUBDD(bdd_.bddZero());
     }
 
-    SylvanUBDD one() const override {
+    SylvanUBDD SylvanUBDD::one() const  {
         return SylvanUBDD(bdd_.bddOne());
     }
 
-    SylvanUBDD var() const override {
+    SylvanUBDD SylvanUBDD::var() const  {
         size_t new_index = size_++;
         nodes_map[new_index] = new SylvanUBDD(bdd_.bddVar(new_index));
         return *nodes_map[new_index];
     }
 
-    SylvanUBDD var(size_t index) const override {
+    SylvanUBDD SylvanUBDD::var(size_t index) const  {
         size_t new_index;
         while (size_ <= index) {
             new_index = size_++;
@@ -59,35 +51,35 @@ public:
         return *nodes_map[index];
     }
 
-    size_t nodeSize() const override {
+    size_t SylvanUBDD::nodeSize() const  {
         return size_;
     }
 
-    size_t nodeIndex() const override {
+    size_t SylvanUBDD::nodeIndex() const  {
         return mtbdd_getvar(bdd_.GetBDD());
     }
 
-    SylvanUBDD cube(std::vector<SylvanUBDD> variables, std::vector<uint8_t> values) const override {
+    SylvanUBDD SylvanUBDD::cube(std::vector<SylvanUBDD> variables, std::vector<uint8_t> values) const  {
         sylvan::BddSet bddSet = BddSet::fromVector(extractBDDs(variables));
         BDDsylvan bdd = bdd_.bddCube(bddSet, values);
         return SylvanUBDD(bdd);
     }
 
-    SylvanUBDD cube(std::vector<SylvanUBDD> variables, std::vector<int> values) const override {
+    SylvanUBDD SylvanUBDD::cube(std::vector<SylvanUBDD> variables, std::vector<int> values) const  {
         std::vector<uint8_t> values_uint8_t(values.begin(), values.end());
         return cube(variables, values_uint8_t);
     }
 
-    SylvanUBDD cube(std::vector<SylvanUBDD> variables) const override {
+    SylvanUBDD SylvanUBDD::cube(std::vector<SylvanUBDD> variables) const  {
         BDDsylvan bdd = bdd_.VectorCube(extractBDDs(variables));
         return SylvanUBDD(bdd);
     }
 
-    SylvanUBDD permute(const std::vector<size_t> &from, const std::vector<size_t> &to) const override {
+    SylvanUBDD SylvanUBDD::permute(const std::vector<size_t> &from, const std::vector<size_t> &to) const  {
         return SylvanUBDD(bdd_.Permute(std::vector<uint32_t>(from.begin(), from.end()), std::vector<uint32_t>(to.begin(), to.end())));
     }
 
-    double countMinterm(size_t nvars) const override {
+    double SylvanUBDD::countMinterm(size_t nvars) const  {
         size_t nodeCount = bdd_.NodeCount();
         if (nodeCount <= nvars) {
             return bdd_.SatCount(nvars);
@@ -96,21 +88,21 @@ public:
         }
     }
 
-    void printMinterm() const override {
+    void SylvanUBDD::printMinterm() const  {
         sylvan_print(bdd_.GetBDD());
     }
 
 
-    SylvanUBDD existAbstract(const SylvanUBDD &cube) const override {
+    SylvanUBDD SylvanUBDD::existAbstract(const SylvanUBDD &cube) const  {
         return SylvanUBDD(bdd_.ExistAbstract(cube.bdd_));
     }
 
-    SylvanUBDD andAbstract(const SylvanUBDD &g, const SylvanUBDD &cube) const override {
+    SylvanUBDD SylvanUBDD::andAbstract(const SylvanUBDD &g, const SylvanUBDD &cube) const  {
         BDDsylvan bdd = bdd_.AndAbstract(g.bdd_, cube.bdd_);
         return SylvanUBDD(bdd);
     }
 
-    UBDDMintermIterator *generateMintermIterator(std::vector<size_t> &ivars) const override {
+    UBDDMintermIterator *SylvanUBDD::generateMintermIterator(std::vector<size_t> &ivars) const  {
         BDDsylvan bddSet = var(ivars[0]).bdd_;
         for (size_t i = 1; i < ivars.size(); i++) {
             bddSet &= var(ivars[i]).bdd_;
@@ -118,11 +110,11 @@ public:
         return new SylvanUBDDMintermIterator(bdd_.GetBDD(), bddSet.GetBDD(), ivars);
     }
 
-    SylvanUBDD complement(SylvanUBDD &symbolicSet,
-                          std::vector<size_t> nofGridPoints,
-                          std::vector<size_t> nofBddVars,
-                          std::vector<std::vector<size_t>> indBddVars,
-                          size_t dim) override {
+    SylvanUBDD SylvanUBDD::complement(SylvanUBDD &symbolicSet,
+                                      std::vector<size_t> nofGridPoints,
+                                      std::vector<size_t> nofBddVars,
+                                      std::vector<std::vector<size_t>> indBddVars,
+                                      size_t dim)  {
         /* generate ADD variables and ADD for the grid points in each dimension */
         Mtbdd constant;
         std::vector<Mtbdd> aVar(dim);
@@ -151,17 +143,17 @@ public:
     }
 
     /* compute symbolic representation (=bdd) of a polytope { x | Hx<= h }*/
-    SylvanUBDD computePolytope(const size_t p,
-                               const std::vector<double> &H,
-                               const std::vector<double> &h,
-                               int type,
-                               size_t dim,
-                               const std::vector<double> &eta,
-                               const std::vector<double> &z,
-                               const std::vector<double> &firstGridPoint,
-                               const std::vector<size_t> &nofBddVars,
-                               const std::vector<std::vector<size_t>> &indBddVars,
-                               const std::vector<size_t> &nofGridPoints) override {
+    SylvanUBDD SylvanUBDD::computePolytope(const size_t p,
+                                           const std::vector<double> &H,
+                                           const std::vector<double> &h,
+                                           int type,
+                                           size_t dim,
+                                           const std::vector<double> &eta,
+                                           const std::vector<double> &z,
+                                           const std::vector<double> &firstGridPoint,
+                                           const std::vector<size_t> &nofBddVars,
+                                           const std::vector<std::vector<size_t>> &indBddVars,
+                                           const std::vector<size_t> &nofGridPoints)  {
         /* define minusInfinity (for outside area of the domain) and epsilon */
         double unusedFloat = firstGridPoint[0] - eta[0];
         for (size_t i = 1; i < dim; i++) {
@@ -225,13 +217,13 @@ public:
         return SylvanUBDD(polytope);
     }
 
-    int save(FILE *file) override {
+    int SylvanUBDD::save(FILE *file)  {
         MTBDD m = bdd_.GetBDD();
         mtbdd_writer_tobinary(file, &m, 1);
         return 1;
     }
 
-    SylvanUBDD load(FILE *file, std::vector<int> composeids, int newID) override {
+    SylvanUBDD SylvanUBDD::load(FILE *file, std::vector<int> composeids, int newID)  {
         MTBDD m;
         mtbdd_reader_frombinary(file, &m, 1);
         BDDsylvan bdd(m);
@@ -246,88 +238,77 @@ public:
         return ubdd;
     }
 
-    SylvanUBDD transfer(const SylvanUBDD &destination) const override {
+    SylvanUBDD SylvanUBDD::transfer(const SylvanUBDD &destination) const  {
         return *this;
     }
 
-    bool isCoverEqual(const SylvanUBDD &other) const override { return true; }
+    bool SylvanUBDD::isCoverEqual(const SylvanUBDD &other) const  { return true; }
 
-    SylvanUBDD &operator=(const SylvanUBDD &right) {
+    SylvanUBDD &SylvanUBDD::operator=(const SylvanUBDD &right) {
         bdd_ = right.bdd_;
         return *this;
     }
-    bool operator==(const SylvanUBDD &other) const override { return bdd_ == other.bdd_; }
-    bool operator!=(const SylvanUBDD &other) const override { return bdd_ != other.bdd_; }
-    bool operator<=(const SylvanUBDD &other) const override { return bdd_ <= other.bdd_; }
-    bool operator>=(const SylvanUBDD &other) const override { return bdd_ >= other.bdd_; }
-    bool operator<(const SylvanUBDD &other) const override { return bdd_ < other.bdd_; }
-    bool operator>(const SylvanUBDD &other) const override { return bdd_ > other.bdd_; }
-    SylvanUBDD operator!() const override {
+    bool SylvanUBDD::operator==(const SylvanUBDD &other) const  { return bdd_ == other.bdd_; }
+    bool SylvanUBDD::operator!=(const SylvanUBDD &other) const  { return bdd_ != other.bdd_; }
+    bool SylvanUBDD::operator<=(const SylvanUBDD &other) const  { return bdd_ <= other.bdd_; }
+    bool SylvanUBDD::operator>=(const SylvanUBDD &other) const  { return bdd_ >= other.bdd_; }
+    bool SylvanUBDD::operator<(const SylvanUBDD &other) const  { return bdd_ < other.bdd_; }
+    bool SylvanUBDD::operator>(const SylvanUBDD &other) const  { return bdd_ > other.bdd_; }
+    SylvanUBDD SylvanUBDD::operator!() const  {
         BDDsylvan bdd = !bdd_;
         return SylvanUBDD(bdd);
     }
-    SylvanUBDD operator~() const override {
+    SylvanUBDD SylvanUBDD::operator~() const  {
         BDDsylvan bdd = ~bdd_;
         return SylvanUBDD(bdd);
     }
-    SylvanUBDD operator*(const SylvanUBDD &other) const override {
+    SylvanUBDD SylvanUBDD::operator*(const SylvanUBDD &other) const  {
         BDDsylvan bdd = bdd_ * other.bdd_;
         return SylvanUBDD(bdd);
     }
-    SylvanUBDD operator*=(const SylvanUBDD &other) override {
+    SylvanUBDD SylvanUBDD::operator*=(const SylvanUBDD &other)  {
         bdd_ *= other.bdd_;
         return *this;
     }
-    SylvanUBDD operator&(const SylvanUBDD &other) const override {
+    SylvanUBDD SylvanUBDD::operator&(const SylvanUBDD &other) const  {
         BDDsylvan bdd = bdd_ & other.bdd_;
         return SylvanUBDD(bdd);
     }
-    SylvanUBDD operator&=(const SylvanUBDD &other) override {
+    SylvanUBDD SylvanUBDD::operator&=(const SylvanUBDD &other)  {
         bdd_ &= other.bdd_;
         return *this;
     }
-    SylvanUBDD operator+(const SylvanUBDD &other) const override {
+    SylvanUBDD SylvanUBDD::operator+(const SylvanUBDD &other) const  {
         BDDsylvan bdd = bdd_ + other.bdd_;
         return SylvanUBDD(bdd);
     }
-    SylvanUBDD operator+=(const SylvanUBDD &other) override {
+    SylvanUBDD SylvanUBDD::operator+=(const SylvanUBDD &other)  {
         bdd_ += other.bdd_;
         return *this;
     }
-    SylvanUBDD operator|(const SylvanUBDD &other) const override {
+    SylvanUBDD SylvanUBDD::operator|(const SylvanUBDD &other) const  {
         BDDsylvan bdd = bdd_ | other.bdd_;
         return SylvanUBDD(bdd);
     }
-    SylvanUBDD operator|=(const SylvanUBDD &other) override {
+    SylvanUBDD SylvanUBDD::operator|=(const SylvanUBDD &other)  {
         bdd_ |= other.bdd_;
         return *this;
     }
-    SylvanUBDD operator^(const SylvanUBDD &other) const override {
+    SylvanUBDD SylvanUBDD::operator^(const SylvanUBDD &other) const  {
         BDDsylvan bdd = bdd_ ^ other.bdd_;
         return SylvanUBDD(bdd);
     }
-    SylvanUBDD operator^=(const SylvanUBDD &other) override {
+    SylvanUBDD SylvanUBDD::operator^=(const SylvanUBDD &other)  {
         bdd_ ^= other.bdd_;
         return *this;
     }
-    SylvanUBDD operator-(const SylvanUBDD &other) const override {
+    SylvanUBDD SylvanUBDD::operator-(const SylvanUBDD &other) const  {
         BDDsylvan bdd = bdd_ - other.bdd_;
         return SylvanUBDD(bdd);
     }
-    SylvanUBDD operator-=(const SylvanUBDD &other) override {
+    SylvanUBDD SylvanUBDD::operator-=(const SylvanUBDD &other)  {
         bdd_ -= other.bdd_;
         return *this;
     }
-
-private:
-    static std::vector<BDDsylvan> extractBDDs(const std::vector<SylvanUBDD> &ubdds) {
-        std::vector<BDDsylvan> bdds(ubdds.size());
-        for (size_t i = 0; i < ubdds.size(); i++)
-            bdds[i] = ubdds[i].bdd_;
-        return bdds;
-    }
-};
-//std::map<size_t, SylvanUBDD *> SylvanUBDD::nodes_map = SylvanUBDD::create_map();
-
-#endif /* SYLVANUBDD_HH_
- */
+    //std::map<size_t, SylvanUBDD *> SylvanUBDD::nodes_map = SylvanUBDD::create_map();
+}// namespace fairsyn

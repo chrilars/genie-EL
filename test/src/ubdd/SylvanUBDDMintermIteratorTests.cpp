@@ -6,6 +6,8 @@
 //#include "SylvanUBDD.hh"
 #include "UBDDMintermIteratorTests.h"
 
+using namespace fairsyn;
+
 struct SylvanUBDDMintermIteratorTests : UBDDMintermIteratorTests<SylvanUBDD>, SylvanTestHelper {
 };
 

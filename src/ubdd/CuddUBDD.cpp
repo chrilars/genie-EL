@@ -5,108 +5,102 @@
  *      author: Mateusz Rychlicki
  *
  */
-#include "BaseUBDD.hh"
-#include "CuddUBDDMintermIterator.hh"
+#include "ubdd/CuddUBDD.hh"
+#include "ubdd/CuddUBDDMintermIterator.hh"
+#include "ubdd/BaseUBDD.hh"
 #include <complex>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "cudd.h"
 #include "cuddObj.hh"
 #include "dddmp.h"
 
-#ifndef CUDDUBDD_HH_
-#    define CUDDUBDD_HH_
+namespace fairsyn {
 
-typedef BDD BDDcudd;
-
-class CuddUBDD : public BaseUBDD<CuddUBDD> {
-public:
-    BDDcudd bdd_;
-    std::shared_ptr<Cudd> cudd_;
-
-    CuddUBDD(BDDcudd &bdd, std::shared_ptr<Cudd> cudd) {
+    CuddUBDD::CuddUBDD(BDDcudd &bdd, std::shared_ptr<Cudd> cudd) {
         cudd_ = cudd;
         bdd_ = bdd;
     }
 
-    CuddUBDD(unsigned int numVars,
-             unsigned int numVarsZ,
-             unsigned int numSlots = CUDD_UNIQUE_SLOTS,
-             unsigned int cacheSize = CUDD_CACHE_SLOTS,
-             unsigned long maxMemory = 0,
-             PFC defaultHandler = defaultError) {
+    CuddUBDD::CuddUBDD(unsigned int numVars,
+                       unsigned int numVarsZ,
+                       unsigned int numSlots,
+                       unsigned int cacheSize,
+                       unsigned long maxMemory,
+                       PFC defaultHandler) {
         cudd_ = std::make_shared<Cudd>(numVars, numVarsZ, numSlots, cacheSize, maxMemory, defaultHandler);
     }
 
-    CuddUBDD(const Cudd &x) {
+    CuddUBDD::CuddUBDD(const Cudd &x) {
         cudd_ = std::make_shared<Cudd>(x);
     }
 
-    CuddUBDD(CuddUBDD &ubdd) {
+    CuddUBDD::CuddUBDD(CuddUBDD &ubdd) {
         cudd_ = ubdd.cudd_;
         bdd_ = BDD(ubdd.bdd_);
     }
 
-    CuddUBDD(const CuddUBDD &ubdd) {
+    CuddUBDD::CuddUBDD(const CuddUBDD &ubdd) {
         cudd_ = ubdd.cudd_;
         bdd_ = BDD(ubdd.bdd_);
     }
 
-    CuddUBDD() {
+    CuddUBDD::CuddUBDD() {
         cudd_ = std::make_shared<Cudd>();
     }
 
-    CuddUBDD zero() const override {
+    CuddUBDD CuddUBDD::zero() const {
         BDDcudd bdd = cudd_->bddZero();
         return CuddUBDD(bdd, cudd_);
     }
 
-    CuddUBDD one() const override {
+    CuddUBDD CuddUBDD::one() const {
         BDDcudd bdd = cudd_->bddOne();
         return CuddUBDD(bdd, cudd_);
     }
 
-    CuddUBDD var() const override {
+    CuddUBDD CuddUBDD::var() const {
         BDDcudd bdd = cudd_->bddVar();
         return CuddUBDD(bdd, cudd_);
     }
 
-    CuddUBDD var(size_t index) const override {
+    CuddUBDD CuddUBDD::var(size_t index) const {
         BDDcudd bdd = cudd_->bddVar(index);
         return CuddUBDD(bdd, cudd_);
     }
 
-    size_t nodeSize() const override {
+    size_t CuddUBDD::nodeSize() const {
         return cudd_->ReadSize();
     }
 
-    size_t nodeIndex() const override {
+    size_t CuddUBDD::nodeIndex() const {
         return bdd_.NodeReadIndex();
     }
 
-    size_t nodeCount() const {
+    size_t CuddUBDD::nodeCount() const {
         return bdd_.SupportSize();
     }
 
-    CuddUBDD cube(std::vector<CuddUBDD> variables, std::vector<int> values) const override {
+    CuddUBDD CuddUBDD::cube(std::vector<CuddUBDD> variables, std::vector<int> values) const {
         std::vector<BDDcudd> varsBdd = extractBDDs(variables);
         BDDcudd bdd = variables[0].cudd_->bddComputeCube(&varsBdd[0], &values[0], variables.size());
         return CuddUBDD(bdd, variables[0].cudd_);
     }
 
-    CuddUBDD cube(std::vector<CuddUBDD> variables, std::vector<uint8_t> values) const override {
+    CuddUBDD CuddUBDD::cube(std::vector<CuddUBDD> variables, std::vector<uint8_t> values) const {
         std::vector<int> phase_int(values.begin(), values.end());
         return cube(variables, phase_int);
     }
 
-    CuddUBDD cube(std::vector<CuddUBDD> variables) const override {
+    CuddUBDD CuddUBDD::cube(std::vector<CuddUBDD> variables) const {
         std::vector<BDDcudd> varsBdd = extractBDDs(variables);
         BDDcudd bdd = cudd_->bddComputeCube(&varsBdd[0], nullptr, variables.size());// Same as BDD::computeCube
         return CuddUBDD(bdd, cudd_);
     }
 
-    CuddUBDD permute(const std::vector<size_t> &from, const std::vector<size_t> &to) const override {
+    CuddUBDD CuddUBDD::permute(const std::vector<size_t> &from, const std::vector<size_t> &to) const {
         BDDcudd bdd;
         std::vector<int> permutation;
         if (nodeSize() > from.size()) {
@@ -123,38 +117,38 @@ public:
         return CuddUBDD(bdd, cudd_);
     }
 
-    double countMinterm(size_t nvars) const override {
+    double CuddUBDD::countMinterm(size_t nvars) const {
         return bdd_.CountMinterm(nvars);
     }
 
-    void printMinterm() const override {
+    void CuddUBDD::printMinterm() const {
         bdd_.PrintMinterm();
     }
 
-    double readEpsilon() const {
+    double CuddUBDD::readEpsilon() const {
         return cudd_->ReadEpsilon();
     }
 
 
-    CuddUBDD existAbstract(const CuddUBDD &cube) const override {
+    CuddUBDD CuddUBDD::existAbstract(const CuddUBDD &cube) const {
         BDD bdd = bdd_.ExistAbstract(cube.bdd_);
         return CuddUBDD(bdd, cudd_);
     }
 
-    CuddUBDD andAbstract(const CuddUBDD &g, const CuddUBDD &cube) const override {
+    CuddUBDD CuddUBDD::andAbstract(const CuddUBDD &g, const CuddUBDD &cube) const {
         BDDcudd bdd = bdd_.AndAbstract(g.bdd_, cube.bdd_);
         return CuddUBDD(bdd, g.cudd_);
     }
 
-    UBDDMintermIterator *generateMintermIterator(std::vector<size_t> &ivars) const override {
+    UBDDMintermIterator *CuddUBDD::generateMintermIterator(std::vector<size_t> &ivars) const {
         return new CuddUBDDMintermIterator(bdd_, ivars);
     }
 
-    CuddUBDD complement(CuddUBDD &symbolicSet,
-                        std::vector<size_t> nofGridPoints,
-                        std::vector<size_t> nofBddVars,
-                        std::vector<std::vector<size_t>> indBddVars,
-                        size_t dim) override {
+    CuddUBDD CuddUBDD::complement(CuddUBDD &symbolicSet,
+                                  std::vector<size_t> nofGridPoints,
+                                  std::vector<size_t> nofBddVars,
+                                  std::vector<std::vector<size_t>> indBddVars,
+                                  size_t dim) {
         /* generate ADD variables and ADD for the grid points in each dimension */
         ADD constant;
         std::vector<ADD> aVar(dim);
@@ -183,17 +177,17 @@ public:
     }
 
     /* compute symbolic representation (=bdd) of a polytope { x | Hx<= h }*/
-    CuddUBDD computePolytope(const size_t p,
-                             const std::vector<double> &H,
-                             const std::vector<double> &h,
-                             int type,
-                             size_t dim,
-                             const std::vector<double> &eta,
-                             const std::vector<double> &z,
-                             const std::vector<double> &firstGridPoint,
-                             const std::vector<size_t> &nofBddVars,
-                             const std::vector<std::vector<size_t>> &indBddVars,
-                             const std::vector<size_t> &nofGridPoints) override {
+    CuddUBDD CuddUBDD::computePolytope(const size_t p,
+                                       const std::vector<double> &H,
+                                       const std::vector<double> &h,
+                                       int type,
+                                       size_t dim,
+                                       const std::vector<double> &eta,
+                                       const std::vector<double> &z,
+                                       const std::vector<double> &firstGridPoint,
+                                       const std::vector<size_t> &nofBddVars,
+                                       const std::vector<std::vector<size_t>> &indBddVars,
+                                       const std::vector<size_t> &nofGridPoints) {
         /* generate ADD variables and ADD for the grid points in each dimension */
         const int OUTER = 0;
         const int INNER = 1;
@@ -252,7 +246,7 @@ public:
         return CuddUBDD(polytope, cudd_);
     }
 
-    int save(FILE *file) override{
+    int CuddUBDD::save(FILE *file) {
         /* before we save the BDD to file, we save it to another manager,
          * because the current manager is classified as ADD manager */
         Cudd mdest;
@@ -269,7 +263,7 @@ public:
                 file);
     }
 
-    CuddUBDD load(FILE *file, std::vector<int> composeids, int newID) override{
+    CuddUBDD CuddUBDD::load(FILE *file, std::vector<int> composeids, int newID) {
         /* if match then we have to create new variable id's and load the bdd with those new ids */
         DdNode *dd = Dddmp_cuddBddLoad(cudd_->getManager(),
                                        (newID) ? DDDMP_VAR_COMPOSEIDS : DDDMP_VAR_MATCHIDS,
@@ -283,86 +277,86 @@ public:
         return CuddUBDD(bdd, cudd_);
     }
 
-    CuddUBDD transfer(const CuddUBDD &destination) const override{
+    CuddUBDD CuddUBDD::transfer(const CuddUBDD &destination) const {
         BDD bdd = BDD(bdd_);
         return CuddUBDD(bdd, cudd_);
     }
 
-    bool isCoverEqual(const CuddUBDD &other) const override{
+    bool CuddUBDD::isCoverEqual(const CuddUBDD &other) const {
         return cudd_->getManager() == other.cudd_->getManager();
     }
 
-    CuddUBDD& operator=(const CuddUBDD &right) override {
+    CuddUBDD &CuddUBDD::operator=(const CuddUBDD &right) {
         bdd_ = right.bdd_;
         cudd_ = right.cudd_;
         return *this;
     }
-    bool operator==(const CuddUBDD &other) const override { return bdd_ == other.bdd_; }
-    bool operator!=(const CuddUBDD &other) const override { return bdd_ != other.bdd_; }
-    bool operator<=(const CuddUBDD &other) const override { return bdd_ <= other.bdd_; }
-    bool operator>=(const CuddUBDD &other) const override { return bdd_ >= other.bdd_; }
-    bool operator<(const CuddUBDD &other) const override { return bdd_ < other.bdd_; }
-    bool operator>(const CuddUBDD &other) const override { return bdd_ > other.bdd_; }
-    CuddUBDD operator!() const override {
+    bool CuddUBDD::operator==(const CuddUBDD &other) const { return bdd_ == other.bdd_; }
+    bool CuddUBDD::operator!=(const CuddUBDD &other) const { return bdd_ != other.bdd_; }
+    bool CuddUBDD::operator<=(const CuddUBDD &other) const { return bdd_ <= other.bdd_; }
+    bool CuddUBDD::operator>=(const CuddUBDD &other) const { return bdd_ >= other.bdd_; }
+    bool CuddUBDD::operator<(const CuddUBDD &other) const { return bdd_ < other.bdd_; }
+    bool CuddUBDD::operator>(const CuddUBDD &other) const { return bdd_ > other.bdd_; }
+    CuddUBDD CuddUBDD::operator!() const {
         BDDcudd bdd = !bdd_;
         return CuddUBDD(bdd, cudd_);
     }
-    CuddUBDD operator~() const override {
+    CuddUBDD CuddUBDD::operator~() const {
         BDDcudd bdd = ~bdd_;
         return CuddUBDD(bdd, cudd_);
     }
-    CuddUBDD operator*(const CuddUBDD &other) const override {
+    CuddUBDD CuddUBDD::operator*(const CuddUBDD &other) const {
         BDDcudd bdd = bdd_ * other.bdd_;
         return CuddUBDD(bdd, cudd_);
     }
-    CuddUBDD operator*=(const CuddUBDD &other) override {
+    CuddUBDD CuddUBDD::operator*=(const CuddUBDD &other) {
         bdd_ *= other.bdd_;
         return *this;
     }
-    CuddUBDD operator&(const CuddUBDD &other) const override {
+    CuddUBDD CuddUBDD::operator&(const CuddUBDD &other) const {
         BDDcudd bdd = bdd_ & other.bdd_;
         return CuddUBDD(bdd, cudd_);
     }
-    CuddUBDD operator&=(const CuddUBDD &other) override {
+    CuddUBDD CuddUBDD::operator&=(const CuddUBDD &other) {
         bdd_ &= other.bdd_;
         return *this;
     }
-    CuddUBDD operator+(const CuddUBDD &other) const override {
+    CuddUBDD CuddUBDD::operator+(const CuddUBDD &other) const {
         BDDcudd bdd = bdd_ + other.bdd_;
         return CuddUBDD(bdd, cudd_);
     }
-    CuddUBDD operator+=(const CuddUBDD &other) override {
+    CuddUBDD CuddUBDD::operator+=(const CuddUBDD &other) {
         bdd_ += other.bdd_;
         return *this;
     }
-    CuddUBDD operator|(const CuddUBDD &other) const override {
+    CuddUBDD CuddUBDD::operator|(const CuddUBDD &other) const {
         BDDcudd bdd = bdd_ | other.bdd_;
         return CuddUBDD(bdd, cudd_);
     }
-    CuddUBDD operator|=(const CuddUBDD &other) override {
+    CuddUBDD CuddUBDD::operator|=(const CuddUBDD &other) {
         bdd_ |= other.bdd_;
         return *this;
     }
-    CuddUBDD operator^(const CuddUBDD &other) const override {
+    CuddUBDD CuddUBDD::operator^(const CuddUBDD &other) const {
         BDDcudd bdd = bdd_ ^ other.bdd_;
         return CuddUBDD(bdd, cudd_);
     }
-    CuddUBDD operator^=(const CuddUBDD &other) override {
+    CuddUBDD CuddUBDD::operator^=(const CuddUBDD &other) {
         bdd_ ^= other.bdd_;
         return *this;
     }
-    CuddUBDD operator-(const CuddUBDD &other) const override {
+    CuddUBDD CuddUBDD::operator-(const CuddUBDD &other) const {
         BDDcudd bdd = bdd_ - other.bdd_;
         return CuddUBDD(bdd, cudd_);
     }
-    CuddUBDD operator-=(const CuddUBDD &other) override {
+    CuddUBDD CuddUBDD::operator-=(const CuddUBDD &other) {
         bdd_ -= other.bdd_;
         return *this;
     }
 
     /* compute the smallest radius over all 2-norm balls that contain
      * the set  L([-eta[0]/2, eta[0]2]x ... x [eta[dim-1]/2, eta[dim-1]/2]) */
-    double computeEllipsoidRadius(const std::vector<double> L, size_t dim, const std::vector<double> eta, const std::vector<double> z) const {
+    double CuddUBDD::computeEllipsoidRadius(const std::vector<double> L, size_t dim, const std::vector<double> eta, const std::vector<double> z) const {
 
         /* compute smallest radius of ball that contains L*cell */
         Cudd mgr;
@@ -393,15 +387,4 @@ public:
 
         return std::sqrt(Cudd_V(max.getNode())) + cudd_->ReadEpsilon();
     }
-
-private:
-    static std::vector<BDDcudd> extractBDDs(std::vector<CuddUBDD> ubdds) {
-        std::vector<BDDcudd> bdds(ubdds.size());
-        for (size_t i = 0; i < ubdds.size(); i++)
-            bdds[i] = ubdds[i].bdd_;
-        return bdds;
-    }
-};
-
-#endif /* CUDDUBDD_HH_
- */
+}// namespace fairsyn

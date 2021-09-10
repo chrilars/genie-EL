@@ -2,8 +2,10 @@
 // Created by mrychlicki on 7/26/21.
 //
 
-#include "BaseUBDD.hh"
+#include "ubdd/BaseUBDD.hh"
 #include <gtest/gtest.h>
+
+using namespace fairsyn;
 
 template <class UBDD>
 struct UBDDTest : testing::Test {

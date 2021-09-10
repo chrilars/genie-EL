@@ -2,10 +2,11 @@
 // Created by mrychlicki on 7/26/21.
 //
 
-#include "BaseUBDD.hh"
-#include "CuddUBDD.hh"
 #include "UBDDTests.h"
+#include "ubdd/CuddUBDD.hh"
 #include <gtest/gtest.h>
+
+using namespace fairsyn;
 
 struct CuddUBDDTest : public UBDDTest<CuddUBDD> {
     CuddUBDD *cudd_base;

@@ -2,10 +2,12 @@
 // Created by mrychlicki on 7/26/21.
 //
 
-#include "BaseUBDD.hh"
+#include "ubdd/BaseUBDD.hh"
 #include "SylvanTestHelper.h"
 #include "UBDDTests.h"
 #include <gtest/gtest.h>
+
+using namespace fairsyn;
 
 struct SylvanUBDDTest : public UBDDTest<SylvanUBDD>, SylvanTestHelper {
     SylvanUBDD *sylvan_base;
