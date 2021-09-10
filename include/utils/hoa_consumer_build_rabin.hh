@@ -6,16 +6,16 @@
 // HOA format
 //==============================================================================
 
-#ifndef CPPHOAFPARSER_HOACONSUMER_BUILDRABIN_H
-#define CPPHOAFPARSER_HOACONSUMER_BUILDRABIN_H
+#pragma once
 
 #include <iostream>
 #include <limits>
 #include <map>
 #include <stack>
 
-#include "hoa_consumer.hh"
-#include "hoa_parser.hh"
+#include "cpphoafparser/consumer/hoa_consumer.hh" // todo fix include
+#include "cpphoafparser/parser/hoa_parser.hh" // todo fix include
+#include <cstring> // todo fix include
 
 #define UNUSED(x) (void)(x)
 
@@ -209,5 +209,3 @@ namespace cpphoafparser {
     };
 
 }// namespace cpphoafparser
-
-#endif

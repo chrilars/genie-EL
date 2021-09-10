@@ -3,8 +3,7 @@
  *
  */
 
-#ifndef FIXEDPOINT_HH_
-#define FIXEDPOINT_HH_
+#pragma once
 
 #include <iostream>
 #include <stdexcept>
@@ -14,8 +13,8 @@
 #include <array>
 #include <sylvan_obj.hpp>
 
+#include "RabinAutomaton.hh"
 #include "lib/Arena.hh"
-#include "lib/RabinAutomaton.hh"
 #include "utils/TicToc.hh"
 
 struct const_arg_recursive_rabin {
@@ -954,5 +953,3 @@ TASK_IMPL_5(sylvan::BDD,
     return YY.GetBDD();
 }
 } /* close namespace */
-
-#endif /* FIXEDPOINT_HH_ */

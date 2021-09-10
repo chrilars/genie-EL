@@ -20,6 +20,9 @@ find_package(Cudd ${MIN_Cudd_VERSION} REQUIRED)
 
 set(MIN_Sylvan_VERSION 1.6)
 find_package(Sylvan REQUIRED)
+
+set(MIN_CppHoafParser_VERSION 2.0)
+find_package(CppHoafParser REQUIRED ${MIN_CppHoafParser_VERSION})
 ##############################################
 # Create target and set properties
 
@@ -28,6 +31,10 @@ add_library(fairsyn
         src/ubdd/CuddUBDDMintermIterator.cpp
         src/ubdd/SylvanUBDD.cpp
         src/ubdd/SylvanUBDDMintermIterator.cpp
+#        src/lib/Arena.cpp
+#        src/lib/FixedPoint.cpp
+        src/utils/hoa_consumer_build_rabin.cpp
+        src/utils/TicToc.cpp
         )
 
 
@@ -48,7 +55,9 @@ target_compile_options(fairsyn PRIVATE
         $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
         -Wall -Wextra -Wpedantic>)
 
-target_link_libraries(fairsyn PRIVATE Cudd::Cudd Sylvan::Sylvan)
+target_link_libraries(fairsyn PRIVATE Cudd::Cudd Sylvan::Sylvan CppHoafParser::CppHoafParser)
+add_link_options(-std=c++11 -g -ldl) # Mascot
+add_link_options(-O0 -Wall -Wextra -Wfatal-errors) # Debug
 add_link_options(--coverage -pthread)
 
 ##############################################
@@ -95,6 +104,7 @@ configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/FairSynConfig.cmak
 install(FILES
         ${CMAKE_CURRENT_LIST_DIR}/cmake/FindCudd.cmake
         ${CMAKE_CURRENT_LIST_DIR}/cmake/FindSylvan.cmake
+        ${CMAKE_CURRENT_LIST_DIR}/cmake/FindCppHoafParser.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/FairSynConfig.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/FairSynConfigVersion.cmake
         DESTINATION ${INSTALL_CONFIGDIR}
@@ -108,6 +118,10 @@ configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/FindCudd.cmake
 
 configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/FindSylvan.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/FindSylvan.cmake
+        COPYONLY)
+
+configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/FindCppHoafParser.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/FindCppHoafParser.cmake
         COPYONLY)
 
 export(EXPORT fairsyn-targets

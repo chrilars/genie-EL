@@ -5,8 +5,7 @@
  *      author: rungger
  */
 
-#ifndef TICTOC_HH_
-#define TICTOC_HH_
+#pragma once
 
 #include <chrono>
 #include <iostream>
@@ -39,5 +38,3 @@ public:
         return dt.count();
     }
 };
-
-#endif /* TICTOC_HH_ */

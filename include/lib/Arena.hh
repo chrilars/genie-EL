@@ -3,9 +3,7 @@
  *
  */
 
-#ifndef ARENA_HH_
-#define ARENA_HH_
-
+#pragma once
 #include <iostream>
 #include <stdexcept>
 #include <cmath>
@@ -399,4 +397,3 @@ public:
 }; /* close class definition */
 } /* close namespace */
 
-#endif /* TRANSITIONSYSTEM_HH_ */
