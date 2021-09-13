@@ -17,9 +17,9 @@ private:
     std::chrono::high_resolution_clock::time_point start;
     std::chrono::high_resolution_clock::time_point stop;
 public:
-    TicToc() = default;;
+    TicToc() = default;
 
-    ~TicToc() = default;;
+    ~TicToc() = default;
 
     /* function: tic
      * set start time
