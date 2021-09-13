@@ -42,13 +42,13 @@ struct nconst_arg_recursive_rabin {
 
 namespace fairsyn {
     /*
-* class: FixedPoint
-*
-*
-* provides the fixed point computation for the Rabin specification
-* on finite transition systems with the edge fairness condition
-*
-*/
+    * class: FixedPoint
+    *
+    *
+    * provides the fixed point computation for the Rabin specification
+    * on finite transition systems with the edge fairness condition
+    *
+    */
     class FixedPoint : public Arena {
     public:
         /* var: tr_domain_

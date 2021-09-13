@@ -24,50 +24,45 @@ namespace fairsyn {
         sylvan::Bdd states;
         sylvan::Bdd transitions;
     };
+
     /*
-    * class: Arena
-    *
-    *
-    * a representation of the finite two-player turn-based game arena with edge fairness condition
-    *
-    */
+     * class: Arena
+     *
+     *
+     * a representation of the finite two-player turn-based game arena with edge fairness condition
+     *
+     */
     class Arena {
     public:
         /* var: nodes_
-        * stores the nodes in a BDD */
+         * stores the nodes in a BDD */
         sylvan::Bdd nodes_;
         /* var: sys_nodes_
          * stores the system nodes in a BDD */
         sylvan::Bdd sys_nodes_;
         /* var: env_nodes_
-        * stores the environment nodes in a BDD */
+         * stores the environment nodes in a BDD */
         sylvan::Bdd env_nodes_;
-        //    /* var: inputSpace_
-        //     * stores the input space BDD */
-        //    sylvan::Bdd inputSpace_;
         /* var: preVars_
-        * stores the "pre" node variable indices */
+         * stores the "pre" node variable indices */
         std::vector<uint32_t> preVars_;
-        //    /* var: inputVars_
-        //     * stores the input variable indices */
-        //    std::vector<uint32_t> inputVars_;
         /* var: postVars_
-      * stores the "post" node variable indices */
+         * stores the "post" node variable indices */
         std::vector<uint32_t> postVars_;
         /* var: tr_
-       * Transition BDD */
+         * Transition BDD */
         sylvan::Bdd tr_;
         /* var: live_
-          * the live transitions (subset of the transition relation) */
+         * the live transitions (subset of the transition relation) */
         sylvan::Bdd live_;
 
 
     public:
         /*
-    * constructor: Arena
-    *
-    *  construct Arena from a given product of thread interfaces
-    */
+         * constructor: Arena
+         *
+         *  construct Arena from a given product of thread interfaces
+         */
         Arena(std::set<uint32_t> &all_variables,
               std::vector<thread *> &thread_list,
               std::vector<uint32_t> &resource_vars,
@@ -83,7 +78,8 @@ namespace fairsyn {
                     all_variables.insert(*j);
                     preVars_.push_back(*j);
                 }
-                for (auto j = thread_list[i]->state_vars_post.begin(); j != thread_list[i]->state_vars_post.end(); ++j) {
+                for (auto j = thread_list[i]->state_vars_post.begin();
+                     j != thread_list[i]->state_vars_post.end(); ++j) {
                     all_variables.insert(*j);
                     postVars_.push_back(*j);
                 }
@@ -104,16 +100,15 @@ namespace fairsyn {
                 all_variables.insert(*j);
             }
             /* ----------- the state space -----------------
-        * state space of the product is the product of the state spaces of the threads and the resource state space */
+             * state space of the product is the product of the state spaces of the threads and the resource state space */
             nodes_ = sylvan::Bdd::bddOne();
             for (size_t i = 0; i < thread_list.size(); i++) {
                 nodes_ &= thread_list[i]->states;
             }
             nodes_ &= resource_states;
-            // print_bdd_info(nodes_, thread_list[0]->state_vars);
             /* ------------ the transitions -----------------*/
             std::vector<uint32_t> thread_vars, thread_vars_post; /* bdd variables for representing which of the threads moves in a transition
-       When all the variables are 0, it means that no thread moves (for example, from the system nodes). */
+        When all the variables are 0, it means that no thread moves (for example, from the system nodes). */
             for (uint32_t i = 1; i <= std::ceil(std::log2(thread_list.size() + 1)); i++) {
                 uint32_t new_var_id = *all_variables.rbegin() + 1;
                 thread_vars.push_back(new_var_id);
@@ -129,15 +124,16 @@ namespace fairsyn {
             sylvan::BddSet thread_vars_bdd = sylvan::BddSet::fromVector(thread_vars);
             sylvan::BddSet thread_vars_post_bdd = sylvan::BddSet::fromVector(thread_vars_post);
             /* build the product transition with the following constraints:
-            * - at a time, only one thread moves to the next step and the rest remains standstill
-            * - the index of the moving thread is recorded in the thread_vars_post bdd variables
-            */
+             * - at a time, only one thread moves to the next step and the rest remains standstill
+             * - the index of the moving thread is recorded in the thread_vars_post bdd variables
+             */
             tr_ = sylvan::Bdd::bddZero();
             for (size_t i = 0; i < thread_list.size(); i++) {
                 /* the bdd representing the transitions where only thread i moves */
                 sylvan::Bdd T = sylvan::Bdd::bddOne();
                 /* thread i moves */
-                T &= elementToBdd(i + 1, thread_vars_post_bdd, thread_vars_post.size()); /* select thread i; the "+1" is to account for the fact that the decimal value "0" is reserved for the case when no thread moves. */
+                T &= elementToBdd(i + 1, thread_vars_post_bdd,
+                                  thread_vars_post.size()); /* select thread i; the "+1" is to account for the fact that the decimal value "0" is reserved for the case when no thread moves. */
                 T &= thread_list[i]->transitions;
                 /* rest of the threads remain at standstill */
                 for (size_t j = 0; j < thread_list.size(); j++) {
@@ -148,40 +144,32 @@ namespace fairsyn {
 
                     for (size_t k = 0; k < thread_list[j]->state_vars.size(); k++) {
                         /* b represents a bdd of the form (x <=> x'), where x and x' are the k-th pre and post state variables of the thread j */
-                        sylvan::Bdd b = sylvan::Bdd::bddVar(thread_list[j]->state_vars[k]) & sylvan::Bdd::bddVar(thread_list[j]->state_vars_post[k]);
-                        b |= (!sylvan::Bdd::bddVar(thread_list[j]->state_vars[k])) & (!sylvan::Bdd::bddVar(thread_list[j]->state_vars_post[k]));
+                        sylvan::Bdd b = sylvan::Bdd::bddVar(thread_list[j]->state_vars[k]) &
+                                        sylvan::Bdd::bddVar(thread_list[j]->state_vars_post[k]);
+                        b |= (!sylvan::Bdd::bddVar(thread_list[j]->state_vars[k])) &
+                             (!sylvan::Bdd::bddVar(thread_list[j]->state_vars_post[k]));
                         T &= b;
                     }
+
                 }
 
                 tr_ |= T;
+
             }
             tr_ &= nodes_;
-            /* debug */
-            // std::vector<uint32_t> actionVars=input_action_vars;
-            // actionVars.push_back(output_action_vars[0]);
-            // print_bdd_info(tr_, preVars_, actionVars, postVars_);
-            // print_bdd_info(thread_list[0]->transitions, thread_list[0]->state_vars, actionVars, thread_list[0]->state_vars_post);
-            // print_bdd_info(tr_, sort(preVars_), sort(postVars_));
-            /* debug ends */
-            // tr_ &= nodes_;
-            // print_bdd_info(tr_, preVars_, postVars_);
             /* return the mapping from progress_i symbols to the state predicates recording the progress in the individual threads */
             progress_pred_to_bdd.clear();
             for (size_t i = 0; i < thread_list.size(); i++) {
                 std::string s = "progress_";
                 s += std::to_string(i);
                 // progress_pred_to_bdd.insert({s, nodes_ & elementToBdd(i+1, thread_vars_bdd, thread_vars.size())}); /* mark progress in thread i; the "+1" is to account for the fact that the decimal value "0" is reserved for the case when no thread moves. */
-                progress_pred_to_bdd.insert({s, nodes_.Permute(preVars_, postVars_) & elementToBdd(i + 1, thread_vars_post_bdd, thread_vars_post.size())}); /* mark progress in thread i; the "+1" is to account for the fact that the decimal value "0" is reserved for the case when no thread moves. */
+                progress_pred_to_bdd.insert({s, nodes_.Permute(preVars_, postVars_) &
+                                                elementToBdd(i + 1, thread_vars_post_bdd,
+                                                             thread_vars_post.size())}); /* mark progress in thread i; the "+1" is to account for the fact that the decimal value "0" is reserved for the case when no thread moves. */
             }
-            /* debug */
-            // print_bdd_info(tr_&progress_pred_to_bdd["progress_0"], preVars_, postVars_);
-            // std::vector<uint32_t> temp=preVars_;
-            // temp.push_back(output_action_vars[0]);
-            // print_bdd_info(tr_, temp, postVars_);
-            /* debug ends */
             /* ---------------- the game (splitting states into system and environment states) ------------ */
-            uint32_t system_nodes = *all_variables.rbegin() + 1; /* bdd variable that is 1 for system nodes and 0 for the environment nodes */
+            uint32_t system_nodes = *all_variables.rbegin() +
+                                    1; /* bdd variable that is 1 for system nodes and 0 for the environment nodes */
             sylvan::Bdd system_nodes_bdd = sylvan::Bdd::bddVar(system_nodes);
             sylvan::Bdd environment_nodes_bdd = !system_nodes_bdd;
             sys_nodes_ = nodes_ & system_nodes_bdd;
@@ -196,14 +184,10 @@ namespace fairsyn {
             /* encode the interplay between the system and the environment */
             sylvan::Bdd game_rule = sylvan::Bdd::bddZero();
             /* from the system nodes, the game can move to one of these:
-            * (1) an input successor
-            * (2) the environment node which has the same valuations for the rest of the bdd variables */
+             * (1) an input successor
+             * (2) the environment node which has the same valuations for the rest of the bdd variables */
             /* rule (1) */
             game_rule |= (system_nodes_bdd & input_action_states & (!output_action_states) & system_nodes_post_bdd);
-
-            /* debug */
-            // print_bdd_info(game_rule, preVars_, actionVars, postVars_);
-            /* debug ends */
 
             /* rule (2) */
             sylvan::Bdd b = sylvan::Bdd::bddOne();
@@ -219,24 +203,9 @@ namespace fairsyn {
             }
             game_rule |= b;
 
-            /* debug */
-            // print_bdd_info(game_rule, preVars_, actionVars, postVars_);
-            /* debug ends */
-
             /* from the envrionment nodes, the game can move along one of the output successors, and the next state is a sysetm node */
-            game_rule |= (environment_nodes_bdd & output_action_states & (!input_action_states) & system_nodes_post_bdd);
-
-            /* debug */
-            // temp=preVars_;
-            // temp.push_back(output_action_vars[0]);
-            // print_bdd_info(game_rule, temp, postVars_);
-            // print_bdd_info(tr_, temp, postVars_);
-            /* debug ends */
-
-            /* debug */
-            // print_bdd_info(game_rule, preVars_, actionVars, postVars_);
-            // print_bdd_info(tr_, preVars_, actionVars, postVars_);
-            /* debug ends */
+            game_rule |= (environment_nodes_bdd & output_action_states & (!input_action_states) &
+                          system_nodes_post_bdd);
 
             /* any system node can transition to an environment node without changing the other components */
             b = sylvan::Bdd::bddOne();
@@ -255,24 +224,18 @@ namespace fairsyn {
 
             /* finally, incorporate the system-environment interaction in the transitions */
             tr_ &= game_rule;
-            /* debug */
-            // print_bdd_info(tr_, preVars_, actionVars, postVars_);
-            /* debug ends */
-            // print_bdd_info(game_rule, preVars_, postVars_);
-            // store_bdd_in_file(tr_, preVars_, postVars_, "tr.txt");
+
             /* the live transitions are all the environment transitions */
             live_ = tr_ & environment_nodes_bdd;
             /* sort the list of variables */
             std::sort(preVars_.begin(), preVars_.end());
             std::sort(postVars_.begin(), postVars_.end());
-            // /* debug */
-            // print_bdd_info(tr_, preVars_, postVars_);
-            // print_bdd_info(progress_pred_to_bdd["progress_0"], preVars_);
-            // /* debug ends */
+
         }
+
         /*
-    * constructor: Arena
-    */
+         * constructor: Arena
+         */
         Arena(std::set<uint32_t> &all_variables,
               std::vector<size_t> &nodes,
               std::vector<size_t> &sys_nodes,
@@ -281,7 +244,7 @@ namespace fairsyn {
               std::vector<std::vector<size_t>> &live_edges) {
             /* number of bdd variables required for the nodes */
             uint32_t nvars = std::ceil(std::log2(nodes.size()));
-            if (all_variables.size() == 0) {
+            if (all_variables.empty()) {
                 /* the "pre" bdd variables */
                 for (uint32_t i = 0; i < nvars; i++) {
                     uint32_t new_var_id = i;
@@ -306,7 +269,7 @@ namespace fairsyn {
                 all_variables.insert(new_var_id);
             }
             /* the bdd representing the set of nodes
-        * given in terms of the "pre" variables */
+             * given in terms of the "pre" variables */
             sylvan::BddSet preBddVars = sylvan::BddSet::fromVector(preVars_);
             nodes_ = setToBdd(nodes, preBddVars, nvars);
             sys_nodes_ = setToBdd(sys_nodes, preBddVars, nvars);
@@ -335,6 +298,7 @@ namespace fairsyn {
                         exit(0);
                     }
                 }
+
             }
 
 
@@ -371,10 +335,12 @@ namespace fairsyn {
                 std::cout << "Some live edges are not valid transitions. Exiting.\n";
                 exit(0);
             }
+
         }
+
         /*
-    * Default constructor
-    */
+         * Default constructor
+         */
         Arena() {
             nodes_ = sylvan::Bdd::bddZero();
             sys_nodes_ = sylvan::Bdd::bddZero();
@@ -382,8 +348,9 @@ namespace fairsyn {
             tr_ = sylvan::Bdd::bddZero();
             live_ = sylvan::Bdd::bddZero();
         }
+
         /* function: sort */
-        template <class T>
+        template<class T>
         inline std::vector<T> sort(const std::vector<T> &vec) {
             std::vector<T> sorted = vec;
             std::sort(sorted.begin(), sorted.end());
@@ -429,4 +396,4 @@ namespace fairsyn {
         }
         
     }; /* close class definition */
-}// namespace fairsyn
+} /* close namespace */

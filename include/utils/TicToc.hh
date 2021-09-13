@@ -16,24 +16,25 @@ class TicToc {
 private:
     std::chrono::high_resolution_clock::time_point start;
     std::chrono::high_resolution_clock::time_point stop;
-
 public:
-    TicToc(){};
-    ~TicToc(){};
+    TicToc() = default;;
+
+    ~TicToc() = default;;
 
     /* function: tic
      * set start time
      */
-    inline void tic(void) {
+    inline void tic() {
         start = std::chrono::high_resolution_clock::now();
     }
+
     /* function: toc
      * set stop time and print out elapsed time since last call of tic()
      */
-    inline double toc(void) {
+    inline double toc() {
         stop = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> dt;
-        dt = std::chrono::duration_cast<std::chrono::duration<double>>(stop - start);
+        dt = std::chrono::duration_cast<std::chrono::duration<double> >(stop - start);
         // std::cout << "Elapsed time is " << dt.count() << " seconds." << std::endl;
         return dt.count();
     }

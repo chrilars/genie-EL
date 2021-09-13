@@ -49,21 +49,21 @@ namespace cpphoafparser {
         /** Constructor, providing a reference to the output stream */
         HOAConsumerBuildRabin(rabin_data *data) : data_(data), out(std::cout) {}
 
-        virtual bool parserResolvesAliases() override {
+        bool parserResolvesAliases() override {
             return false;
         }
 
-        virtual void notifyHeaderStart(const std::string &version) override {
+        void notifyHeaderStart(const std::string &version) override {
             UNUSED(version);
             UNUSED(out);
         }
 
-        virtual void setNumberOfStates(unsigned int numberOfStates) override {
+        void setNumberOfStates(unsigned int numberOfStates) override {
             data_->States = numberOfStates;
         }
 
-        virtual void addStartStates(const int_list &stateConjunction) override {
-            if (stateConjunction.size() == 0) {
+        void addStartStates(const int_list &stateConjunction) override {
+            if (stateConjunction.empty()) {
                 throw std::runtime_error("no initial state specified");
             } else if (stateConjunction.size() > 1) {
                 throw std::runtime_error("multiple initial states not allowed");
@@ -71,26 +71,26 @@ namespace cpphoafparser {
             data_->Start = stateConjunction[0];
         }
 
-        virtual void addAlias(const std::string &name, label_expr::ptr labelExpr) override {
+        void addAlias(const std::string &name, label_expr::ptr labelExpr) override {
             UNUSED(name);
             UNUSED(labelExpr);
         }
 
-        virtual void setAPs(const std::vector<std::string> &aps) override {
+        void setAPs(const std::vector<std::string> &aps) override {
             data_->ap_id_map.clear();
             for (size_t i = 0; i < aps.size(); i++) {
                 data_->ap_id_map.insert({i, aps[i]});
             }
         }
 
-        virtual void setAcceptanceCondition(unsigned int numberOfSets, acceptance_expr::ptr accExpr) override {
+        void setAcceptanceCondition(unsigned int numberOfSets, acceptance_expr::ptr accExpr) override {
             for (size_t i = 0; i < numberOfSets; i++) {
                 std::vector<size_t> acc_label;
                 data_->acc_signature.push_back(acc_label);
             }
             std::stack<acceptance_expr::ptr> nodes;
             nodes.push(accExpr);
-            while (nodes.size() != 0) {
+            while (nodes.empty()) {
                 acceptance_expr::ptr curr_node = nodes.top();
                 nodes.pop();
                 if (curr_node->isOR()) {
@@ -126,39 +126,40 @@ namespace cpphoafparser {
             }
         }
 
-        virtual void provideAcceptanceName(const std::string &name, const std::vector<IntOrString> &extraInfo) override {
-            if (strcmp(name.c_str(), "Rabin")) {
+        void
+        provideAcceptanceName(const std::string &name, const std::vector<IntOrString> &extraInfo) override {
+            if (std::strcmp(name.c_str(), "Rabin") != 0) {
                 throw std::runtime_error("the input automaton is not rabin automaton");
             }
             UNUSED(extraInfo);
         }
 
-        virtual void setName(const std::string &name) override {
+        void setName(const std::string &name) override {
             UNUSED(name);
         }
 
-        virtual void setTool(const std::string &name, std::shared_ptr<std::string> version) override {
+        void setTool(const std::string &name, std::shared_ptr<std::string> version) override {
             UNUSED(name);
             UNUSED(version);
         }
 
-        virtual void addProperties(const std::vector<std::string> &properties) override {
+        void addProperties(const std::vector<std::string> &properties) override {
             UNUSED(properties);
         }
 
-        virtual void addMiscHeader(const std::string &name, const std::vector<IntOrString> &content) override {
+        void addMiscHeader(const std::string &name, const std::vector<IntOrString> &content) override {
             UNUSED(name);
             UNUSED(content);
         }
 
-        virtual void notifyBodyStart() override {}
+        void notifyBodyStart() override {}
 
-        virtual void addState(unsigned int id,
-                              std::shared_ptr<std::string> info,
-                              label_expr::ptr labelExpr,
-                              std::shared_ptr<int_list> accSignature) override {
+        void addState(unsigned int id,
+                      std::shared_ptr<std::string> info,
+                      label_expr::ptr labelExpr,
+                      std::shared_ptr<int_list> accSignature) override {
             if (accSignature) {
-                for (unsigned int acc : *accSignature) {
+                for (unsigned int acc: *accSignature) {
                     data_->acc_signature[acc].push_back(id);
                 }
             }
@@ -166,18 +167,18 @@ namespace cpphoafparser {
             UNUSED(labelExpr);
         }
 
-        virtual void addEdgeImplicit(unsigned int stateId,
-                                     const int_list &conjSuccessors,
-                                     std::shared_ptr<int_list> accSignature) override {
+        void addEdgeImplicit(unsigned int stateId,
+                             const int_list &conjSuccessors,
+                             std::shared_ptr<int_list> accSignature) override {
             UNUSED(stateId);
             UNUSED(conjSuccessors);
             UNUSED(accSignature);
         }
 
-        virtual void addEdgeWithLabel(unsigned int stateId,
-                                      label_expr::ptr labelExpr,
-                                      const int_list &conjSuccessors,
-                                      std::shared_ptr<int_list> accSignature) override {
+        void addEdgeWithLabel(unsigned int stateId,
+                              label_expr::ptr labelExpr,
+                              const int_list &conjSuccessors,
+                              std::shared_ptr<int_list> accSignature) override {
             if (conjSuccessors.size() != 1) {
                 throw std::runtime_error("the rabin automaton must be deterministic");
             }
@@ -191,15 +192,15 @@ namespace cpphoafparser {
             UNUSED(accSignature);
         }
 
-        virtual void notifyEndOfState(unsigned int stateId) override {
+        void notifyEndOfState(unsigned int stateId) override {
             UNUSED(stateId);
         }
 
-        virtual void notifyEnd() override {}
+        void notifyEnd() override {}
 
-        virtual void notifyAbort() override {}
+        void notifyAbort() override {}
 
-        virtual void notifyWarning(const std::string &warning) override {
+        void notifyWarning(const std::string &warning) override {
             std::cerr << "Warning: " << warning << std::endl;
         }
 
