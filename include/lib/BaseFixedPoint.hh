@@ -24,6 +24,7 @@ namespace fairsyn {
     * on finite transition systems with the edge fairness condition
     *
     */
+    template <class UBDD>
     class BaseFixedPoint {
     public:
         /* function: printTabs

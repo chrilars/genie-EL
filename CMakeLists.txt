@@ -31,9 +31,12 @@ add_library(fairsyn
         src/ubdd/CuddUBDDMintermIterator.cpp
         src/ubdd/SylvanUBDD.cpp
         src/ubdd/SylvanUBDDMintermIterator.cpp
-#        src/lib/Arena.cpp
-        src/lib/BaseFixedPoint.cpp
         src/utils/hoa_consumer_build_rabin.cpp
+        #        src/lib/Arena.cpp
+        src/lib/BaseFixedPoint.cpp
+        src/lib/BaseRabinAutomaton.cpp
+        include/lib/BaseRabinAutomaton.hh
+        include/lib/BaseFixedPoint.hh
         src/utils/TicToc.cpp
         )
 
