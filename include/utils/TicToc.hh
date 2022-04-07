@@ -1,17 +1,17 @@
-/*
- * TicToc.hh
- *
- *  created on: 02.10.2015
- *      author: rungger
- */
+/** @file TicToc.hh
+*
+*  @date 02.10.2015
+*  @author rungger
+*/
 
 #pragma once
 
 #include <chrono>
 #include <iostream>
 
-/* class: TicToc
- * helper class to measure elapsed time based on std::chrono library */
+/**
+ * @brief helper class to measure elapsed time based on std::chrono library
+ */
 class TicToc {
 private:
     std::chrono::high_resolution_clock::time_point start;
@@ -21,15 +21,15 @@ public:
 
     ~TicToc() = default;
 
-    /* function: tic
-     * set start time
+    /**
+     * @brief set start time
      */
     inline void tic() {
         start = std::chrono::high_resolution_clock::now();
     }
 
-    /* function: toc
-     * set stop time and print out elapsed time since last call of tic()
+    /**
+     * @brief set stop time and print out elapsed time since last call of tic()
      */
     inline double toc() {
         stop = std::chrono::high_resolution_clock::now();

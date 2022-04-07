@@ -1,10 +1,8 @@
-/*
- * SylvanUBDDMintermIterator.hh
- *
- *  created on: 12.07.2021
- *      author: Mateusz Rychlicki
- *
- */
+/** @file SylvanUBDDMintermIterator.hh
+*
+*  @date 10.09.2021
+*  @author Mateusz Rychlicki
+*/
 
 #pragma once
 
@@ -17,6 +15,9 @@
 namespace fairsyn {
     typedef sylvan::Bdd BDDsylvan;
 
+    /**
+     * @brief Implementation of Sylvan version of UBDDMintermIterator
+     */
     class SylvanUBDDMintermIterator : public UBDDMintermIterator {
         sylvan::MTBDD leaf_;
         sylvan::MTBDD dd_;

@@ -1,9 +1,8 @@
-/*
- * CuddUBDDMintermIterator.hh
- *
- *  created on: 11.07.2021
- *      author: Mateusz Rychlicki
- */
+/** @file CuddUBDDMintermIterator.cpp
+*
+*  @date 10.09.2021
+*  @author Mateusz Rychlicki
+*/
 
 #include "ubdd/CuddUBDDMintermIterator.hh"
 

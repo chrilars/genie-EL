@@ -1,10 +1,9 @@
-/*
- * SylvanUBDD.hh
- *
- *  created on: 01.07.2021
- *      author: Mateusz Rychlicki
- *
- */
+/** @file SylvanUBDD.cpp
+*
+*  @date 10.09.2021
+*  @author Mateusz Rychlicki
+*/
+
 #include "ubdd/SylvanUBDD.hh"
 #include "ubdd/SylvanUBDDMintermIterator.hh"
 #include "ubdd/BaseUBDD.hh"

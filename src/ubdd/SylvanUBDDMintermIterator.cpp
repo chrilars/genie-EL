@@ -1,10 +1,8 @@
-/*
- * SylvanUBDDMintermIterator.hh
- *
- *  created on: 12.07.2021
- *      author: Mateusz Rychlicki
- *
- */
+/** @file SylvanUBDDMintermIterator.cpp
+*
+*  @date 10.09.2021
+*  @author Mateusz Rychlicki
+*/
 
 #include "ubdd/SylvanUBDDMintermIterator.hh"
 

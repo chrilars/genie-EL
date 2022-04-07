@@ -1,10 +1,9 @@
-/*
- * SylvanUBDD.hh
- *
- *  created on: 01.07.2021
- *      author: Mateusz Rychlicki
- *
- */
+/** @file SylvanUBDD.hh
+*
+*  @date 10.09.2021
+*  @author Mateusz Rychlicki
+*/
+
 #pragma once
 
 #include "BaseUBDD.hh"
@@ -17,6 +16,9 @@
 
 using namespace sylvan;
 namespace fairsyn {
+    /**
+     * @brief Implementation of Sylvan version of BaseUBDD
+     */
     class SylvanUBDD : public BaseUBDD<SylvanUBDD> {
 
     public:

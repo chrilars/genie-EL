@@ -1,10 +1,9 @@
-//==============================================================================
-//
-// Author: Kaushik Mallik
-//
-// An interface to the cpphoafparser library for parsing a Rabin automaton in
-// HOA format
-//==============================================================================
+/** @file hoa_consumer_build_rabin.hh
+*   An interface to the cpphoafparser library for parsing a Rabin automaton in
+*   HOA format
+*
+*  @author Kaushik Mallik
+*/
 
 #pragma once
 
@@ -37,11 +36,11 @@ namespace cpphoafparser {
     };
 
     /**
- * A HOAConsumer implementation that works as an interface to convert a rabin automaton from HOA format
- * to the format used in Mascot-SDS.
- *
- */
-
+     * @brief An interface to the cpphoafparser library for parsing a Rabin automaton in HOA format
+     * @details
+     * A HOAConsumer implementation that works as an interface to convert a rabin automaton from HOA format
+     * to the format used in Mascot-SDS.
+     */
     class HOAConsumerBuildRabin : public HOAConsumer {
     public:
         rabin_data *data_;

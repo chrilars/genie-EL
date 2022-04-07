@@ -1,9 +1,9 @@
-/*
-* CuddUBDDMintermIterator.hh
+/** @file CuddUBDDMintermIterator.hh
 *
-*  created on: 11.07.2021
-*      author: Mateusz Rychlicki
+*  @date 10.09.2021
+*  @author Mateusz Rychlicki
 */
+
 #pragma once
 
 #include "UBDDMintermIterator.hh"
@@ -14,6 +14,9 @@
 namespace fairsyn {
     typedef BDD BDDcudd;
 
+    /**
+     * @brief Implementation of Cudd version of UBDDMintermIterator
+     */
     class CuddUBDDMintermIterator : public UBDDMintermIterator {
     private:
         BDDcudd bdd_;

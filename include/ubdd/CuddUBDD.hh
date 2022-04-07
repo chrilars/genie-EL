@@ -1,10 +1,9 @@
-/*
- * CuddUBDD.hh
+/** @file CuddUBDD.hh
  *
- *  created on: 01.07.2021 (In Progress)
- *      author: Mateusz Rychlicki
- *
+ *  @date 10.09.2021
+ *  @author Mateusz Rychlicki
  */
+
 #pragma once
 
 #include "BaseUBDD.hh"
@@ -18,6 +17,9 @@
 #include "dddmp.h"
 
 namespace fairsyn {
+    /**
+     * @brief Implementation of Cudd version of BaseUBDD
+     */
     class CuddUBDD : public BaseUBDD<CuddUBDD> {
     public:
         BDDcudd bdd_;
@@ -92,6 +94,8 @@ namespace fairsyn {
         CuddUBDD operator^=(const CuddUBDD &other) override;
         CuddUBDD operator-(const CuddUBDD &other) const override;
         CuddUBDD operator-=(const CuddUBDD &other) override;
+        /** compute the smallest radius over all 2-norm balls that contain
+         * the set  L([-eta[0]/2, eta[0]2]x ... x [eta[dim-1]/2, eta[dim-1]/2]) */
         double computeEllipsoidRadius(const std::vector<double> L, size_t dim, const std::vector<double> eta, const std::vector<double> z) const;
 
         static std::vector<BDDcudd> extractBDDs(std::vector<CuddUBDD> ubdds) {

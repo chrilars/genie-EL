@@ -1,10 +1,9 @@
-/*
- * CuddUBDD.hh
- *
- *  created on: 01.07.2021 (In Progress)
- *      author: Mateusz Rychlicki
- *
- */
+/** @file CuddUBDD.cpp
+*
+*  @date 10.09.2021
+*  @author Mateusz Rychlicki
+*/
+
 #include "ubdd/CuddUBDD.hh"
 #include "ubdd/CuddUBDDMintermIterator.hh"
 #include "ubdd/BaseUBDD.hh"
