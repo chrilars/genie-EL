@@ -1,3 +1,9 @@
+/** @file BaseRabinAutomaton.hh
+*
+*  @date 8.04.2022 (in progress)
+*  @author Mateusz Rychlicki
+*/
+
 #pragma once
 
 #include "../utils/hoa_consumer_build_rabin.hh"// todo fix that!
@@ -8,31 +14,30 @@
 
 namespace fairsyn {
 
-    /* structure containing a single rabin pair */
+
+    /** structure containing a single rabin pair */
     template <class UBDD>
     struct rabin_pair_ {
-        size_t rabin_index_; /* each rabin pair gets a unique index */
-        UBDD G_;             /* the states which are to be visited infinitely often */
-        UBDD nR_;            /* the complement of the states which are to be visited finitely often */
+        size_t rabin_index_; /**< each rabin pair gets a unique index */
+        UBDD G_;             /**< the states which are to be visited infinitely often */
+        UBDD nR_;            /**< the complement of the states which are to be visited finitely often */
     };
+
 
     template <class UBDD>
     class BaseRabinAutomaton {
     public:
-        /* var: base_
-         *  the bdd manager */
-        UBDD base_;
-        /* var: transitions_
-         *  the bdd representing the transition relation as sets of tuples (s,x',s'), where s is pre-state of the rabin automaton, x' is post-state of the symbolic model, and s' is the post-state of the rabin automaton */
-        UBDD transitions_;
-        /* var: numRabinPairs_
-         *  the number of rabin pairs */
-        size_t numRabinPairs_;
-        /* var: RabinPairs_
-         *  BDD vector[numRabinPairs_][2] containing the rabin pairs {(G_i,~R_i)}, where the Rabin condition is given as:
-            \/_i ([]<>G_i & <>[]~R_i)
-         * and each G_i,~R_i are given a bdd representing a set of states of the automaton */
-        std::vector<rabin_pair_<UBDD>> RabinPairs_;
+        UBDD base_;                                 /**< the bdd manager */
+        UBDD transitions_;                          /**< @brief the bdd representing the transition relation
+                                                     * @details the bdd representing the transition relation as sets of tuples (s,x',s'),
+                                                     * where s is pre-state of the rabin automaton, x' is post-state of the symbolic model,
+                                                     * and s' is the post-state of the rabin automaton */
+        size_t numRabinPairs_;                      /**< the number of rabin pairs */
+        std::vector<rabin_pair_<UBDD>> RabinPairs_; /**< @brief vector of sets of states of the automaton
+                                                     * @details BDD vector[numRabinPairs_][2] containing the rabin pairs {(G_i,~R_i)},
+                                                     * where the Rabin condition is given as:
+                                                     * \/_i ([]<>G_i & <>[]~R_i)
+                                                     * and each G_i,~R_i are given a bdd representing a set of states of the automaton */
 
         BaseRabinAutomaton(UBDD base):base_(base) {}
 
@@ -124,7 +129,7 @@ namespace fairsyn {
                 for (size_t j = 0; j < v.size(); j++) {
                     pair.G_ |= element_to_ubdd(v[j]);
                 }
-                /* second, create theUBDD for the COMPLEMENT OF the R sets */
+                /* second, create the UBDD for the COMPLEMENT OF the R sets */
                 pair.nR_ = complement_of_R(get_array(i, 1));
                 RabinPairs_.push_back(pair);
             }
