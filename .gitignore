@@ -11,6 +11,8 @@
 **/build/
 **/cmake-build-debug/
 **/tmp/
+docs/html
+docs/latex
 
 # For safety #
 ###################
