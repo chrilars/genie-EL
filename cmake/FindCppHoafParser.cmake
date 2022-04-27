@@ -1,12 +1,20 @@
-message(mascot/fairsyn/cmake/FindCppHoafParser.cmake)
+message(cmake/FindCppHoafParser.cmake)
 find_package(PkgConfig)
 pkg_check_modules(PC_CppHoafParser QUIET CppHoafParser)
 
-find_path(CppHoafParser_INCLUDE_DIR
-        NAMES  parser/hoa_parser.hh consumer/hoa_consumer.hh
-        PATHS ${PC_CppHoafParser_INCLUDE_DIRS}
-        PATH_SUFFIXES cpphoafparser
-        )
+if (CHP_HOME)
+    find_path(CppHoafParser_INCLUDE_DIR
+            NAMES parser/hoa_parser.hh consumer/hoa_consumer.hh
+            PATHS ${CHP_HOME}
+            PATH_SUFFIXES cpphoafparser
+            NO_DEFAULT_PATH
+            )
+else ()
+    find_path(CppHoafParser_INCLUDE_DIR
+            NAMES parser/hoa_parser.hh consumer/hoa_consumer.hh
+            PATH_SUFFIXES cpphoafparser
+            )
+endif ()
 
 set(CppHoafParser_VERSION ${PC_CppHoafParser_VERSION})
 
@@ -18,10 +26,10 @@ find_package_handle_standard_args(CppHoafParser
         VERSION_VAR CppHoafParser_VERSION
         )
 
-if(CppHoafParser_FOUND AND NOT TARGET CppHoafParser::CppHoafParser)
+if (CppHoafParser_FOUND AND NOT TARGET CppHoafParser::CppHoafParser)
     add_library(CppHoafParser::CppHoafParser INTERFACE IMPORTED)
     set_target_properties(CppHoafParser::CppHoafParser PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${CppHoafParser_INCLUDE_DIR}/consumer;${CppHoafParser_INCLUDE_DIR}/parser;${CppHoafParser_INCLUDE_DIR}/ast;${CppHoafParser_INCLUDE_DIR}/util"
             )
-endif()
-message(CppHoafParser_INCLUDE_DIR: ${CppHoafParser_INCLUDE_DIR})
+endif ()
+#message(CppHoafParser_INCLUDE_DIR: ${CppHoafParser_INCLUDE_DIR})
