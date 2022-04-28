@@ -1,5 +1,4 @@
-#
-# CuddUBDD.hh
+#  CMakeList.txt
 #
 #  created on: 10.09.2021 (In Progress)
 #      author: Mateusz Rychlicki
@@ -136,5 +135,5 @@ export(PACKAGE FairSyn)
 
 ##############################################
 ## Add test
-enable_testing()
-add_subdirectory(test)
+#enable_testing()
+#add_subdirectory(test)
