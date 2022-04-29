@@ -1,4 +1,4 @@
-message(cmake/FindCppHoafParser.cmake)
+message(CMakeLists:FairSyn/cmake/FindCppHoafParser.cmake)
 find_package(PkgConfig)
 pkg_check_modules(PC_CppHoafParser QUIET CppHoafParser)
 

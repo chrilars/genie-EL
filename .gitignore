@@ -13,6 +13,7 @@
 **/tmp/
 docs/html
 docs/latex
+submodules/
 
 # For safety #
 ###################

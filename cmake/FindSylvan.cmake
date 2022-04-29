@@ -1,4 +1,4 @@
-message(cmake/FindSylvan.cmake)
+message(CMakeLists:FairSyn/cmake/FindSylvan.cmake)
 find_package(PkgConfig)
 pkg_check_modules(PC_Sylvan QUIET Sylvan)
 

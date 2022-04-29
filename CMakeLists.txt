@@ -7,7 +7,7 @@
 
 cmake_minimum_required(VERSION 3.13...3.19 FATAL_ERROR)
 project(libfairsyn VERSION 1.0.0 LANGUAGES CXX)
-message(mascot/farisyn)
+message("CMakeLists:Fairsyn")
 
 #Make sure that custom modules like FindRapidJSON are found
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -31,7 +31,6 @@ add_library(fairsyn
         src/ubdd/SylvanUBDD.cpp
         src/ubdd/SylvanUBDDMintermIterator.cpp
         src/utils/hoa_consumer_build_rabin.cpp
-        #        src/lib/Arena.cpp
         src/lib/BaseFixedPoint.cpp
         src/lib/BaseRabinAutomaton.cpp
         include/lib/BaseRabinAutomaton.hh
@@ -135,5 +134,7 @@ export(PACKAGE FairSyn)
 
 ##############################################
 ## Add test
-#enable_testing()
-#add_subdirectory(test)
+if (${CMAKE_BUILD_TYPE} MATCHES Debug)
+    enable_testing()
+    add_subdirectory(test)
+endif ()

@@ -2,7 +2,7 @@ include(GoogleTest) # For Terminal
 find_package(GTest REQUIRED) # For Clion
 
 # Now simply link against gtest as needed. Eg
-message(mascot/fairsyn/test)
+message(CMakeLists:FairSyn/test)
 add_executable(fairsyn_test
         tests.cpp
         src/ubdd/CuddUBDDTests.cpp

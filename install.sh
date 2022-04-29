@@ -1,10 +1,17 @@
+# A simple script to install all the programs you need.
+# You don't need root to run the script, but I encourage
+# you to install all listed programs.
+#
+# OPTIONS
+#       -d
+#         Installs additional debugging software
+
 mkdir submodules
 cd submodules
 
 # installing CUDD
 git clone https://github.com/ivmai/cudd
 cd cudd
-mkdir build
 autoreconf -f -i
 ./configure --enable-shared --enable-obj --enable-dddmp --prefix="$PWD"
 make
@@ -28,21 +35,15 @@ cd cpphoafparser
 make
 cd ..
 
-# todo only for debug version
-# googletest
-#git clone https://github.com/google/googletest
-#cd googletest
-#sudo apt-get install libgtest-dev
-#cmake -Dgtest_build_tests=ON -Dgmock_build_tests=ON .
-#make
-#make test
-#cd ..
-
-cd ..
-mkdir build
-cd build
-cmake ..
-make
-make install
-cd ..
+if [ "$1" = -d ];
+then
+  # googletest
+  git clone https://github.com/google/googletest
+  cd googletest
+  sudo apt-get install libgtest-dev
+  cmake -Dgtest_build_tests=ON -Dgmock_build_tests=ON .
+  make
+  make test
+  cd ..
+fi
 

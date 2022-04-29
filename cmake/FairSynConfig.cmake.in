@@ -1,4 +1,4 @@
-message(cmake/FairSynConfig.cmake.in)
+message(CMakeLists:FairSyn/cmake/FairSynConfig.cmake.in)
 get_filename_component(FAIRSYN_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 include(CMakeFindDependencyMacro)
 
