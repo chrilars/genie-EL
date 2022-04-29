@@ -1,25 +1,28 @@
-##TODO List
+# FairSyn
 
-- FixPoint<BaseUBDD> in FairSyn [FM]
-  - Translate to ubdd and add to FairSyn [F]
-    - Add tests [F]
-  - Applying to Mascot [FM]
-    - Add tests [M]
-  - Applying to Synthesis [FS]
-    - Add tests [S]
-- Pipeline
-  - clean dirs [SM]
-  - clean code [S]
-  - CMakelist
-      - FairSyn::CuddUBDD and FairSyn::SylvanUBDD [F]
-      - Doxygen [FMS]
-        - Change comments style [SM]
-  - README
-    - How to install thinks [FM]
-    - How to use Fairsyn [F]
-    - Directory thinks [FM]
-  - MascotSDS or Mascot-SDS or mascotsds etc
-  - consistent names
-- Analysis MEXfiles etc [M]
+A library for easily generating experiments on Binary Decision Diagram.
 
-test
+# Install
+
+To run the library we need:
+  - [Cudd](https://github.com/ivmai/cudd)
+  - [Sylvan](https://github.com/trolando/sylvan)
+  - [CppHoafParser](https://automata.tools/hoa/cpphoafparser/index.html)
+
+If you do not have these projects, you can run ``install.sh``. 
+This script do not need root access, but you will need to add the appropriate flags to ``cmake``.
+
+If you have installed these projects, you can just run:
+
+```
+mkdir build
+cd build
+cmake ..
+make
+cd ..
+```
+
+It is possible that cmake will not be able to find the libraries, in which case you should add the appropriate flags, for example:
+``` cmake .. -DCUDD_HOME="$HOME/FairSyn/submodules/cudd" -DSYLVAN_HOME="$HOME/FairSyn/submodules/sylvan" -DCHP_HOME="$HOME/mpi/cpphoafparser/include" ```
+
+The flags will be saved and the next time you want to run just type ``cmake ..``.
