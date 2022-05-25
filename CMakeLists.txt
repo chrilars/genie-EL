@@ -9,19 +9,15 @@ cmake_minimum_required(VERSION 3.13...3.19 FATAL_ERROR)
 project(libfairsyn VERSION 1.0.0 LANGUAGES CXX)
 message("CMakeLists:Fairsyn")
 
-#Make sure that custom modules like FindRapidJSON are found
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 ##############################################
 # Find system dependencies
-set(MIN_Cudd_VERSION 3.0)
-find_package(Cudd ${MIN_Cudd_VERSION} REQUIRED)
+find_package(cudd)
 
-set(MIN_Sylvan_VERSION 1.6)
-find_package(Sylvan REQUIRED)
+find_package(Sylvan)
 
-set(MIN_CppHoafParser_VERSION 2.0)
-find_package(CppHoafParser REQUIRED ${MIN_CppHoafParser_VERSION})
+find_package(CppHoafParser)
 ##############################################
 # Create target and set properties
 
@@ -56,7 +52,7 @@ target_compile_options(fairsyn PRIVATE
         $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
         -Wall -Wextra -Wpedantic>)
 
-target_link_libraries(fairsyn PRIVATE Cudd::Cudd Sylvan::Sylvan CppHoafParser::CppHoafParser)
+target_link_libraries(fairsyn PUBLIC cudd Sylvan CppHoafParser)
 add_link_options(-std=c++11 -g -ldl) # Mascot
 add_link_options(-O0 -Wall -Wextra -Wfatal-errors) # Debug
 add_link_options(--coverage -pthread)
@@ -103,7 +99,7 @@ configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/FairSynConfig.cmak
 
 #Install the config, configversion and custom find modules
 install(FILES
-        ${CMAKE_CURRENT_LIST_DIR}/cmake/FindCudd.cmake
+        ${CMAKE_CURRENT_LIST_DIR}/cmake/Findcudd.cmake
         ${CMAKE_CURRENT_LIST_DIR}/cmake/FindSylvan.cmake
         ${CMAKE_CURRENT_LIST_DIR}/cmake/FindCppHoafParser.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/FairSynConfig.cmake
@@ -113,8 +109,8 @@ install(FILES
 
 ##############################################
 ## Exporting from the build tree
-configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/FindCudd.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/FindCudd.cmake
+configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/Findcudd.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/Findcudd.cmake
         COPYONLY)
 
 configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/FindSylvan.cmake
