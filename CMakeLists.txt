@@ -52,7 +52,10 @@ target_compile_options(fairsyn PRIVATE
         $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
         -Wall -Wextra -Wpedantic>)
 
-target_link_libraries(fairsyn PUBLIC cudd Sylvan CppHoafParser)
+target_link_libraries(fairsyn ${cudd_LIBRARIES} ${Sylvan_LIBRARIES} CppHoafParser)
+target_include_directories(fairsyn ${cudd_INCLUDE_DIRS} ${Sylvan_INCLUDE_DIRS})
+target_compile_options(fairsyn ${cudd_CFLAGS_OTHER} ${Sylvan_CFLAGS_OTHER})
+
 add_link_options(-std=c++11 -g -ldl) # Mascot
 add_link_options(-O0 -Wall -Wextra -Wfatal-errors) # Debug
 add_link_options(--coverage -pthread)

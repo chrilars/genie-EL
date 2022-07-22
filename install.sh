@@ -1,10 +1,18 @@
 # A simple script to install all the programs you need.
-# You don't need root to run the script, but I encourage
-# you to install all listed programs.
 #
-# OPTIONS
-#       -d
-#         Installs additional debugging software
+# Run "./install.sh <path>" to install all programs in "<path>".
+# If there is no argument, the <path> is set to "/usr/local/" (maybe sudo will be needed).
+#
+# Script create a folder "submodules", clone every necessary
+# project and install everything in <path>.
+
+# Setting installation directory.
+if [ "$1" ];
+then
+    INSTALLATION_PATH=$1
+else
+    INSTALLATION_PATH=/usr/local/
+fi
 
 mkdir submodules
 cd submodules
@@ -13,17 +21,21 @@ cd submodules
 git clone https://github.com/ivmai/cudd
 cd cudd
 autoreconf -f -i
-./configure --enable-shared --enable-obj --enable-dddmp --prefix="$PWD"
+./configure --enable-shared --enable-obj --enable-dddmp --prefix="$INSTALLATION_PATH"
 make
 make check
 make install
+# Now we copy and paste two files
+cp config.h $INSTALLATION_PATH/include
+cp util/util.h $INSTALLATION_PATH/include
 cd ..
 
 # installing Sylvan
 git clone https://github.com/trolando/sylvan
 cd sylvan
-cmake .
+cmake . -DCMAKE_INSTALL_PREFIX="$INSTALLATION_PATH"
 make
+make install
 cd ..
 
 # cpphoaster
@@ -33,17 +45,15 @@ mv cpphoafparser-0.99.2 cpphoafparser
 rm cpphoafparser-0.99.2.tgz
 cd cpphoafparser
 make
+# Now we copy and paste folder
+cp -r include/* $INSTALLATION_PATH/include
 cd ..
 
-if [ "$1" = -d ];
-then
-  # googletest
-  git clone https://github.com/google/googletest
-  cd googletest
-  sudo apt-get install libgtest-dev
-  cmake -Dgtest_build_tests=ON -Dgmock_build_tests=ON .
-  make
-  make test
-  cd ..
-fi
-
+## googletest
+#git clone https://github.com/google/googletest
+#cd googletest
+#sudo apt-get install libgtest-dev
+#cmake -Dgtest_build_tests=ON -Dgmock_build_tests=ON .
+#make
+#make test
+#cd ..

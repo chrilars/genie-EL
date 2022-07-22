@@ -2,17 +2,33 @@
 
 A library for easily generating experiments on Binary Decision Diagram.
 
-# Install
+## Installation
 
 To run the library we need:
   - [Cudd](https://github.com/ivmai/cudd)
   - [Sylvan](https://github.com/trolando/sylvan)
   - [CppHoafParser](https://automata.tools/hoa/cpphoafparser/index.html)
 
-If you do not have these projects, you can run ``install.sh``. 
-This script do not need root access, but you will need to add the appropriate flags to ``cmake``.
+### Libraries Dependencies
 
-If you have installed these projects, you can just run:
+- ``c++``
+- [Cudd] dependencies:
+  - ``pkg-config``
+- [Sylvan] dependencies:
+  - ``libgmp-dev``
+
+### Installation of Libraries 
+
+If you do not have [Cudd], [Sylvan] or [CppHoafParser], you can run:
+```
+./install.sh <path>
+```
+where ``<path>`` is absolute path to folder for installation. 
+If you run script without argument, they set ``<path>`` to ``/usr/local/``.
+This script create a folder "submodules", clone every necessary project and install everything in ``<path>``.
+
+
+### How to run FairSyn
 
 ```
 mkdir build
@@ -22,7 +38,19 @@ make
 cd ..
 ```
 
-It is possible that cmake will not be able to find the libraries, in which case you should add the appropriate flags, for example:
-``` cmake .. -DCUDD_HOME="$HOME/FairSyn/submodules/cudd" -DSYLVAN_HOME="$HOME/FairSyn/submodules/sylvan" -DCHP_HOME="$HOME/mpi/cpphoafparser/include" ```
+It is possible that cmake will not be able to find the libraries, then you have to run instead:
+```
+ cmake .. -DCMAKE_PREFIX_PATH=<semicolon-saperated list of/directories>"
+```
+where ``<paths>`` is semicolon-seperated list of directories. If you run ``./install.sh <path>`` you can use ``<path>`` instead.
 
-The flags will be saved and the next time you want to run just type ``cmake ..``.
+## Generate Documentation
+
+To create documentation run:
+
+```
+cd docs
+doxygen Doxygen.in
+```
+
+and now documentation can be found in `docs/html/index.html`.
