@@ -1,19 +1,9 @@
 message(CMakeLists:FairSyn/cmake/FindCppHoafParser.cmake)
 pkg_check_modules(PC_CppHoafParser QUIET CppHoafParser)
-
-if (CHP_HOME)
-    find_path(CppHoafParser_INCLUDE_DIR
-            NAMES parser/hoa_parser.hh consumer/hoa_consumer.hh
-            PATHS ${CHP_HOME}
-            PATH_SUFFIXES cpphoafparser
-            NO_DEFAULT_PATH
-            )
-else ()
-    find_path(CppHoafParser_INCLUDE_DIR
-            NAMES parser/hoa_parser.hh consumer/hoa_consumer.hh
-            PATH_SUFFIXES cpphoafparser
-            )
-endif ()
+find_path(CppHoafParser_INCLUDE_DIR
+        NAMES parser/hoa_parser.hh consumer/hoa_consumer.hh
+        PATH_SUFFIXES cpphoafparser
+        )
 
 set(CppHoafParser_VERSION ${PC_CppHoafParser_VERSION})
 

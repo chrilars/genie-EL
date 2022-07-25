@@ -2,22 +2,12 @@ message(CMakeLists:FairSyn/cmake/FindSylvan.cmake)
 find_package(PkgConfig)
 pkg_check_modules(PC_Sylvan QUIET Sylvan)
 
-if (Sylvan_HOME)
-    message("Sylvan home")#debug
-    find_path(Sylvan_INCLUDE_DIR sylvan.h PATHS "${Sylvan_HOME}/include" NO_DEFAULT_PATH)
-    find_library(Sylvan_LIBRARY libSylvan.a PATHS "${Sylvan_HOME}/lib" NO_DEFAULT_PATH)
-else ()
-    message("Sylvan no home")#debug
-    find_path(Sylvan_INCLUDE_DIR sylvan.h)
-    find_library(Sylvan_LIBRARY libSylvan.a)
-    if (NOT Sylvan_LIBRARY)
-        # Name of this project has been changed from "Sylvan" to "sylvan"
-        find_library(Sylvan_LIBRARY libsylvan.a)
-    endif ()
+find_path(Sylvan_INCLUDE_DIR sylvan.h)
+find_library(Sylvan_LIBRARY libSylvan.a)
+if (NOT Sylvan_LIBRARY)
+    # Name of this project has been changed from "Sylvan" to "sylvan"
+    find_library(Sylvan_LIBRARY libsylvan.a)
 endif ()
-
-message("${Sylvan_LIBRARY}")#debug
-message("${Sylvan_INCLUDE_DIR}")#debug
 
 set(Sylvan_LIBRARIES ${Sylvan_LIBRARY})
 set(Sylvan_INCLUDE_DIRS ${Sylvan_INCLUDE_DIR})
