@@ -21,9 +21,14 @@ In this section we will focus on the installation of the necessary libraries
 All the necessary standard libraries are listed below.
 Sometimes errors caused by missing them are not obvious,
 so we advise you to make sure they are there before installation.
-- ``c++``
+- ``git``
+- ``g++``
+- ``pkg-config``
+- ``make``
+- ``cmake``
 - [Cudd](https://github.com/ivmai/cudd) dependencies:
-  - ``pkg-config``
+  - ``autoconf``
+  - ``libtool``
 - [Sylvan](https://github.com/trolando/sylvan) dependencies:
   - ``libgmp-dev``
 
