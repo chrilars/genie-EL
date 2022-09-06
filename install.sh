@@ -14,6 +14,7 @@ else
     INSTALLATION_PATH=/usr/local/
 fi
 
+rm -r -f submodules # we clean up any existing directory with the same name
 mkdir submodules
 cd submodules
 
