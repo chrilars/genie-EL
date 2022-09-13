@@ -49,6 +49,7 @@ namespace fairsyn {
     class BaseFixedPoint {
     public:
         UBDD base_;                                 /**< the bdd manager */
+        const char *str;                            /**< mode of calculation */
         UBDD cubePost_;                             /**< cubes with post variables; used in the existential abstraction  */
         UBDD cubeOther_;                            /**< cubes with other variables (outside the pre and the post variables) on which the transitions possibly depend */
         std::vector<rabin_pair_<UBDD>> RabinPairs_; /**< vector of the rabin pairs */
@@ -60,9 +61,39 @@ namespace fairsyn {
         UBDD tr_;                                   /**< Transition BDD */
         UBDD live_;                                 /**< the live transitions (subset of the transition relation) */
 
+        /**
+         * @brief cube of all the variables
+         * */
+        virtual inline UBDD CubeNotState() = 0;
+
         virtual UBDD RabinRecurse(UBDD controller,
                                   const_arg_recursive_rabin<UBDD> rrConst,
                                   nconst_arg_recursive_rabin<UBDD> rrVars) = 0;
+
+        /**
+         * @brief computes the controllable predecessor
+         * @details
+         * cpre(Zi) = { (x,u) | exists w, exists x': (x,u,w,x') in transitionRelation
+         *                    and forall w, forall x': (x,u,w,x') in transitionRelation  => x' in Zi }
+         */
+        virtual UBDD cpre(const UBDD &Zi) = 0;
+
+        /**
+         * @brief computes the almost sure predecessor
+         * @details
+         * apre(Y,Z) = { (x,u) | forall w, forall x': (x,u,w,x') in maybeTransition_ => x' in Y
+         *                    and forall w, exists x' in Z: (x,u,w,x') in sureTransition_ } OR cpre(Z)
+         */
+        virtual UBDD apre(const UBDD &Y, const UBDD &Z) = 0;
+
+        /**
+         * @brief computes the uncertain predecessor
+         * @details
+         * upre(Y,Z) = { (x,u) | forall w, forall x': (x,u,x') in sureTransition_ => x' in Y
+         *                    and exists w, exists x' in Z: (x,u,x') in maybeTransition_ }
+         */
+        virtual UBDD upre(const UBDD Yi, const UBDD Z) = 0;
+
 
         virtual void print_bdd_info(const UBDD &store,
                                     const std::vector<size_t> &preVars_,
@@ -72,54 +103,6 @@ namespace fairsyn {
                                     const std::vector<size_t> &preVars_,
                                     const std::vector<size_t> &postVars_,
                                     const int verbose) = 0;
-        /**
-         * @brief computes the controllable predecessor
-         * @details
-         * cpre(Zi) = { (x,u) | exists w, exists x': (x,u,w,x') in transitionRelation
-         *                    and forall w, forall x': (x,u,w,x') in transitionRelation  => x' in Zi }
-         */
-        UBDD cpre(const UBDD &Zi) {
-            UBDD Z = Zi;
-            /* project onto state alphabet */
-            Z = Z.existAbstract(cubePost_ * cubeOther_);
-            /* swap variables */
-            Z = Z.permute(preVars_, postVars_);
-            /* the controllable system edges */
-            UBDD W0 = tr_ & Z & sys_nodes_;
-            /* the controllable environment edges */
-            UBDD nZ = !Z & nodes_;
-            /* the environment nodes having an outgoing edge outside Zi */
-            UBDD F = tr_.andAbstract(nZ, cubePost_ * cubeOther_) & env_nodes_;
-            /* the other environment nodes are controllable */
-            UBDD nF = !F;
-            UBDD W1 = tr_ & nF & env_nodes_;
-            /* return all the controllable edges */
-            return (W0 | W1);
-        }
-
-        /**
-         * @brief computes the almost sure predecessor
-         * @details
-         * apre(Y,Z) = { (x,u) | forall w, forall x': (x,u,w,x') in maybeTransition_ => x' in Y
-         *                    and forall w, exists x' in Z: (x,u,w,x') in sureTransition_ } OR cpre("maybe",Z)
-         */
-        UBDD apre(const UBDD &Y,
-                  const UBDD &Z) {
-            UBDD Z2 = Z;
-            /* project onto state alphabet */
-            Z2 = Z2.existAbstract(cubePost_ * cubeOther_);
-            /* swap variables */
-            Z2 = Z2.permute(preVars_, postVars_);
-            /* the nodes from which there are live edges to Z */
-            UBDD W0 = live_.andAbstract(Z2, cubePost_ * cubeOther_);
-            /* remove from W0 those env vertices which have some transition outside Y */
-            UBDD P = cpre(Y);
-            UBDD W1 = W0 & P;
-            /* the edges in cpre(Z) are also in apre(Y,Z) */
-            UBDD W2 = W1 | cpre(Z);
-            return W2;
-        }
-
         /**
          * @brief computes the fair adversarial rabin winning domain
          * @param accl_on   - true/false setting the accelerated fixpoint on/off
@@ -165,7 +148,7 @@ namespace fairsyn {
             /* initialize the sets for the nu fixed point */
             UBDD Y = base_.zero();
             UBDD YY = initial_seed;
-            for (int i = 0; Y.existAbstract(cubePost_ * cubeOther_) != YY.existAbstract(cubePost_ * cubeOther_); i++) {
+            for (int i = 0; Y.existAbstract(CubeNotState()) != YY.existAbstract(CubeNotState()); i++) {
                 Y = YY;
 
                 if (accl_on)
@@ -182,7 +165,7 @@ namespace fairsyn {
                 /* initialize the sets for the mu fixed point */
                 UBDD X = base_.one();
                 UBDD XX = base_.zero();
-                for (int k = 0; X.existAbstract(cubePost_ * cubeOther_) != XX.existAbstract(cubePost_ * cubeOther_); k++) {
+                for (int k = 0; X.existAbstract(CubeNotState()) != XX.existAbstract(CubeNotState()); k++) {
                     X = XX;
 
                     if (accl_on)
@@ -194,9 +177,16 @@ namespace fairsyn {
                         print_bdd_info(X, preVars_, verbose);
                     }
 
-                    UBDD term = apre(Y, X);
+                    UBDD term;
+                    if (!strcmp(str, "under")) {
+                        term = apre(Y, X);
+                    } else if (!strcmp(str, "over")) {
+                        term = upre(Y, X);
+                    } else if (!strcmp(str, "wc")) {
+                        term = cpre(X);
+                    }
                     /* the state-input pairs added by the outermost loop get the smallest rank */
-                    UBDD N = term & (!(C.existAbstract(cubePost_ * cubeOther_)));
+                    UBDD N = term & (!(C.existAbstract(CubeNotState())));
                     C |= N;
                     /* recursively solve the rest of the fp */
                     const_arg_recursive_rabin<UBDD> arg_const_new = {
@@ -207,7 +197,7 @@ namespace fairsyn {
                             initial_seed,
                             verbose};
                     nconst_arg_recursive_rabin<UBDD> arg_nconst_new = {base_.one(),
-                                                                       term.existAbstract(cubePost_ * cubeOther_),
+                                                                       term.existAbstract(CubeNotState()),
                                                                        indexRP,
                                                                        indexY,
                                                                        indexX,
