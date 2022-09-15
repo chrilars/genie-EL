@@ -48,7 +48,7 @@ namespace fairsyn {
     class BaseFixedPoint {
     public:
         UBDD base_;                                 /**< the bdd manager */
-        const char *str;                            /**< mode of calculation */
+        const char *str_;                           /**< mode of calculation */
         UBDD cubePost_;                             /**< cubes with post variables; used in the existential abstraction  */
         UBDD cubeOther_;                            /**< cubes with other variables (outside the pre and the post variables) on which the transitions possibly depend */
         std::vector<rabin_pair_<UBDD>> RabinPairs_; /**< vector of the rabin pairs */
@@ -84,15 +84,6 @@ namespace fairsyn {
          *                    and forall w, exists x' in Z: (x,u,w,x') in sureTransition_ } OR cpre(Z)
          */
         virtual UBDD apre(const UBDD &Y, const UBDD &Z) = 0;
-
-        /**
-         * @brief computes the uncertain predecessor
-         * @details
-         * upre(Y,Z) = { (x,u) | forall w, forall x': (x,u,x') in sureTransition_ => x' in Y
-         *                    and exists w, exists x' in Z: (x,u,x') in maybeTransition_ }
-         */
-        virtual UBDD upre(const UBDD Yi, const UBDD Z) = 0;
-
 
         virtual void print_bdd_info(const UBDD &store,
                                     const std::vector<size_t> &preVars_,
@@ -186,13 +177,7 @@ namespace fairsyn {
                     }
 
                     UBDD term;
-                    if (!strcmp(str, "under")) {
-                        term = apre(Y, X);
-                    } else if (!strcmp(str, "over")) {
-                        term = upre(Y, X);
-                    } else if (!strcmp(str, "wc")) {
-                        term = cpre(X);
-                    }
+                    term = apre(Y, X);
                     /* the state-input pairs added by the outermost loop get the smallest rank */
                     UBDD N = term & (!(C.existAbstract(CubeNotState())));
                     C |= N;
@@ -241,9 +226,9 @@ namespace fairsyn {
                 //                cout << std::endl;
             }
 
-            UBDD strategy = (C & sys_nodes_);
-
-            return strategy;
+//            UBDD strategy = (C & sys_nodes_);
+//            return strategy;
+            return C;
         }
 
         /**
