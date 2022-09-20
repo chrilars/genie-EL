@@ -85,14 +85,11 @@ namespace fairsyn {
          */
         virtual UBDD apre(const UBDD &Y, const UBDD &Z) = 0;
 
-        virtual void print_bdd_info(const UBDD &store,
-                                    const std::vector<size_t> &preVars_,
-                                    const int verbose) = 0;
+        virtual void print_rabin_info(const UBDD &store,
+                                      int iteration,
+                                      const char *mode,
+                                      int verbose) = 0;
 
-        virtual void print_bdd_info(const UBDD &store,
-                                    const std::vector<size_t> &preVars_,
-                                    const std::vector<size_t> &postVars_,
-                                    const int verbose) = 0;
         /**
          * @brief computes the fair adversarial rabin winning domain
          * @param accl_on   - true/false setting the accelerated fixpoint on/off
@@ -152,12 +149,7 @@ namespace fairsyn {
 
                 if (accl_on)
                     indexY->push_back(i);
-
-                if (verbose >= 1) {
-                    std::cout << std::endl;
-                    std::cout << "\t Y0, iteration " << i << ", states = ";
-                    print_bdd_info(Y, preVars_, verbose);
-                }
+                print_rabin_info(Y, i, "Y", verbose);
 
                 /* reset the controller */
                 C = base_.zero();
@@ -170,11 +162,7 @@ namespace fairsyn {
                     if (accl_on)
                         indexX->push_back(k);
 
-                    if (verbose >= 1) {
-                        std::cout << std::endl;
-                        std::cout << "\t X0, iteration " << k << ", states = ";
-                        print_bdd_info(X, preVars_, verbose);
-                    }
+                    print_rabin_info(X, k,"X", verbose);
 
                     UBDD term;
                     term = apre(Y, X);
@@ -207,27 +195,7 @@ namespace fairsyn {
             }
             /* the winning strategy is the set of controlled edges whose source belong to the system */
 
-            if (verbose == 2) {
-                print_bdd_info(C, preVars_, postVars_, verbose);
-                // todo
-                //                std::cout << std::endl;
-                //                std::cout << "\t sys_nodes_ , states = ";
-                //
-                //                uint32_t nvars = (preVars_.size());
-                //                sylvan::BddSet preBddVars = sylvan::BddSet::fromVector(to_uint32_t(preVars_));
-                //                for (int i = 0; i < pow(2, preVars_.size()); i++) {
-                //                    UBDD cur_node = elementToBdd(i, preBddVars, nvars);
-                //                    UBDD intermediate = sys_nodes_ & cur_node;
-                //                    if (cur_node == intermediate) {
-                //                        cout << i << " ";
-                //                    }
-                //                }
-                //                cout << -1 << " ";
-                //                cout << std::endl;
-            }
-
-//            UBDD strategy = (C & sys_nodes_);
-//            return strategy;
+            print_rabin_info(C, 0, "end", verbose);
             return C;
         }
 
