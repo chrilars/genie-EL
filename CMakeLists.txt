@@ -32,7 +32,7 @@ add_library(fairsyn
         include/lib/BaseRabinAutomaton.hh
         include/lib/BaseFixedPoint.hh
         src/utils/TicToc.cpp
-        )
+        include/lib/ParallelRabinRecurse.hh)
 
 
 #Add an alias so that library can be used inside the build tree, e.g. when testing
@@ -52,7 +52,7 @@ target_compile_options(fairsyn PRIVATE
         $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
         -Wall -Wextra -Wpedantic>)
 
-target_link_libraries(fairsyn ${cudd_LIBRARIES} ${Sylvan_LIBRARIES}  CppHoafParser)
+target_link_libraries(fairsyn ${cudd_LIBRARIES} ${Sylvan_LIBRARIES} CppHoafParser)
 target_include_directories(fairsyn PUBLIC ${cudd_INCLUDE_DIRS})
 target_compile_options(fairsyn PUBLIC ${cudd_CFLAGS_OTHER})
 

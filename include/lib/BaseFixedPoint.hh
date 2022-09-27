@@ -65,10 +65,6 @@ namespace fairsyn {
          * */
         virtual inline UBDD CubeNotState() = 0;
 
-        virtual UBDD RabinRecurse(UBDD controller,
-                                  const_arg_recursive_rabin<UBDD> rrConst,
-                                  nconst_arg_recursive_rabin<UBDD> rrVars) = 0;
-
         /**
          * @brief computes the controllable predecessor
          * @details
@@ -86,10 +82,10 @@ namespace fairsyn {
         virtual UBDD apre(const UBDD &Y, const UBDD &Z) = 0;
 
         virtual void print_rabin_info(const UBDD &store,
-                                      int iteration,
                                       const char *mode,
-                                      int verbose) = 0;
-
+                                      int verbose,
+                                      int iteration = 0,
+                                      int depth = 0) = 0 ;
         /**
          * @brief computes the fair adversarial rabin winning domain
          * @param accl_on   - true/false setting the accelerated fixpoint on/off
@@ -100,7 +96,8 @@ namespace fairsyn {
         UBDD Rabin(const bool accl_on,
                    const size_t M, /* the bound on the iteration count for memorizing the BDDs from the past iterations */
                    const UBDD &initial_seed,
-                   const int verbose) {
+                   const int verbose,
+                   std::function<UBDD(BaseFixedPoint<UBDD>*, UBDD,  const_arg_recursive_rabin<UBDD>, nconst_arg_recursive_rabin<UBDD>)> RR = SequentialRabinRecurse){
             /* copy the rabin pairs */
             std::vector<rabin_pair_<UBDD>> pairs = RabinPairs_;
             size_t nrp = pairs.size(); /* number of rabin pairs */
@@ -149,7 +146,7 @@ namespace fairsyn {
 
                 if (accl_on)
                     indexY->push_back(i);
-                print_rabin_info(Y, i, "Y", verbose);
+                print_rabin_info(Y, "Y", verbose, i);
 
                 /* reset the controller */
                 C = base_.zero();
@@ -162,7 +159,7 @@ namespace fairsyn {
                     if (accl_on)
                         indexX->push_back(k);
 
-                    print_rabin_info(X, k,"X", verbose);
+                    print_rabin_info(X, "X", verbose, k);
 
                     UBDD term;
                     term = apre(Y, X);
@@ -185,7 +182,7 @@ namespace fairsyn {
                                                                        hist_Y,
                                                                        hist_X};
                     //                    XX = RUN(RabinRecurse, this, &C, &arg_const_new, &arg_nconst_new);
-                    XX = RabinRecurse(C, arg_const_new, arg_nconst_new);
+                    XX = RR(this, C, arg_const_new, arg_nconst_new);
                     if (accl_on)
                         indexX->pop_back();
                 }
@@ -195,8 +192,175 @@ namespace fairsyn {
             }
             /* the winning strategy is the set of controlled edges whose source belong to the system */
 
-            print_rabin_info(C, 0, "end", verbose);
+            print_rabin_info(C, "end", verbose);
             return C;
+        }
+
+
+        static UBDD SequentialRabinRecurse(BaseFixedPoint<UBDD> *fp,
+                                           UBDD controller,
+                                           const_arg_recursive_rabin<UBDD> rrConst,
+                                           nconst_arg_recursive_rabin<UBDD> rrVars){
+            /* initialize the final solution to be returned in the end */
+            /* unpack the inputs */
+            const bool accl_on = rrConst.accl_on;
+            const size_t M = rrConst.M; /* the bound on the iteration count for memorizing the BDDs from the past iterations */
+            const int depth = rrConst.depth;
+            const int verbose = rrConst.verbose;
+            auto pairs = rrConst.pairs;
+            auto initial_seed = rrConst.initial_seed;
+            auto seqR = rrVars.seqR;
+            auto right = rrVars.right;
+            auto hist_Y = rrVars.hist_Y;
+            auto hist_X = rrVars.hist_X;
+            auto indexY = rrVars.indexY;
+            auto indexX = rrVars.indexX;
+            auto indexRP = rrVars.indexRP;
+
+            UBDD U = fp->base_.zero();
+            for (size_t i = 0; i < pairs.size(); i++) {
+                if (verbose == 2) {
+                    fp->printTabs(3 * depth - 1);
+                    std::cout << "Remaining pairs " << pairs.size() << "\n\n";
+                }
+                if (accl_on)
+                    indexRP->push_back(pairs[i].rabin_index_);
+                UBDD G = pairs[i].G_;
+                UBDD nR = pairs[i].nR_;
+                std::vector<rabin_pair_<UBDD>> remPairs = pairs;
+                remPairs.erase(remPairs.begin() + i);
+                /* initialize a local copy for the controller */
+                UBDD C = fp->base_.zero();
+                ;
+                /* initialize the sets for the nu fixed point */
+                UBDD Y = fp->base_.zero();
+                UBDD YY;
+                if (accl_on && check_threshold(*indexY, M - 1) && check_threshold(*indexX, M - 1)) {
+                    //        YY = (*hist_Y)
+                    //        [fp->lexi_order(*indexRP,fp->fp->RabinPairs_.size()-1)]
+                    //        [fp->to_dec(M,fp->pad_zeros(*indexX,remPairs.size()+1))]
+                    //        [depth-1]
+                    //        [std::min((*indexY)[0],M-1)];
+                    //        YY = (*hist_Y)[fp->lexi_order(*indexRP,fp->fp->RabinPairs_.size()-1)][fp->to_dec(M,fp->pad_zeros(*indexX,remPairs.size()+1))][depth-1];
+                    YY = (*hist_Y)[depth - 1]
+                    [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
+                    [std::min((*indexY)[0], M - 1)]
+                    [fp->to_dec(M, *indexX)];
+                } else {
+                    YY = initial_seed;
+                }
+
+                //            if (accl_on && check_threshold(*indexX,M-1)) {
+                //                YY = (*hist_Y)[lexi_order(*indexRP,fp->RabinPairs_.size()-1)][to_dec(M,pad_zeros(*indexX,remPairs.size()+1))][depth];
+                //            } else {
+                //                YY = initial_seed;
+                //            }
+                for (int j = 0; Y.existAbstract(fp->CubeNotState()) != YY.existAbstract(fp->CubeNotState()); j++) {
+                    Y = YY;
+                    if (accl_on)
+                        indexY->push_back(j);
+                    fp->print_rabin_info(Y, "Y", verbose, j, depth);
+
+                    UBDD term1;
+                    term1 = right | (seqR & nR & G & fp->cpre(Y));
+                    /* reset the local copy of the controller to the most recently added state-input pairs */
+                    UBDD N = term1 & (!(controller.existAbstract(fp->CubeNotState())));
+                    C = controller | N;
+                    /* initialize the sets for the mu fixed point */
+                    UBDD X = fp->base_.one();
+                    UBDD XX;
+                    if (accl_on && check_threshold(*indexY, M - 1) && check_threshold(*indexX, M - 1)) {
+                        //            XX=(*hist_X)
+                        //            [fp->lexi_order(*indexRP,fp->fp->RabinPairs_.size()-1)]
+                        //            [fp->to_dec(M,fp->pad_zeros(*indexY,remPairs.size()))]
+                        //            [depth-1]
+                        //            [std::min((*indexX)[0],M-1)];
+                        //            XX=(*hist_X)[fp->lexi_order(*indexRP,fp->fp->RabinPairs_.size()-1)][fp->to_dec(M,fp->pad_zeros(*indexY,remPairs.size()))][depth-1];
+                        XX = (*hist_X)[depth - 1]
+                        [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
+                        [std::min((*indexX)[0], M - 1)]
+                        [fp->to_dec(M, *indexY)];
+                    } else {
+                        XX = fp->base_.zero();
+                    }
+
+                    //                if (accl_on && check_threshold(*indexY,M-1)) {
+                    //                    XX=(*hist_X)[lexi_order(*indexRP,fp->RabinPairs_.size()-1)][to_dec(M,pad_zeros(*indexY,remPairs.size()))][depth];
+                    //                } else {
+                    //                    XX = base_.zero();
+                    //                }
+                    for (int k = 0; X.existAbstract(fp->CubeNotState()) != XX.existAbstract(fp->CubeNotState()); k++) {
+                        X = XX;
+                        if (accl_on)
+                            indexX->push_back(k);
+                        fp->print_rabin_info(X, "X", verbose, k, depth);
+                        UBDD term2;
+                        term2 = term1 | (seqR & nR & fp->apre(Y, X));
+                        /* add the recently added state-input pairs to the controller */
+                        N = term2 & (!(C.existAbstract(fp->CubeNotState())));
+                        C |= N;
+                        if (remPairs.size() == 0) {
+                            XX = term2;
+                        } else {
+                            fairsyn::const_arg_recursive_rabin<UBDD> arg_const_new = {
+                                    accl_on,
+                                    M, /* the bound on the iteration count for memorizing the BDDs from the past iterations */
+                                    depth + 1,
+                                    remPairs,
+                                    initial_seed,
+                                    verbose};
+                            fairsyn::nconst_arg_recursive_rabin<UBDD> arg_nconst_new = {
+                                    seqR & nR, // todo diff
+                                    term2, // todo diff check that in the future
+                                    indexRP,
+                                    indexY,
+                                    indexX,
+                                    hist_Y,
+                                    hist_X};
+                            XX = SequentialRabinRecurse(fp,C, arg_const_new, arg_nconst_new);
+                        }
+                        if (accl_on)
+                            indexX->pop_back();
+                    }
+                    YY = XX;
+                    if (accl_on) {
+                        if (check_threshold(*indexY, M - 1) && check_threshold(*indexX, M - 1)) {
+                            if ((*hist_X)[depth - 1]
+                                [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
+                                [std::min((*indexX)[0] + 1, M - 1)]
+                                [fp->to_dec(M, *indexY)] <= (XX.existAbstract(fp->cubePost_))) {
+                                (*hist_X)[depth - 1]
+                                [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
+                                [std::min((*indexX)[0] + 1, M - 1)]
+                                [fp->to_dec(M, *indexY)] = (XX.existAbstract(fp->cubePost_));
+                            }
+
+                            //                        (*hist_X)[lexi_order(*indexRP,fp->RabinPairs_.size()-1)][to_dec(M,pad_zeros(*indexY,remPairs.size()))][depth]=X;
+                        }
+                        indexY->pop_back();
+                    }
+                }
+                U |= YY;
+                controller = C;
+                if (accl_on) {
+                    if (check_threshold(*indexY, M - 1) && check_threshold(*indexX, M - 1)) {
+                        if ((YY.existAbstract(fp->cubePost_)) <= (*hist_Y)[depth - 1]
+                        [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
+                        [std::min((*indexY)[0] + 1, M - 1)]
+                        [fp->to_dec(M, *indexX)]) {
+                            (*hist_Y)[depth - 1]
+                            [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
+                            [std::min((*indexY)[0] + 1, M - 1)]
+                            [fp->to_dec(M, *indexX)] = (YY.existAbstract(fp->cubePost_));
+                        }
+
+                        //                    (*hist_Y)[lexi_order(*indexRP,fp->RabinPairs_.size()-1)][to_dec(M,pad_zeros(*indexX,remPairs.size()+1))][depth]=Y;
+                    }
+                }
+                if (accl_on)
+                    indexRP->pop_back();
+            }
+            return U;
         }
 
         /**
