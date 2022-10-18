@@ -41,43 +41,25 @@ namespace fairsyn {
 
         BaseRabinAutomaton(UBDD base):base_(base) {}
 
-        virtual UBDD element_to_ubdd(size_t id) = 0;
-        virtual UBDD element_to_ubdd_post(size_t id) = 0;
+        virtual UBDD element_to_ubdd(std::vector<size_t> id) = 0;
+        virtual UBDD element_to_ubdd_post(std::vector<size_t> id) = 0;
 
         void build_transitions(cpphoafparser::rabin_data &data,
                                std::map<std::string, UBDD> &inputs_id_to_ubdd,
                                UBDD isTrueCase) {
             transitions_ = base_.zero();
-            size_t v;
             for (size_t i = 0; i < data.Transitions.size(); i++) {
                 UBDD cube = base_.one();
-                v = data.Transitions[i].state_id;
+                std::vector<size_t> v;
+                v = {data.Transitions[i].state_id};
                 cube &= element_to_ubdd(v);
                 std::stack<cpphoafparser::HOAConsumer::label_expr::ptr> nodes;
                 nodes.push(data.Transitions[i].label);
                 //            cpphoafparser::HOAConsumer::label_expr::ptr curr_node = nodes.top();
                 //            nodes.pop();
                 cube &= label_to_ubdd(nodes, inputs_id_to_ubdd, isTrueCase);
-                //            while (nodes.size()!=0) {
-                //                cpphoafparser::HOAConsumer::label_expr::ptr curr_node = nodes.top();
-                //                nodes.pop();
-                //                if (curr_node->isAND()) {
-                //                    nodes.push(curr_node->getLeft());
-                //                    nodes.push(curr_node->getRight());
-                //                } else if (curr_node->isOR()) { /* need to implement this */
-                //                    throw std::runtime_error("Or not allowed in transition labels of the rabin automaton.");
-                //                } else if (curr_node->isNOT()) {
-                //                    cube &= (!(inputs_id_to_ubdd[curr_node->getLeft()->toString()])) & inputSpace_->getSymbolicSet();
-                //                } else if (curr_node->isAtom()) {
-                //                    cube &= inputs_id_to_ubdd[curr_node->toString()];
-                //                } else if (curr_node->isTRUE()) {
-                //                    cube &= inputSpace_->getSymbolicSet();
-                //                } else if (curr_node->isFALSE()) {
-                //                    cube &= base_.zero();
-                //                }
-                //            }
-                //                v = {data.Transitions[i].post_id};
-                cube &= element_to_ubdd_post(data.Transitions[i].post_id);
+                v = {data.Transitions[i].post_id};
+                cube &= element_to_ubdd_post(v);
                 transitions_ |= cube;
             }
         }
@@ -119,15 +101,15 @@ namespace fairsyn {
 
 
         void build_rabin_pairs(std::function<std::vector<size_t> (size_t, size_t)> get_array) {
-            std::vector<size_t> v;
             for (size_t i = 0; i < numRabinPairs_; i++) {
                 rabin_pair_<UBDD> pair;
                 pair.rabin_index_ = i;
                 pair.G_ = base_.zero();
                 /* first, create theUBDD for the G sets */
+                std::vector<size_t> v;
                 v = get_array(i, 0);
                 for (size_t j = 0; j < v.size(); j++) {
-                    pair.G_ |= element_to_ubdd(v[j]);
+                    pair.G_ |= element_to_ubdd({v[j]});
                 }
                 /* second, create the UBDD for the COMPLEMENT OF the R sets */
                 pair.nR_ = complement_of_R(get_array(i, 1));

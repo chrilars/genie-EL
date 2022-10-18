@@ -89,7 +89,7 @@ namespace cpphoafparser {
             }
             std::stack<acceptance_expr::ptr> nodes;
             nodes.push(accExpr);
-            while (nodes.empty()) {
+            while (!nodes.empty()) {
                 acceptance_expr::ptr curr_node = nodes.top();
                 nodes.pop();
                 if (curr_node->isOR()) {
