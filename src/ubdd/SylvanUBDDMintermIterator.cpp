@@ -19,7 +19,7 @@ namespace fairsyn {
         done_ = false;
         counter_ = 0;
         arr_ = new uint8_t[nvars_];
-        max_ivars_ = *max_element(ivars_.begin(), ivars_.end() - 1);
+        max_ivars_ = *max_element(ivars_.begin(), ivars_.end());
         minterm_ = std::vector<size_t>(max_ivars_ + 1, 2);
 
         if (nvars_ > sizeof(size_t) * 8) {
@@ -42,9 +42,14 @@ namespace fairsyn {
         done_ = (leaf_ == sylvan::mtbdd_false);
         for (size_t i = 0; i < ivars_.size(); i++)
             minterm_[sorted_ivars_[i]] = arr_[i];
+        /* added by kaushik */
+        progress_ = 1;
     }
 
     void SylvanUBDDMintermIterator::next() {
+        /* added by kaushik */
+        progress_++;
+        /***/
         leaf_ = sylvan::mtbdd_enum_all_next(dd_, variables_, arr_, NULL);
         done_ = (leaf_ == sylvan::mtbdd_false);
         for (size_t i = 0; i < ivars_.size(); i++)

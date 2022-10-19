@@ -79,12 +79,7 @@ namespace fairsyn {
     }
 
     double SylvanUBDD::countMinterm(size_t nvars) const  {
-        size_t nodeCount = bdd_.NodeCount();
-        if (nodeCount <= nvars) {
-            return bdd_.SatCount(nvars);
-        } else {
-            return bdd_.SatCount(nodeCount) / std::pow(2.0, nodeCount - nvars);
-        }
+        return bdd_.SatCount(nvars);
     }
 
     void SylvanUBDD::printMinterm() const  {

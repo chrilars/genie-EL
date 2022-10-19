@@ -86,8 +86,8 @@ namespace fairsyn {
         const int depth = arg_const->depth;
         const std::vector<rabin_pair_<SylvanUBDD>> pairs = arg_const->pairs;
         const SylvanUBDD initial_seed = arg_const->initial_seed;
-        SylvanUBDD seqR = arg_nconst->seqR & fp->tr_; // todo diff
-        SylvanUBDD right = arg_nconst->right & fp->tr_; // todo diff
+        SylvanUBDD seqR = arg_nconst->seqR; // & fp->tr_; // todo diff
+        SylvanUBDD right = arg_nconst->right; // & fp->tr_; // todo diff
         /* the original scheme from piterman pnueli paper */
         auto hist_Y = arg_nconst->hist_Y;
         auto hist_X = arg_nconst->hist_X;
@@ -187,8 +187,8 @@ namespace fairsyn {
                             initial_seed,
                             verbose};
                     nconst_arg_recursive_rabin<SylvanUBDD> arg_nconst_new = {
-                            (seqR & nR).existAbstract(fp->CubeNotState()), // todo diff
-                            term2.existAbstract(fp->CubeNotState()), // todo diff
+                            (seqR & nR), //.existAbstract(fp->CubeNotState()), // todo diff
+                            term2, //.existAbstract(fp->CubeNotState()), // todo diff
                             indexRP,
                             indexY,
                             indexX,
@@ -240,7 +240,7 @@ namespace fairsyn {
 
         if (accl_on)
             indexRP->pop_back();
-        YY = YY.existAbstract(fp->CubeNotState()); // todo diff
+        // YY = YY.existAbstract(fp->CubeNotState()); // todo diff
 
         return YY;
     }

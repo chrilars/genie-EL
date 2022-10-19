@@ -231,7 +231,7 @@ namespace fairsyn {
                 remPairs.erase(remPairs.begin() + i);
                 /* initialize a local copy for the controller */
                 UBDD C = fp->base_.zero();
-                ;
+                
                 /* initialize the sets for the nu fixed point */
                 UBDD Y = fp->base_.zero();
                 UBDD YY;

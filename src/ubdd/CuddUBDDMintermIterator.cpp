@@ -22,7 +22,7 @@ namespace fairsyn {
         }
 
         bdd_ = bdd;
-        /* check if bdd depens only on bdd variables with indices ivars */
+        /* check if bdd depends only on bdd variables with indices ivars */
         std::vector<unsigned int> sup = bdd.SupportIndices();
         for (size_t i = 0; i < sup.size(); i++) {
             int marker = 0;
