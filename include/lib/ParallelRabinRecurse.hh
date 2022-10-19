@@ -208,11 +208,13 @@ namespace fairsyn {
                     if ((*hist_X)[depth - 1]
                         [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
                         [std::min((*indexX)[0] + 1, M - 1)]
-                        [fp->to_dec(M, *indexY)] <= (XX.existAbstract(fp->CubeNotState()) * fp->tr_)) {
+                        // [fp->to_dec(M, *indexY)] <= (XX.existAbstract(fp->CubeNotState()) * fp->tr_)) {
+                        [fp->to_dec(M, *indexY)] <= (XX.existAbstract(fp->cubePost_))) {
                         (*hist_X)[depth - 1]
                         [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
                         [std::min((*indexX)[0] + 1, M - 1)]
-                        [fp->to_dec(M, *indexY)] = (XX.existAbstract(fp->CubeNotState()) * fp->tr_);
+                        // [fp->to_dec(M, *indexY)] = (XX.existAbstract(fp->CubeNotState()) * fp->tr_);
+                        [fp->to_dec(M, *indexY)] = (XX.existAbstract(fp->cubePost_));
                     }
                 }
                 indexY->pop_back();
@@ -225,14 +227,16 @@ namespace fairsyn {
         if (accl_on) { // todo diff * fp->cubeOther_) * fp->tr_
             if (accl_on && fp->check_threshold(*indexY, M - 1) && fp->check_threshold(*indexX, M - 1)) {
 
-                if ((YY.existAbstract(fp->CubeNotState()) * fp->tr_) <= (*hist_Y)[depth - 1]
+                // if ((YY.existAbstract(fp->CubeNotState()) * fp->tr_) <= (*hist_Y)[depth - 1]
+                if ((YY.existAbstract(fp->cubePost_)) <= (*hist_Y)[depth - 1]
                 [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
                 [std::min((*indexY)[0] + 1, M - 1)]
                 [fp->to_dec(M, *indexX)]) {
                     (*hist_Y)[depth - 1]
                     [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
                     [std::min((*indexY)[0] + 1, M - 1)]
-                    [fp->to_dec(M, *indexX)] = (YY.existAbstract(fp->CubeNotState()) * fp->tr_);
+                    // [fp->to_dec(M, *indexX)] = (YY.existAbstract(fp->CubeNotState()) * fp->tr_);
+                    [fp->to_dec(M, *indexX)] = (YY.existAbstract(fp->cubePost_));
                 }
             }
         }
