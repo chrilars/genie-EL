@@ -32,6 +32,7 @@ namespace fairsyn {
                                                      * @details the bdd representing the transition relation as sets of tuples (s,x',s'),
                                                      * where s is pre-state of the rabin automaton, x' is post-state of the symbolic model,
                                                      * and s' is the post-state of the rabin automaton */
+        size_t start_state_index;                   /**< the index of the initial state */
         size_t numRabinPairs_;                      /**< the number of rabin pairs */
         std::vector<rabin_pair_<UBDD>> RabinPairs_; /**< @brief vector of sets of states of the automaton
                                                      * @details BDD vector[numRabinPairs_][2] containing the rabin pairs {(G_i,~R_i)},
@@ -47,6 +48,7 @@ namespace fairsyn {
         void build_transitions(cpphoafparser::rabin_data &data,
                                std::map<std::string, UBDD> &inputs_id_to_ubdd,
                                UBDD isTrueCase) {
+            start_state_index = data.Start;
             transitions_ = base_.zero();
             for (size_t i = 0; i < data.Transitions.size(); i++) {
                 UBDD cube = base_.one();
