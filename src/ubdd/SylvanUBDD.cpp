@@ -155,7 +155,8 @@ namespace fairsyn {
                 unusedFloat = firstGridPoint[i] - eta[i];
             }
         }
-        double minusInfinity = unusedFloat;
+        // double minusInfinity = unusedFloat;
+        Mtbdd minusInfinity = Mtbdd::doubleTerminal(unusedFloat);
         double epsilon = DBL_MIN;
         /* generate ADD variables and ADD for the grid points in each dimension */
         const int OUTER = 0;
