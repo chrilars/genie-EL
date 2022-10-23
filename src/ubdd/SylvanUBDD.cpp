@@ -13,8 +13,6 @@
 #include <memory>
 
 
-using namespace sylvan;
-
 namespace fairsyn {
     SylvanUBDD::SylvanUBDD() {
     }
@@ -55,11 +53,11 @@ namespace fairsyn {
     }
 
     size_t SylvanUBDD::nodeIndex() const  {
-        return mtbdd_getvar(bdd_.GetBDD());
+        return sylvan::mtbdd_getvar(bdd_.GetBDD());
     }
 
     SylvanUBDD SylvanUBDD::cube(std::vector<SylvanUBDD> variables, std::vector<uint8_t> values) const  {
-        sylvan::BddSet bddSet = BddSet::fromVector(extractBDDs(variables));
+        sylvan::BddSet bddSet = sylvan::BddSet::fromVector(extractBDDs(variables));
         BDDsylvan bdd = bdd_.bddCube(bddSet, values);
         return SylvanUBDD(bdd);
     }
@@ -83,7 +81,7 @@ namespace fairsyn {
     }
 
     void SylvanUBDD::printMinterm() const  {
-        sylvan_print(bdd_.GetBDD());
+        sylvan::sylvan_print(bdd_.GetBDD());
     }
 
 
@@ -109,6 +107,8 @@ namespace fairsyn {
                                       std::vector<size_t> nofBddVars,
                                       std::vector<std::vector<size_t>> indBddVars,
                                       size_t dim)  {
+        using namespace sylvan;
+
         /* generate ADD variables and ADD for the grid points in each dimension */
         Mtbdd constant;
         std::vector<Mtbdd> aVar(dim);
@@ -148,6 +148,7 @@ namespace fairsyn {
                                            const std::vector<size_t> &nofBddVars,
                                            const std::vector<std::vector<size_t>> &indBddVars,
                                            const std::vector<size_t> &nofGridPoints)  {
+        using namespace sylvan;
         /* define minusInfinity (for outside area of the domain) and epsilon */
         double unusedFloat = firstGridPoint[0] - eta[0];
         for (size_t i = 1; i < dim; i++) {
@@ -213,12 +214,14 @@ namespace fairsyn {
     }
 
     int SylvanUBDD::save(FILE *file)  {
+        using namespace sylvan;
         MTBDD m = bdd_.GetBDD();
         mtbdd_writer_tobinary(file, &m, 1);
         return 1;
     }
 
     SylvanUBDD SylvanUBDD::load(FILE *file, std::vector<int> composeids, int newID)  {
+        using namespace sylvan;
         MTBDD m;
         mtbdd_reader_frombinary(file, &m, 1);
         BDDsylvan bdd(m);

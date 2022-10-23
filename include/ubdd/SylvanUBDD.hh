@@ -14,7 +14,6 @@
 #include <memory>
 
 
-using namespace sylvan;
 namespace fairsyn {
     /**
      * @brief Implementation of Sylvan version of BaseUBDD
