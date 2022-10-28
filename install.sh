@@ -49,12 +49,3 @@ make
 # Now we copy and paste folder
 cp -r include/* $INSTALLATION_PATH/include
 cd ..
-
-## googletest
-#git clone https://github.com/google/googletest
-#cd googletest
-#sudo apt-get install libgtest-dev
-#cmake -Dgtest_build_tests=ON -Dgmock_build_tests=ON .
-#make
-#make test
-#cd ..
