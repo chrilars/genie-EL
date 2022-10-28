@@ -56,9 +56,19 @@ target_link_libraries(fairsyn ${cudd_LIBRARIES} ${Sylvan_LIBRARIES} CppHoafParse
 target_include_directories(fairsyn PUBLIC ${cudd_INCLUDE_DIRS})
 target_compile_options(fairsyn PUBLIC ${cudd_CFLAGS_OTHER})
 
-add_link_options(-std=c++11 -g -ldl) # Mascot
-add_link_options(-O0 -Wall -Wextra -Wfatal-errors) # Debug
-add_link_options(--coverage -pthread)
+if(NOT DEFINED CMAKE_BUILD_TYPE)
+    message(STATUS "No mode selected. Using release mode as default.")
+    set(CMAKE_BUILD_TYPE "release")
+endif()
+
+set(CMAKE_VERBOSE_MAKEFILE ON) # show everything
+add_link_options(-std=c++11 --coverage -pthread -ldl)
+if(CMAKE_BUILD_TYPE MATCHES debug)
+    message(STATUS "Debug mode.")
+    add_link_options(-Wfatal-errors -Wall -Wextra)
+elseif(CMAKE_BUILD_TYPE MATCHES release)
+    message(STATUS "Release mode.")
+endif()
 
 ##############################################
 # Installation instructions
