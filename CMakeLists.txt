@@ -140,12 +140,3 @@ export(EXPORT fairsyn-targets
 
 #Register package in the User Package Registry
 export(PACKAGE FairSyn)
-
-##############################################
-## Add test
-if (${CMAKE_BUILD_TYPE} MATCHES Debug)
-    enable_testing()
-    add_subdirectory(test)
-endif ()
-
-# test comment
