@@ -15,7 +15,7 @@ namespace fairsyn {
 #define RabinRecurseInit(fp, controller, arg_const, arg_nconst) CALL(RabinRecurseInit, (fp), (controller), (arg_const), (arg_nconst))
 
         SylvanUBDD ParallelRabinRecurse(BaseFixedPoint<SylvanUBDD> *rabin,
-                                        SylvanUBDD controller,
+                                        SylvanUBDD& controller,
                                         const_arg_recursive_rabin<SylvanUBDD> rrConst,
                                         nconst_arg_recursive_rabin<SylvanUBDD> rrVars) {
 

@@ -198,7 +198,7 @@ namespace fairsyn {
 
 
         static UBDD SequentialRabinRecurse(BaseFixedPoint<UBDD> *fp,
-                                           UBDD controller,
+                                           UBDD& controller,
                                            const_arg_recursive_rabin<UBDD> rrConst,
                                            nconst_arg_recursive_rabin<UBDD> rrVars){
             /* initialize the final solution to be returned in the end */
@@ -231,7 +231,7 @@ namespace fairsyn {
                 remPairs.erase(remPairs.begin() + i);
                 /* initialize a local copy for the controller */
                 UBDD C = fp->base_.zero();
-                
+
                 /* initialize the sets for the nu fixed point */
                 UBDD Y = fp->base_.zero();
                 UBDD YY;
