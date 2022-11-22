@@ -74,4 +74,5 @@ and now documentation can be found in `docs/html/index.html`.
 # Example of Usage
 
 An example of usage you can find in
+[Mascot-SDS](https://gitlab.mpi-sws.org/kmallik/mascot-sds) or 
 [synthesis-with-edge-fairness](https://gitlab.mpi-sws.org/kmallik/synthesis-with-edge-fairness) repository.
