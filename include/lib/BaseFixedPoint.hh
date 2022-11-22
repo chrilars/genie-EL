@@ -97,7 +97,7 @@ namespace fairsyn {
                    const size_t M, /* the bound on the iteration count for memorizing the BDDs from the past iterations */
                    const UBDD &initial_seed,
                    const int verbose,
-                   std::function<UBDD(BaseFixedPoint<UBDD>*, UBDD,  const_arg_recursive_rabin<UBDD>, nconst_arg_recursive_rabin<UBDD>)> RR = SequentialRabinRecurse){
+                   std::function<UBDD(BaseFixedPoint<UBDD>*, UBDD&,  const_arg_recursive_rabin<UBDD>, nconst_arg_recursive_rabin<UBDD>)> RR = SequentialRabinRecurse){
             /* copy the rabin pairs */
             std::vector<rabin_pair_<UBDD>> pairs = RabinPairs_;
             size_t nrp = pairs.size(); /* number of rabin pairs */
