@@ -33,14 +33,17 @@ namespace fairsyn {
                 const_arg_recursive_rabin<SylvanUBDD> *, arg_const,
                 nconst_arg_recursive_rabin<SylvanUBDD> *, arg_nconst) {
         /* initialize a vector for storing the winning domain computed in each thread */
-
+        // /* debug */
+        // fp->print_rabin_info(*controller, "end", 1);
+        // /* debug ends */
         std::vector<SylvanUBDD> Y;
         std::vector<SylvanUBDD *> C;
         int dupa = arg_const->pairs.size();
         for (size_t i = 0; i < arg_const->pairs.size(); i++) {
             Y.push_back(fp->base_.zero());
-            SylvanUBDD controller_copy = *controller;
-            C.push_back(&controller_copy);
+            SylvanUBDD* controller_copy = new SylvanUBDD;
+            *controller_copy = *controller;
+            C.push_back(controller_copy);
         }
 
         /* spawn as many additional worker threads as the number of remaining pairs minus 1 */
@@ -61,13 +64,21 @@ namespace fairsyn {
 
         /* compute the union of all the winning domains and the controllers computed by the different worker threads */
         SylvanUBDD U = fp->base_.zero();
+        // /* debug */
+        // fp->print_rabin_info(*C[0], "end", 1);
+        // fp->print_rabin_info(*controller, "end", 1);
+        // /* debug ends */
         for (size_t i = 0; i < arg_const->pairs.size(); i++) {
             U |= Y[i];
-            SylvanUBDD N = *C[i] & (!(controller->existAbstract(fp->CubeNotState())));
+            SylvanUBDD c = *C[i];
+            SylvanUBDD N = c & (!(controller->existAbstract(fp->CubeNotState())));
             *controller |= N;
+            std::cout << i;
         }
+        // /* debug */
+        // fp->print_rabin_info(*controller, "end", 1);
+        // /* debug ends */
 
-        /* return the underlying MTBDD of U */
         return U;
     }
 
@@ -175,7 +186,13 @@ namespace fairsyn {
                 SylvanUBDD term2 = (term1 | (seqR & (nR & fp->apre(Y, X))));
                 /* add the recently added state-input pairs to the controller */
                 N = term2 & (!(C.existAbstract(fp->CubeNotState()))); // todo diff
+                // /* debug */
+                // fp->print_rabin_info(C, "end", 1);
+                // /* debug ends */
                 C |= N;
+                // /* debug */
+                // fp->print_rabin_info(C, "end", 1);
+                // /* debug ends */
                 if (remPairs.empty()) {
                     XX = term2;
                 } else {
@@ -194,7 +211,13 @@ namespace fairsyn {
                             indexX,
                             hist_Y,
                             hist_X};
+                    // /* debug */
+                    // fp->print_rabin_info(C, "end", 1);
+                    // /* debug ends */
                     XX = CALL(RabinRecurseInit, fp, &C, &arg_const_new, &arg_nconst_new);
+                    // /* debug */
+                    // fp->print_rabin_info(C, "end", 1);
+                    // /* debug ends */
                 }
                 if (accl_on)
                     indexX->pop_back();
@@ -222,6 +245,9 @@ namespace fairsyn {
         }
 
         *controller = C;
+        // /* debug */
+        // fp->print_rabin_info(*controller, "end", 1);
+        // /* debug ends */
 
         /////////////////////////  UPDATING BDDS in YY
         if (accl_on) { // todo diff * fp->cubeOther_) * fp->tr_
