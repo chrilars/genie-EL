@@ -15,7 +15,7 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 # Find system dependencies
 find_package(cudd)
 
-find_package(Sylvan)
+find_package(sylvan)
 
 find_package(CppHoafParser)
 ##############################################
@@ -52,7 +52,7 @@ target_compile_options(fairsyn PRIVATE
         $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
         -Wall -Wextra -Wpedantic>)
 
-target_link_libraries(fairsyn ${cudd_LIBRARIES} ${Sylvan_LIBRARIES} CppHoafParser)
+target_link_libraries(fairsyn ${cudd_LIBRARIES} ${sylvan_LIBRARIES} CppHoafParser)
 target_include_directories(fairsyn PUBLIC ${cudd_INCLUDE_DIRS})
 target_compile_options(fairsyn PUBLIC ${cudd_CFLAGS_OTHER})
 
@@ -62,7 +62,7 @@ if(NOT DEFINED CMAKE_BUILD_TYPE)
 endif()
 
 set(CMAKE_VERBOSE_MAKEFILE ON) # show everything
-add_link_options(-std=c++11 --coverage -pthread -ldl)
+add_link_options(-std=c++11 -ldl -O3)
 if(CMAKE_BUILD_TYPE MATCHES debug)
     message(STATUS "Debug mode.")
     add_link_options(-Wfatal-errors -Wall -Wextra)
@@ -113,7 +113,7 @@ configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/FairSynConfig.cmak
 #Install the config, configversion and custom find modules
 install(FILES
         ${CMAKE_CURRENT_LIST_DIR}/cmake/Findcudd.cmake
-        ${CMAKE_CURRENT_LIST_DIR}/cmake/FindSylvan.cmake
+        ${CMAKE_CURRENT_LIST_DIR}/cmake/Findsylvan.cmake
         ${CMAKE_CURRENT_LIST_DIR}/cmake/FindCppHoafParser.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/FairSynConfig.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/FairSynConfigVersion.cmake
@@ -126,8 +126,8 @@ configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/Findcudd.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/Findcudd.cmake
         COPYONLY)
 
-configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/FindSylvan.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/FindSylvan.cmake
+configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/Findsylvan.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/Findsylvan.cmake
         COPYONLY)
 
 configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/FindCppHoafParser.cmake

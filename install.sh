@@ -32,7 +32,7 @@ cp util/util.h $INSTALLATION_PATH/include
 cd ..
 
 # installing Sylvan
-git clone https://github.com/trolando/sylvan
+git clone --branch v1.6.0 https://github.com/trolando/sylvan
 cd sylvan
 cmake . -DCMAKE_INSTALL_PREFIX="$INSTALLATION_PATH"
 make
