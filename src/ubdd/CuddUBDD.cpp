@@ -285,6 +285,10 @@ namespace fairsyn {
         return cudd_->getManager() == other.cudd_->getManager();
     }
 
+    bool CuddUBDD::isParallelSafe() const {
+        return false;
+    }
+
     CuddUBDD &CuddUBDD::operator=(const CuddUBDD &right) {
         bdd_ = right.bdd_;
         cudd_ = right.cudd_;

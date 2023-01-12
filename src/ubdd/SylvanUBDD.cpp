@@ -242,6 +242,10 @@ namespace fairsyn {
 
     bool SylvanUBDD::isCoverEqual(const SylvanUBDD &other) const  { return true; }
 
+    bool SylvanUBDD::isParallelSafe() const {
+        return true;
+    }
+
     SylvanUBDD &SylvanUBDD::operator=(const SylvanUBDD &right) {
         bdd_ = right.bdd_;
         return *this;

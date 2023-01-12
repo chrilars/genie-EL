@@ -182,6 +182,11 @@ namespace fairsyn {
 
         virtual bool isCoverEqual(const SubUBDD &other) const = 0;
 
+        /**
+         * @brief returns true if UBDD class is parallel safe
+         */
+        virtual bool isParallelSafe() const = 0;
+
         virtual SubUBDD &operator=(const SubUBDD &right) = 0;
         virtual bool operator==(const SubUBDD &other) const = 0;
         virtual bool operator!=(const SubUBDD &other) const = 0;

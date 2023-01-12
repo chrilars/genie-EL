@@ -62,6 +62,7 @@ namespace fairsyn {
         SylvanUBDD load(FILE *file, std::vector<int> composeids, int newID) override;
         SylvanUBDD transfer(const SylvanUBDD &destination) const override;
         bool isCoverEqual(const SylvanUBDD &other) const override;
+        bool isParallelSafe() const override;
         SylvanUBDD &operator=(const SylvanUBDD &right);
         bool operator==(const SylvanUBDD &other) const override;
         bool operator!=(const SylvanUBDD &other) const override;

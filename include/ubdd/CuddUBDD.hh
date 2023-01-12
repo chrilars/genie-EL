@@ -73,6 +73,7 @@ namespace fairsyn {
         CuddUBDD load(FILE *file, std::vector<int> composeids, int newID) override;
         CuddUBDD transfer(const CuddUBDD &destination) const override;
         bool isCoverEqual(const CuddUBDD &other) const override;
+        bool isParallelSafe() const override;
         CuddUBDD &operator=(const CuddUBDD &right) override;
         bool operator==(const CuddUBDD &other) const override;
         bool operator!=(const CuddUBDD &other) const override;
