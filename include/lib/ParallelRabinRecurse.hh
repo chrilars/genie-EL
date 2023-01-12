@@ -73,7 +73,6 @@ namespace fairsyn {
             SylvanUBDD c = *C[i];
             SylvanUBDD N = c & (!(controller->existAbstract(fp->CubeNotState())));
             *controller |= N;
-            std::cout << i;
         }
         // /* debug */
         // fp->print_rabin_info(*controller, "end", 1);
