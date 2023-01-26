@@ -4,7 +4,7 @@ pkg_check_modules(PC_sylvan QUIET sylvan)
 
 # Name of this project has been changed from "sylvan" to "sylvan"
 find_path(sylvan_INCLUDE_DIR sylvan.h)
-find_library(sylvan_LIBRARY libsylvan.so)
+find_library(sylvan_LIBRARY libsylvan.a)
 
 
 set(sylvan_LIBRARIES ${sylvan_LIBRARY})
