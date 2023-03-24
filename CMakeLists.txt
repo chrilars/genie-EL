@@ -48,9 +48,6 @@ target_include_directories(fairsyn
         )
 
 target_compile_features(fairsyn PRIVATE cxx_auto_type)
-target_compile_options(fairsyn PRIVATE
-        $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
-        -Wall -Wextra -Wpedantic>)
 
 target_link_libraries(fairsyn ${cudd_LIBRARIES} ${sylvan_LIBRARIES} CppHoafParser)
 target_include_directories(fairsyn PUBLIC ${cudd_INCLUDE_DIRS})
@@ -66,8 +63,17 @@ add_link_options(-std=c++11 -ldl -O3)
 if(CMAKE_BUILD_TYPE MATCHES debug)
     message(STATUS "Debug mode.")
     add_link_options(-Wfatal-errors -Wall -Wextra)
+    target_compile_options(fairsyn PRIVATE
+            $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
+            -Wall -Wextra>)
 elseif(CMAKE_BUILD_TYPE MATCHES release)
     message(STATUS "Release mode.")
+    target_compile_options(fairsyn PRIVATE
+            $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>: >)
+else()
+    message(STATUS "Undefined mode.")
+    target_compile_options(fairsyn PRIVATE
+            $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>: >)
 endif()
 
 ##############################################
