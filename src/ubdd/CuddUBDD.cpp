@@ -277,8 +277,8 @@ namespace fairsyn {
     }
 
     CuddUBDD CuddUBDD::transfer(const CuddUBDD &destination) const {
-        BDD bdd = BDD(bdd_);
-        return CuddUBDD(bdd, cudd_);
+        BDD bdd = BDD(bdd_).Transfer(*destination.cudd_);
+        return CuddUBDD(bdd, destination.cudd_);
     }
 
     bool CuddUBDD::isCoverEqual(const CuddUBDD &other) const {

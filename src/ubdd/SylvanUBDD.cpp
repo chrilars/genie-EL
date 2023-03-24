@@ -14,6 +14,9 @@
 
 
 namespace fairsyn {
+    size_t SylvanUBDD::size_ = 0;
+    std::map<size_t, SylvanUBDD *> SylvanUBDD::nodes_map = std::map<size_t, SylvanUBDD *>();
+
     SylvanUBDD::SylvanUBDD() {
     }
 
@@ -229,18 +232,18 @@ namespace fairsyn {
         if (newID) {
             std::vector<size_t> from(composeids.size());
             std::vector<size_t> to(composeids.begin(), composeids.end());
-            for (int i = 0; i < composeids.size(); i++)
+            for (size_t i = 0; i < composeids.size(); i++)
                 from[i] = i;
             return ubdd.permute(from, to);
         }
         return ubdd;
     }
 
-    SylvanUBDD SylvanUBDD::transfer(const SylvanUBDD &destination) const  {
+    SylvanUBDD SylvanUBDD::transfer(const SylvanUBDD &) const  {
         return *this;
     }
 
-    bool SylvanUBDD::isCoverEqual(const SylvanUBDD &other) const  { return true; }
+    bool SylvanUBDD::isCoverEqual(const SylvanUBDD &) const  { return true; }
 
     bool SylvanUBDD::isParallelSafe() const {
         return true;

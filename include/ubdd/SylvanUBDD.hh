@@ -21,8 +21,10 @@ namespace fairsyn {
     class SylvanUBDD : public BaseUBDD<SylvanUBDD> {
 
     public:
-        inline static size_t size_ = 0;
-        inline static std::map<size_t, SylvanUBDD *> nodes_map = std::map<size_t, SylvanUBDD *>();
+      static size_t size_;
+      static std::map<size_t, SylvanUBDD *> nodes_map;
+//        inline static size_t size_ = 0;
+//        inline static std::map<size_t, SylvanUBDD *> nodes_map = std::map<size_t, SylvanUBDD *>();
         BDDsylvan bdd_;
         SylvanUBDD();
         SylvanUBDD(BDDsylvan const &from);
