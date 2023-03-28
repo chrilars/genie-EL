@@ -27,10 +27,10 @@ add_library(fairsyn
         src/ubdd/SylvanUBDD.cpp
         src/ubdd/SylvanUBDDMintermIterator.cpp
         src/utils/hoa_consumer_build_rabin.cpp
-        src/lib/BaseFixedPoint.cpp
+        src/lib/BaseFixpoint.cpp
         src/lib/BaseRabinAutomaton.cpp
         include/lib/BaseRabinAutomaton.hh
-        include/lib/BaseFixedPoint.hh
+        include/lib/BaseFixpoint.hh
         src/utils/TicToc.cpp
         include/lib/ParallelRabinRecurse.hh)
 

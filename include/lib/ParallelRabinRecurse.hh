@@ -4,17 +4,17 @@
 
 #pragma once
 #include "ubdd/SylvanUBDD.hh"
-#include "BaseFixedPoint.hh"
+#include "BaseFixpoint.hh"
 #include "BaseRabinAutomaton.hh"
 
 namespace fairsyn {
 
-    TASK_DECL_4(SylvanUBDD, RabinRecurseInit, BaseFixedPoint<SylvanUBDD> *, SylvanUBDD *, struct const_arg_recursive_rabin<SylvanUBDD> *,
+    TASK_DECL_4(SylvanUBDD, RabinRecurseInit, BaseFixpoint<SylvanUBDD> *, SylvanUBDD *, struct const_arg_recursive_rabin<SylvanUBDD> *,
                 struct nconst_arg_recursive_rabin<SylvanUBDD> *)
 
 #define RabinRecurseInit(fp, controller, arg_const, arg_nconst) CALL(RabinRecurseInit, (fp), (controller), (arg_const), (arg_nconst))
 
-        SylvanUBDD ParallelRabinRecurse(BaseFixedPoint<SylvanUBDD> *rabin,
+        SylvanUBDD ParallelRabinRecurse(BaseFixpoint<SylvanUBDD> *rabin,
                                         SylvanUBDD& controller,
                                         const_arg_recursive_rabin<SylvanUBDD> rrConst,
                                         nconst_arg_recursive_rabin<SylvanUBDD> rrVars) {
@@ -22,13 +22,13 @@ namespace fairsyn {
             return RUN(RabinRecurseInit, rabin, &controller, &rrConst, &rrVars);
         }
 
-    TASK_DECL_5(SylvanUBDD, RabinRecurseForLoop, size_t, BaseFixedPoint<SylvanUBDD> *, SylvanUBDD *,
+    TASK_DECL_5(SylvanUBDD, RabinRecurseForLoop, size_t, BaseFixpoint<SylvanUBDD> *, SylvanUBDD *,
                 struct const_arg_recursive_rabin<SylvanUBDD> *, struct nconst_arg_recursive_rabin<SylvanUBDD> *);
 #define RabinRecurseForLoop(i, fp, controller, arg_const, arg_nconst) (CALL(RabinRecurseForLoop, (i), (fp), (controller), (arg_const), (arg_nconst)))
 
     TASK_IMPL_4(SylvanUBDD,
                 RabinRecurseInit,
-                BaseFixedPoint<SylvanUBDD> *, fp,
+                BaseFixpoint<SylvanUBDD> *, fp,
                 SylvanUBDD *, controller,
                 const_arg_recursive_rabin<SylvanUBDD> *, arg_const,
                 nconst_arg_recursive_rabin<SylvanUBDD> *, arg_nconst) {
@@ -86,7 +86,7 @@ namespace fairsyn {
     TASK_IMPL_5(SylvanUBDD,
                 RabinRecurseForLoop,
                 const size_t, i,
-                BaseFixedPoint<SylvanUBDD> *, fp,
+                BaseFixpoint<SylvanUBDD> *, fp,
                 SylvanUBDD *, controller,
                 struct const_arg_recursive_rabin<SylvanUBDD> *, arg_const,
                 struct nconst_arg_recursive_rabin<SylvanUBDD> *, arg_nconst) {

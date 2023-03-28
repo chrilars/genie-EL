@@ -1,4 +1,4 @@
-/** @file BaseFixedPoint.hh
+/** @file BaseFixpoint.hh
  */
 
 #pragma once
@@ -45,7 +45,7 @@ namespace fairsyn {
      * on finite transition systems with the edge fairness condition
      */
     template <class UBDD>
-    class BaseFixedPoint {
+    class BaseFixpoint {
     public:
         UBDD base_;                                 /**< the bdd manager */
         const char *str_;                           /**< mode of calculation */
@@ -90,14 +90,14 @@ namespace fairsyn {
          * @brief computes the fair adversarial rabin winning domain
          * @param accl_on   - true/false setting the accelerated fixpoint on/off
          * @param M         - the bound on the iteration count for memorizing the BDDs from the past iterations
-         * @param initial_seed  - initial seed for warm starting the nu fixedpoints (for example the under-approximation fixpoint can be warm-started from the result of the over-approximation fixpoint)
+         * @param initial_seed  - initial seed for warm starting the nu fixpoints (for example the under-approximation fixpoint can be warm-started from the result of the over-approximation fixpoint)
          * @param verbose   - the verbosity level (0-2, default=0)
          */
         UBDD Rabin(const bool accl_on,
                    const size_t M, /* the bound on the iteration count for memorizing the BDDs from the past iterations */
                    const UBDD &initial_seed,
                    const int verbose,
-                   std::function<UBDD(BaseFixedPoint<UBDD>*, UBDD&,  const_arg_recursive_rabin<UBDD>, nconst_arg_recursive_rabin<UBDD>)> RR = SequentialRabinRecurse){
+                   std::function<UBDD(BaseFixpoint<UBDD>*, UBDD&, const_arg_recursive_rabin<UBDD>, nconst_arg_recursive_rabin<UBDD>)> RR = SequentialRabinRecurse){
             /* copy the rabin pairs */
             std::vector<rabin_pair_<UBDD>> pairs = RabinPairs_;
             size_t nrp = pairs.size(); /* number of rabin pairs */
@@ -197,7 +197,7 @@ namespace fairsyn {
         }
 
 
-        static UBDD SequentialRabinRecurse(BaseFixedPoint<UBDD> *fp,
+        static UBDD SequentialRabinRecurse(BaseFixpoint<UBDD> *fp,
                                            UBDD& controller,
                                            const_arg_recursive_rabin<UBDD> rrConst,
                                            nconst_arg_recursive_rabin<UBDD> rrVars){
