@@ -6,7 +6,7 @@
 
 #include "ubdd/CuddUBDDMintermIterator.hh"
 
-namespace fairsyn {
+namespace genie {
     CuddUBDDMintermIterator::CuddUBDDMintermIterator(BDDcudd bdd, const std::vector<size_t> &ivars) {
         ivars_.assign(ivars.begin(), ivars.end());
         nvars_ = ivars.size();
@@ -124,4 +124,4 @@ namespace fairsyn {
         for (size_t i = 0; i < ivars_.size(); i++)
             minterm_[ivars_[i]] = cube_[ivars_[i]];
     }
-}// namespace fairsyn
+}// namespace genie

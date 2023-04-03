@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <vector>
 
-namespace fairsyn {
+namespace genie {
 
 
     /** structure containing a single rabin pair */
@@ -121,4 +121,4 @@ namespace fairsyn {
 
         virtual UBDD complement_of_R(const std::vector<size_t> &array) = 0;
     };
-}// namespace fairsyn
+}// namespace genie

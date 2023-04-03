@@ -13,8 +13,7 @@
 #include <map>
 #include <memory>
 
-
-namespace fairsyn {
+namespace genie {
     /**
      * @brief Implementation of Sylvan version of BaseUBDD
      */
@@ -95,4 +94,4 @@ namespace fairsyn {
             return bdds;
         }
     };
-}// namespace fairsyn
+}// namespace genie

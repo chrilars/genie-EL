@@ -6,7 +6,7 @@
 
 #include "ubdd/SylvanUBDDMintermIterator.hh"
 
-namespace fairsyn {
+namespace genie {
     SylvanUBDDMintermIterator::SylvanUBDDMintermIterator(sylvan::MTBDD dd, sylvan::MTBDD variables, const std::vector<size_t> &ivars) {
         dd_ = dd;
         variables_ = variables;
@@ -55,4 +55,4 @@ namespace fairsyn {
         for (size_t i = 0; i < ivars_.size(); i++)
             minterm_[sorted_ivars_[i]] = arr_[i];
     }
-}// namespace fairsyn
+}// namespace genie

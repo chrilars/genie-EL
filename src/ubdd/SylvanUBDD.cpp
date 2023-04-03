@@ -13,7 +13,7 @@
 #include <memory>
 
 
-namespace fairsyn {
+namespace genie {
     size_t SylvanUBDD::size_ = 0;
     std::map<size_t, SylvanUBDD *> SylvanUBDD::nodes_map = std::map<size_t, SylvanUBDD *>();
 
@@ -316,4 +316,4 @@ namespace fairsyn {
         return *this;
     }
     //std::map<size_t, SylvanUBDD *> SylvanUBDD::nodes_map = SylvanUBDD::create_map();
-}// namespace fairsyn
+}// namespace genie

@@ -14,7 +14,7 @@
 #include <stdexcept>
 #include <vector>
 
-namespace fairsyn {
+namespace genie {
     /**
      * @brief An interface for Universal BDD Minterm Iterator
      * @details
@@ -117,4 +117,4 @@ namespace fairsyn {
          */
         virtual void next() = 0;
     };
-}// namespace fairsyn
+}// namespace genie

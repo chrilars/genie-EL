@@ -7,7 +7,7 @@
 #include "BaseFixpoint.hh"
 #include "BaseRabinAutomaton.hh"
 
-namespace fairsyn {
+namespace genie {
 
     TASK_DECL_4(SylvanUBDD, RabinRecurseInit, BaseFixpoint<SylvanUBDD> *, SylvanUBDD *, struct const_arg_recursive_rabin<SylvanUBDD> *,
                 struct nconst_arg_recursive_rabin<SylvanUBDD> *)
@@ -101,7 +101,7 @@ namespace fairsyn {
         /* the original scheme from piterman pnueli paper */
         auto hist_Y = arg_nconst->hist_Y;
         auto hist_X = arg_nconst->hist_X;
-        /* the scheme used in the Mascot-SDS paper */
+        /* the scheme used in the MascotSDS paper */
 
         /* create variables for remembering the current indices of the fixpoint variables and the indices of the rabin pairs */
         std::vector<size_t> *indexY = new std::vector<size_t>;
@@ -273,5 +273,4 @@ namespace fairsyn {
 
         return YY;
     }
-
-}
+} // namespace genie

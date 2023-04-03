@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-namespace fairsyn {
+namespace genie {
     /**
      * @brief An interface for Universal BDD
      */
@@ -225,4 +225,4 @@ namespace fairsyn {
         virtual SubUBDD operator-(const SubUBDD &other) const = 0;
         virtual SubUBDD operator-=(const SubUBDD &other) = 0;
     };
-}// namespace fairsyn
+}// namespace genie

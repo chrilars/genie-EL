@@ -1,4 +1,4 @@
-# FairSyn
+# Genie
 
 A library for easily generating experiments on Binary Decision Diagram.
 
@@ -12,7 +12,7 @@ These are necessary to use this library.
 
 # Installation guide
 
-Instructions for easy installation of FairSyn.
+Instructions for easy installation of Genie.
 
 ## Installation of Libraries 
 In this section we will focus on the installation of the necessary libraries
@@ -44,7 +44,7 @@ If you run the script without argument, they set ``<path>`` to ``/usr/local/``.
 This script creates a folder ``submodules``, clones every necessary project and installs everything in ``<path>``.
 You can also see a ``install.sh`` script to install individual libraries.
 
-## How to run FairSyn
+## How to run Genie
 
 ```
 mkdir build
@@ -74,5 +74,5 @@ and now documentation can be found in `docs/html/index.html`.
 # Example of Usage
 
 An example of usage you can find in
-[Mascot-SDS](https://gitlab.mpi-sws.org/kmallik/mascot-sds) or 
+[MascotSDS](https://gitlab.mpi-sws.org/kmallik/mascot-sds) or 
 [synthesis-with-edge-fairness](https://gitlab.mpi-sws.org/kmallik/synthesis-with-edge-fairness) repository.

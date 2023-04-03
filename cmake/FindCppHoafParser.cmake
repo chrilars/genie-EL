@@ -1,4 +1,4 @@
-message(CMakeLists:FairSyn/cmake/FindCppHoafParser.cmake)
+message(CMakeLists:Genie/cmake/FindCppHoafParser.cmake)
 pkg_check_modules(PC_CppHoafParser QUIET CppHoafParser)
 find_path(CppHoafParser_INCLUDE_DIR
         NAMES parser/hoa_parser.hh consumer/hoa_consumer.hh

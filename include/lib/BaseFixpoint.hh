@@ -14,13 +14,13 @@
 #include <vector>
 
 
-namespace fairsyn {
+namespace genie {
     template <class UBDD>
     struct const_arg_recursive_rabin {
         const bool accl_on;
         const size_t M; /* the bound on the iteration count for memorizing the BDDs from the past iterations */
         const int depth;
-        const std::vector<fairsyn::rabin_pair_<UBDD>> pairs;
+        const std::vector<genie::rabin_pair_<UBDD>> pairs;
         const UBDD initial_seed;
         const int verbose;
     };
@@ -302,14 +302,14 @@ namespace fairsyn {
                         if (remPairs.size() == 0) {
                             XX = term2;
                         } else {
-                            fairsyn::const_arg_recursive_rabin<UBDD> arg_const_new = {
+                            genie::const_arg_recursive_rabin<UBDD> arg_const_new = {
                                     accl_on,
                                     M, /* the bound on the iteration count for memorizing the BDDs from the past iterations */
                                     depth + 1,
                                     remPairs,
                                     initial_seed,
                                     verbose};
-                            fairsyn::nconst_arg_recursive_rabin<UBDD> arg_nconst_new = {
+                            genie::nconst_arg_recursive_rabin<UBDD> arg_nconst_new = {
                                     seqR & nR, // todo diff
                                     term2, // todo diff check that in the future
                                     indexRP,
@@ -481,4 +481,4 @@ namespace fairsyn {
             }
         }
     }; /* close class def */
-}// namespace fairsyn
+}// namespace genie

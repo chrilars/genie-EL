@@ -11,7 +11,8 @@
 #include "cudd.h"
 #include "cuddObj.hh"
 #include "dddmp.h"
-namespace fairsyn {
+
+namespace genie {
     typedef BDD BDDcudd;
 
     /**
@@ -36,4 +37,4 @@ namespace fairsyn {
         void begin();
         void next();
     };
-}// namespace fairsyn
+}// namespace genie

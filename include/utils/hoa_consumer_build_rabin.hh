@@ -39,7 +39,7 @@ namespace cpphoafparser {
      * @brief An interface to the cpphoafparser library for parsing a Rabin automaton in HOA format
      * @details
      * A HOAConsumer implementation that works as an interface to convert a rabin automaton from HOA format
-     * to the format used in Mascot-SDS.
+     * to the format used in MascotSDS.
      */
     class HOAConsumerBuildRabin : public HOAConsumer {
     public:

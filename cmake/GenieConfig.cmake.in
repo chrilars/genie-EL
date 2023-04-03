@@ -1,0 +1,18 @@
+message(CMakeLists:Genie/cmake/GenieConfig.cmake.in)
+get_filename_component(GENIE_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+include(CMakeFindDependencyMacro)
+
+list(APPEND CMAKE_MODULE_PATH ${GENIE_CMAKE_DIR})
+
+# NOTE: to find FindSylvan.cmake
+find_dependency(Sylvan @MIN_Sylvan_VERSION@)
+find_dependency(Cudd @MIN_Cudd_VERSION@)
+find_dependency(CppHoafParser @MIN_CppHoafParser_VERSION@)
+list(REMOVE_AT CMAKE_MODULE_PATH -1)
+
+
+if(NOT TARGET Genie::Genie)
+    include("${GENIE_CMAKE_DIR}/GenieTargets.cmake")
+endif()
+
+set(GENIE_lIBRARIES Genie::Genie)

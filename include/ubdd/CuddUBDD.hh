@@ -16,7 +16,7 @@
 #include "cuddObj.hh"
 #include "dddmp.h"
 
-namespace fairsyn {
+namespace genie {
     /**
      * @brief Implementation of Cudd version of BaseUBDD
      */
@@ -106,4 +106,4 @@ namespace fairsyn {
             return bdds;
         }
     };
-}// namespace fairsyn
+}// namespace genie

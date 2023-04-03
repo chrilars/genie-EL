@@ -16,7 +16,7 @@
 #include "cuddObj.hh"
 #include "dddmp.h"
 
-namespace fairsyn {
+namespace genie {
 
     CuddUBDD::CuddUBDD(BDDcudd &bdd, std::shared_ptr<Cudd> cudd) {
         cudd_ = cudd;
@@ -390,4 +390,4 @@ namespace fairsyn {
 
         return std::sqrt(Cudd_V(max.getNode())) + cudd_->ReadEpsilon();
     }
-}// namespace fairsyn
+}// namespace genie

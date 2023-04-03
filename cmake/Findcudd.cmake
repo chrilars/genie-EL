@@ -1,4 +1,4 @@
-message(CMakeLists:FairSyn/cmake/Findcudd.cmake)
+message(CMakeLists:Genie/cmake/Findcudd.cmake)
 
 find_path(cudd_INCLUDE_DIR cudd.h)
 find_library(cudd_LIBRARY libcudd.a cudd)

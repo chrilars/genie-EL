@@ -12,7 +12,7 @@
 
 #include "sylvan_bdd.h"
 
-namespace fairsyn {
+namespace genie {
     typedef sylvan::Bdd BDDsylvan;
 
     /**
@@ -33,4 +33,4 @@ namespace fairsyn {
         void begin();
         void next();
     };
-}// namespace fairsyn
+}// namespace genie
