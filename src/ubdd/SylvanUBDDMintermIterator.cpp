@@ -23,9 +23,8 @@ namespace genie {
         minterm_ = std::vector<size_t>(max_ivars_ + 1, 2);
 
         if (nvars_ > sizeof(size_t) * 8) {
-            std::ostringstream os;
-            os << "Error: UBDDMintermIterator: number of variables we iterate over is limited to highest number in size_t.";
-            throw std::invalid_argument(os.str().c_str());
+            throw std::invalid_argument(
+                    "Error: UBDDMintermIterator: number of variables we iterate over is limited to highest number in size_t.");
         }
 
         begin();
