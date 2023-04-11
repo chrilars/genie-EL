@@ -58,7 +58,7 @@ namespace genie {
                             std::vector<size_t> nofBddVars,
                             std::vector<std::vector<size_t>> indBddVars,
                             size_t dim) override;
-        CuddUBDD computePolytope(const size_t p,
+        CuddUBDD computePolytope(size_t p,
                                  const std::vector<double> &H,
                                  const std::vector<double> &h,
                                  int type,

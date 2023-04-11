@@ -7,7 +7,7 @@
 #include "ubdd/CuddUBDDMintermIterator.hh"
 
 namespace genie {
-    CuddUBDDMintermIterator::CuddUBDDMintermIterator(BDDcudd bdd, const std::vector<size_t> &ivars) {
+    CuddUBDDMintermIterator::CuddUBDDMintermIterator(const BDDcudd &bdd, const std::vector<size_t> &ivars) {
         ivars_.assign(ivars.begin(), ivars.end());
         nvars_ = ivars.size();
         done_ = false;
@@ -16,7 +16,8 @@ namespace genie {
         minterm_ = std::vector<size_t>(max_ivars_ + 1, 2);
 
         if (nvars_ > sizeof(size_t) * 8) {
-            throw std::invalid_argument("Error: UBDDMintermIterator: number of variables we iterate over is limited to highest number in size_t.");
+            throw std::invalid_argument(
+                    "Error: UBDDMintermIterator: number of variables we iterate over is limited to highest number in size_t.");
         }
         bdd_ = bdd;
         /* check if bdd depends only on bdd variables with indices ivars */
@@ -75,8 +76,8 @@ namespace genie {
                 cube_[idontcares_[i]] = 0;
         }
 
-        for (size_t i = 0; i < ivars_.size(); i++)
-            minterm_[ivars_[i]] = cube_[ivars_[i]];
+        for (unsigned long ivar: ivars_)
+            minterm_[ivar] = cube_[ivar];
     }
 
     void CuddUBDDMintermIterator::next() {
@@ -117,7 +118,7 @@ namespace genie {
                     cube_[idontcares_[i]] = 0;
             }
         }
-        for (size_t i = 0; i < ivars_.size(); i++)
-            minterm_[ivars_[i]] = cube_[ivars_[i]];
+        for (unsigned long ivar: ivars_)
+            minterm_[ivar] = cube_[ivar];
     }
 }// namespace genie

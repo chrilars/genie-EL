@@ -30,11 +30,11 @@ namespace genie {
         size_t nexpand_;
 
     public:
-        CuddUBDDMintermIterator(BDDcudd bdd, const std::vector<size_t> &ivars);
-        ~CuddUBDDMintermIterator();
+        CuddUBDDMintermIterator(const BDDcudd& bdd, const std::vector<size_t> &ivars);
+        ~CuddUBDDMintermIterator() override;
 
     private:
-        void begin();
-        void next();
+        void begin() override;
+        void next() override;
     };
 }// namespace genie

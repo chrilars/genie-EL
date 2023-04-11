@@ -139,7 +139,7 @@ namespace genie {
         /**
          * @brief compute smallest radius of ball that contains L*cell
          */
-        virtual SubUBDD computePolytope(const size_t p,
+        virtual SubUBDD computePolytope(size_t p,
                                         const std::vector<double> &H,
                                         const std::vector<double> &h,
                                         int type,

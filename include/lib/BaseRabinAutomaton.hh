@@ -16,7 +16,7 @@ namespace genie {
 
 
     /** structure containing a single rabin pair */
-    template <class UBDD>
+    template<class UBDD>
     struct rabin_pair_ {
         size_t rabin_index_; /**< each rabin pair gets a unique index */
         UBDD G_;             /**< the states which are to be visited infinitely often */
@@ -24,7 +24,7 @@ namespace genie {
     };
 
 
-    template <class UBDD>
+    template<class UBDD>
     class BaseRabinAutomaton {
     public:
         UBDD base_;                                 /**< the bdd manager */
@@ -40,9 +40,10 @@ namespace genie {
                                                      * \/_i ([]<>G_i & <>[]~R_i)
                                                      * and each G_i,~R_i are given a bdd representing a set of states of the automaton */
 
-        BaseRabinAutomaton(UBDD base):base_(base) {}
+        BaseRabinAutomaton(UBDD base) : base_(base) {}
 
         virtual UBDD element_to_ubdd(std::vector<size_t> id) = 0;
+
         virtual UBDD element_to_ubdd_post(std::vector<size_t> id) = 0;
 
         void build_transitions(cpphoafparser::rabin_data &data,
@@ -102,7 +103,7 @@ namespace genie {
         }
 
 
-        void build_rabin_pairs(std::function<std::vector<size_t> (size_t, size_t)> get_array) {
+        void build_rabin_pairs(const std::function<std::vector<size_t>(size_t, size_t)>& get_array) {
             for (size_t i = 0; i < numRabinPairs_; i++) {
                 rabin_pair_<UBDD> pair;
                 pair.rabin_index_ = i;

@@ -27,10 +27,10 @@ namespace genie {
 
     public:
         SylvanUBDDMintermIterator(sylvan::MTBDD dd, sylvan::MTBDD variables, const std::vector<size_t> &ivars);
-        ~SylvanUBDDMintermIterator();
+        ~SylvanUBDDMintermIterator() override;
 
     protected:
-        void begin();
-        void next();
+        void begin() override;
+        void next() override;
     };
 }// namespace genie

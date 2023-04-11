@@ -6,24 +6,26 @@
 */
 
 #pragma once
+
 #include "ubdd/SylvanUBDD.hh"
 #include "BaseFixpoint.hh"
 #include "BaseRabinAutomaton.hh"
 
 namespace genie {
 
-    TASK_DECL_4(SylvanUBDD, RabinRecurseInit, BaseFixpoint<SylvanUBDD> *, SylvanUBDD *, struct const_arg_recursive_rabin<SylvanUBDD> *,
+    TASK_DECL_4(SylvanUBDD, RabinRecurseInit, BaseFixpoint<SylvanUBDD> *, SylvanUBDD *,
+                struct const_arg_recursive_rabin<SylvanUBDD> *,
                 struct nconst_arg_recursive_rabin<SylvanUBDD> *)
 
 #define RabinRecurseInit(fp, controller, arg_const, arg_nconst) CALL(RabinRecurseInit, (fp), (controller), (arg_const), (arg_nconst))
 
-        SylvanUBDD ParallelRabinRecurse(BaseFixpoint<SylvanUBDD> *rabin,
-                                        SylvanUBDD& controller,
-                                        const_arg_recursive_rabin<SylvanUBDD> rrConst,
-                                        nconst_arg_recursive_rabin<SylvanUBDD> rrVars) {
+    SylvanUBDD ParallelRabinRecurse(BaseFixpoint<SylvanUBDD> *rabin,
+                                    SylvanUBDD &controller,
+                                    const_arg_recursive_rabin<SylvanUBDD> rrConst,
+                                    nconst_arg_recursive_rabin<SylvanUBDD> rrVars) {
 
-            return RUN(RabinRecurseInit, rabin, &controller, &rrConst, &rrVars);
-        }
+        return RUN(RabinRecurseInit, rabin, &controller, &rrConst, &rrVars);
+    }
 
     TASK_DECL_5(SylvanUBDD, RabinRecurseForLoop, size_t, BaseFixpoint<SylvanUBDD> *, SylvanUBDD *,
                 struct const_arg_recursive_rabin<SylvanUBDD> *, struct nconst_arg_recursive_rabin<SylvanUBDD> *);
@@ -41,7 +43,7 @@ namespace genie {
         int dupa = arg_const->pairs.size();
         for (size_t i = 0; i < arg_const->pairs.size(); i++) {
             Y.push_back(fp->base_.zero());
-            SylvanUBDD* controller_copy = new SylvanUBDD;
+            auto *controller_copy = new SylvanUBDD;
             *controller_copy = *controller;
             C.push_back(controller_copy);
         }
@@ -125,7 +127,7 @@ namespace genie {
         /* initialize the sets for the nu fixed point */
         SylvanUBDD Y = fp->base_.zero();
         SylvanUBDD YY;
-        if (accl_on && fp->check_threshold(*indexY,M-1) && fp->check_threshold(*indexX,M-1)) {
+        if (accl_on && fp->check_threshold(*indexY, M - 1) && fp->check_threshold(*indexX, M - 1)) {
             YY = (*hist_Y)[depth - 1]
             [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
             [std::min((*indexY)[0], M - 1)]
@@ -203,12 +205,12 @@ namespace genie {
                     if ((*hist_X)[depth - 1]
                         [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
                         [std::min((*indexX)[0] + 1, M - 1)]
-                        // [fp->to_dec(M, *indexY)] <= (XX.existAbstract(fp->CubeNotState()) * fp->tr_)) {
+                                // [fp->to_dec(M, *indexY)] <= (XX.existAbstract(fp->CubeNotState()) * fp->tr_)) {
                         [fp->to_dec(M, *indexY)] <= (XX.existAbstract(fp->cubePost_))) {
                         (*hist_X)[depth - 1]
                         [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
                         [std::min((*indexX)[0] + 1, M - 1)]
-                        // [fp->to_dec(M, *indexY)] = (XX.existAbstract(fp->CubeNotState()) * fp->tr_);
+                                // [fp->to_dec(M, *indexY)] = (XX.existAbstract(fp->CubeNotState()) * fp->tr_);
                         [fp->to_dec(M, *indexY)] = (XX.existAbstract(fp->cubePost_));
                     }
                 }
@@ -219,20 +221,18 @@ namespace genie {
         *controller = C;
 
         /////////////////////////  UPDATING BDDS in YY
-        if (accl_on) {
-            if (accl_on && fp->check_threshold(*indexY, M - 1) && fp->check_threshold(*indexX, M - 1)) {
+        if (accl_on && fp->check_threshold(*indexY, M - 1) && fp->check_threshold(*indexX, M - 1)) {
 
-                // if ((YY.existAbstract(fp->CubeNotState()) * fp->tr_) <= (*hist_Y)[depth - 1]
-                if ((YY.existAbstract(fp->cubePost_)) <= (*hist_Y)[depth - 1]
+            // if ((YY.existAbstract(fp->CubeNotState()) * fp->tr_) <= (*hist_Y)[depth - 1]
+            if ((YY.existAbstract(fp->cubePost_)) <= (*hist_Y)[depth - 1]
+            [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
+            [std::min((*indexY)[0] + 1, M - 1)]
+            [fp->to_dec(M, *indexX)]) {
+                (*hist_Y)[depth - 1]
                 [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
                 [std::min((*indexY)[0] + 1, M - 1)]
-                [fp->to_dec(M, *indexX)]) {
-                    (*hist_Y)[depth - 1]
-                    [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
-                    [std::min((*indexY)[0] + 1, M - 1)]
-                    // [fp->to_dec(M, *indexX)] = (YY.existAbstract(fp->CubeNotState()) * fp->tr_);
-                    [fp->to_dec(M, *indexX)] = (YY.existAbstract(fp->cubePost_));
-                }
+                        // [fp->to_dec(M, *indexX)] = (YY.existAbstract(fp->CubeNotState()) * fp->tr_);
+                [fp->to_dec(M, *indexX)] = (YY.existAbstract(fp->cubePost_));
             }
         }
 

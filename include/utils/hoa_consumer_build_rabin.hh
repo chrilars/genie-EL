@@ -14,6 +14,7 @@
 
 #include "hoa_consumer.hh"
 #include "hoa_parser.hh"
+#include "cstring"
 
 #define UNUSED(x) (void)(x)
 

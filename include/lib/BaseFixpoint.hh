@@ -15,7 +15,7 @@
 
 
 namespace genie {
-    template <class UBDD>
+    template<class UBDD>
     struct const_arg_recursive_rabin {
         const bool accl_on;
         const size_t M; /* the bound on the iteration count for memorizing the BDDs from the past iterations */
@@ -25,7 +25,7 @@ namespace genie {
         const int verbose;
     };
 
-    template <class UBDD>
+    template<class UBDD>
     struct nconst_arg_recursive_rabin {
         UBDD seqR;
         UBDD right;
@@ -44,7 +44,7 @@ namespace genie {
      * provides the fixed point computation for the Rabin specification
      * on finite transition systems with the edge fairness condition
      */
-    template <class UBDD>
+    template<class UBDD>
     class BaseFixpoint {
     public:
         UBDD base_;                                 /**< the bdd manager */
@@ -85,7 +85,8 @@ namespace genie {
                                       const char *mode,
                                       int verbose,
                                       int iteration = 0,
-                                      int depth = 0) = 0 ;
+                                      int depth = 0) = 0;
+
         /**
          * @brief computes the fair adversarial rabin winning domain
          * @param accl_on   - true/false setting the accelerated fixpoint on/off
@@ -97,7 +98,8 @@ namespace genie {
                    const size_t M, /* the bound on the iteration count for memorizing the BDDs from the past iterations */
                    const UBDD &initial_seed,
                    const int verbose,
-                   std::function<UBDD(BaseFixpoint<UBDD>*, UBDD&, const_arg_recursive_rabin<UBDD>, nconst_arg_recursive_rabin<UBDD>)> RR = SequentialRabinRecurse){
+                   std::function<UBDD(BaseFixpoint<UBDD> *, UBDD &, const_arg_recursive_rabin<UBDD>,
+                                      nconst_arg_recursive_rabin<UBDD>)> RR = SequentialRabinRecurse) {
             /* copy the rabin pairs */
             std::vector<rabin_pair_<UBDD>> pairs = RabinPairs_;
             size_t nrp = pairs.size(); /* number of rabin pairs */
@@ -105,23 +107,26 @@ namespace genie {
             UBDD top = initial_seed;
             UBDD bot = base_.zero();
             /* the exact scheme as per the piterman paper */
-            std::vector<std::vector<std::vector<std::vector<UBDD>>>> *hist_Y = new std::vector<std::vector<std::vector<std::vector<UBDD>>>>;
-            std::vector<std::vector<std::vector<std::vector<UBDD>>>> *hist_X = new std::vector<std::vector<std::vector<std::vector<UBDD>>>>;
+            auto *hist_Y = new std::vector<std::vector<std::vector<std::vector<UBDD>>>>;
+            auto *hist_X = new std::vector<std::vector<std::vector<std::vector<UBDD>>>>;
             if (accl_on) {
                 /* if acceleration is on, then populate hist_Y and hist_X with the respective initial values */
                 /* the FIRST index is related to the depth, which is at most nrp+1 (the outer layer does not participate in the caching operation) */
                 for (size_t i = 0; i < nrp; i++) {
                     std::vector<std::vector<std::vector<UBDD>>> x, y;
-                    size_t npos = i + 1; /* the actual depth of the fixpoint variable, where the outermost variables have depth 0 */
+                    /* the actual depth of the fixpoint variable, where the outermost variables have depth 0 */
+                    size_t npos = i + 1;
                     /* the SECOND index is the lexicographic position of the rabin pair subsequence 1...npos */
                     for (size_t j = 0; j < factorial(nrp) / factorial(nrp - npos); j++) {
                         //            for (size_t j=0; j<pow(nrp,npos); j++) {
                         std::vector<std::vector<UBDD>> xx, yy;
                         /* the THIRD index is the value of the sequence 0...npos-1 of the respective variables (Y sequence for hist_Y and X sequence for hist_X) */
                         for (size_t k = 0; k < M; k++) {
-                            std::vector<UBDD> yyy(pow(M, npos), top); /* the FOURTH index for hist_Y is the value of the sequence 0...npos-1 of the X variables */
+                            /* the FOURTH index for hist_Y is the value of the sequence 0...npos-1 of the X variables */
+                            std::vector<UBDD> yyy(pow(M, npos), top);
                             yy.push_back(yyy);
-                            std::vector<UBDD> xxx(pow(M, npos + 1), bot); /* the FOURTH index for hist_X is the value of the sequence 0...npos of the Y variables */
+                            /* the FOURTH index for hist_X is the value of the sequence 0...npos of the Y variables */
+                            std::vector<UBDD> xxx(pow(M, npos + 1), bot);
                             xx.push_back(xxx);
                         }
                         y.push_back(yy);
@@ -133,9 +138,9 @@ namespace genie {
             }
 
             /* create variables for remembering the current indices of the fixpoint variables and the indices of the rabin pairs */
-            std::vector<size_t> *indexY = new std::vector<size_t>;
-            std::vector<size_t> *indexX = new std::vector<size_t>;
-            std::vector<size_t> *indexRP = new std::vector<size_t>;
+            auto *indexY = new std::vector<size_t>;
+            auto *indexX = new std::vector<size_t>;
+            auto *indexRP = new std::vector<size_t>;
             /* the controller */
             UBDD C = base_.zero();
             /* initialize the sets for the nu fixed point */
@@ -198,9 +203,9 @@ namespace genie {
 
 
         static UBDD SequentialRabinRecurse(BaseFixpoint<UBDD> *fp,
-                                           UBDD& controller,
+                                           UBDD &controller,
                                            const_arg_recursive_rabin<UBDD> rrConst,
-                                           nconst_arg_recursive_rabin<UBDD> rrVars){
+                                           nconst_arg_recursive_rabin<UBDD> rrVars) {
             /* initialize the final solution to be returned in the end */
             /* unpack the inputs */
             const bool accl_on = rrConst.accl_on;
@@ -299,7 +304,7 @@ namespace genie {
                         /* add the recently added state-input pairs to the controller */
                         N = term2 & (!(C.existAbstract(fp->CubeNotState())));
                         C |= N;
-                        if (remPairs.size() == 0) {
+                        if (remPairs.empty()) {
                             XX = term2;
                         } else {
                             genie::const_arg_recursive_rabin<UBDD> arg_const_new = {
@@ -317,7 +322,7 @@ namespace genie {
                                     indexX,
                                     hist_Y,
                                     hist_X};
-                            XX = SequentialRabinRecurse(fp,C, arg_const_new, arg_nconst_new);
+                            XX = SequentialRabinRecurse(fp, C, arg_const_new, arg_nconst_new);
                         }
                         if (accl_on)
                             indexX->pop_back();
@@ -375,7 +380,7 @@ namespace genie {
         /**
          *  @brief convert a number with base "base" to a decimal number position 0 is MSB
          */
-        size_t to_dec(const size_t base, const std::vector<size_t> number) {
+        size_t to_dec(const size_t base, const std::vector<size_t>& number) {
             size_t N = 0;
             for (size_t i = 1; i <= number.size(); i++) {
                 //            N += number[i]*pow(base,i);
@@ -432,8 +437,8 @@ namespace genie {
          * @return true if all the elements in the vector called "vec" are below a given threshold
          */
         static inline bool check_threshold(const std::vector<size_t> &vec, const size_t th) {
-            for (size_t i = 0; i < vec.size(); i++) {
-                if (vec[i] > th) {
+            for (unsigned long i : vec) {
+                if (i > th) {
                     return false;
                 }
             }
@@ -462,7 +467,8 @@ namespace genie {
         }
 
         static void produce_all_permutations(std::vector<size_t> &v, std::vector<bool> &vis,
-                                             std::vector<std::vector<size_t>> &permutations, std::vector<size_t> &temp) {
+                                             std::vector<std::vector<size_t>> &permutations,
+                                             std::vector<size_t> &temp) {
 
             permutations.push_back(temp);
 

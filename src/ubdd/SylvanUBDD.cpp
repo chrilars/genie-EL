@@ -29,16 +29,16 @@ namespace genie {
     }
 
     SylvanUBDD SylvanUBDD::zero() const  {
-        return SylvanUBDD(bdd_.bddZero());
+        return SylvanUBDD(BDDsylvan::bddZero());
     }
 
     SylvanUBDD SylvanUBDD::one() const  {
-        return SylvanUBDD(bdd_.bddOne());
+        return SylvanUBDD(BDDsylvan::bddOne());
     }
 
     SylvanUBDD SylvanUBDD::var() const  {
         size_t new_index = size_++;
-        nodes_map[new_index] = new SylvanUBDD(bdd_.bddVar(new_index));
+        nodes_map[new_index] = new SylvanUBDD(BDDsylvan::bddVar(new_index));
         return *nodes_map[new_index];
     }
 
@@ -46,7 +46,7 @@ namespace genie {
         size_t new_index;
         while (size_ <= index) {
             new_index = size_++;
-            nodes_map[new_index] = new SylvanUBDD(bdd_.bddVar(new_index));
+            nodes_map[new_index] = new SylvanUBDD(BDDsylvan::bddVar(new_index));
         }
         return *nodes_map[index];
     }
@@ -61,7 +61,7 @@ namespace genie {
 
     SylvanUBDD SylvanUBDD::cube(std::vector<SylvanUBDD> variables, std::vector<uint8_t> values) const  {
         sylvan::BddSet bddSet = sylvan::BddSet::fromVector(extractBDDs(variables));
-        BDDsylvan bdd = bdd_.bddCube(bddSet, values);
+        BDDsylvan bdd = BDDsylvan::bddCube(bddSet, values);
         return SylvanUBDD(bdd);
     }
 
@@ -71,7 +71,7 @@ namespace genie {
     }
 
     SylvanUBDD SylvanUBDD::cube(std::vector<SylvanUBDD> variables) const  {
-        BDDsylvan bdd = bdd_.VectorCube(extractBDDs(variables));
+        BDDsylvan bdd = BDDsylvan::VectorCube(extractBDDs(variables));
         return SylvanUBDD(bdd);
     }
 

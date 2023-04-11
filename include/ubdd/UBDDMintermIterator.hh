@@ -95,7 +95,7 @@ namespace genie {
         /**
          * @brief Prints progress.
          */
-        inline void printProgress(void) {
+        inline void printProgress() {
             if ((size_t)(progress_ / nminterm_ * 100) >= counter_) {
                 if ((counter_ % 10) == 0)
                     std::cout << counter_;

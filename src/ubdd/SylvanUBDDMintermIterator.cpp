@@ -7,7 +7,8 @@
 #include "ubdd/SylvanUBDDMintermIterator.hh"
 
 namespace genie {
-    SylvanUBDDMintermIterator::SylvanUBDDMintermIterator(sylvan::MTBDD dd, sylvan::MTBDD variables, const std::vector<size_t> &ivars) {
+    SylvanUBDDMintermIterator::SylvanUBDDMintermIterator(sylvan::MTBDD dd, sylvan::MTBDD variables,
+                                                         const std::vector<size_t> &ivars) {
         dd_ = dd;
         variables_ = variables;
         sylvan::sylvan_protect(&dd_);
@@ -37,7 +38,7 @@ namespace genie {
 
     void SylvanUBDDMintermIterator::begin() {
         nminterm_ = BDDsylvan(dd_).SatCount(sylvan::BddSet(sylvan::Bdd(variables_)));
-        leaf_ = sylvan::mtbdd_enum_all_first(dd_, variables_, arr_, NULL);
+        leaf_ = sylvan::mtbdd_enum_all_first(dd_, variables_, arr_, nullptr);
         done_ = (leaf_ == sylvan::mtbdd_false);
         for (size_t i = 0; i < ivars_.size(); i++)
             minterm_[sorted_ivars_[i]] = arr_[i];
@@ -49,7 +50,7 @@ namespace genie {
         /* added by kaushik */
         progress_++;
         /***/
-        leaf_ = sylvan::mtbdd_enum_all_next(dd_, variables_, arr_, NULL);
+        leaf_ = sylvan::mtbdd_enum_all_next(dd_, variables_, arr_, nullptr);
         done_ = (leaf_ == sylvan::mtbdd_false);
         for (size_t i = 0; i < ivars_.size(); i++)
             minterm_[sorted_ivars_[i]] = arr_[i];

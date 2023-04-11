@@ -22,8 +22,6 @@ namespace genie {
     public:
       static size_t size_;
       static std::map<size_t, SylvanUBDD *> nodes_map;
-//        inline static size_t size_ = 0;
-//        inline static std::map<size_t, SylvanUBDD *> nodes_map = std::map<size_t, SylvanUBDD *>();
         BDDsylvan bdd_;
         SylvanUBDD();
         SylvanUBDD(BDDsylvan const &from);
@@ -48,7 +46,7 @@ namespace genie {
                               std::vector<size_t> nofBddVars,
                               std::vector<std::vector<size_t>> indBddVars,
                               size_t dim) override;
-        SylvanUBDD computePolytope(const size_t p,
+        SylvanUBDD computePolytope(size_t p,
                                    const std::vector<double> &H,
                                    const std::vector<double> &h,
                                    int type,
@@ -64,7 +62,7 @@ namespace genie {
         SylvanUBDD transfer(const SylvanUBDD &destination) const override;
         bool isCoverEqual(const SylvanUBDD &other) const override;
         bool isParallelSafe() const override;
-        SylvanUBDD &operator=(const SylvanUBDD &right);
+        SylvanUBDD &operator=(const SylvanUBDD &right) override;
         bool operator==(const SylvanUBDD &other) const override;
         bool operator!=(const SylvanUBDD &other) const override;
         bool operator<=(const SylvanUBDD &other) const override;
