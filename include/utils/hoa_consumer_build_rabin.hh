@@ -12,9 +12,8 @@
 #include <map>
 #include <stack>
 
-#include "cpphoafparser/consumer/hoa_consumer.hh" // todo fix include
-#include "cpphoafparser/parser/hoa_parser.hh" // todo fix include
-#include <cstring> // todo fix include
+#include "hoa_consumer.hh"
+#include "hoa_parser.hh"
 
 #define UNUSED(x) (void)(x)
 

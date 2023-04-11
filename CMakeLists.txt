@@ -26,12 +26,8 @@ add_library(genie
         src/ubdd/CuddUBDDMintermIterator.cpp
         src/ubdd/SylvanUBDD.cpp
         src/ubdd/SylvanUBDDMintermIterator.cpp
-        src/utils/hoa_consumer_build_rabin.cpp
-        src/lib/BaseFixpoint.cpp
-        src/lib/BaseRabinAutomaton.cpp
         include/lib/BaseRabinAutomaton.hh
         include/lib/BaseFixpoint.hh
-        src/utils/TicToc.cpp
         include/lib/ParallelRabinRecurse.hh)
 
 

@@ -310,8 +310,8 @@ namespace genie {
                                     initial_seed,
                                     verbose};
                             genie::nconst_arg_recursive_rabin<UBDD> arg_nconst_new = {
-                                    seqR & nR, // todo diff
-                                    term2, // todo diff check that in the future
+                                    seqR & nR,
+                                    term2,
                                     indexRP,
                                     indexY,
                                     indexX,
@@ -375,7 +375,7 @@ namespace genie {
         /**
          *  @brief convert a number with base "base" to a decimal number position 0 is MSB
          */
-        size_t to_dec(const size_t base, const std::vector<size_t> number) { // todo different to_dec implementation
+        size_t to_dec(const size_t base, const std::vector<size_t> number) {
             size_t N = 0;
             for (size_t i = 1; i <= number.size(); i++) {
                 //            N += number[i]*pow(base,i);
@@ -411,7 +411,7 @@ namespace genie {
         /**
          * @brief A function to find rank of a string in all permutations of characters
          */
-        size_t findRank(size_t nsymbols, std::vector<size_t> str) { // todo check previous version of findRank.
+        size_t findRank(size_t nsymbols, std::vector<size_t> str) {
             size_t len = str.size();
             size_t mul = factorial(len);
             size_t rank = 0;

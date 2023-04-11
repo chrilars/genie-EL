@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include "../utils/hoa_consumer_build_rabin.hh"// todo fix that!
+#include "utils/hoa_consumer_build_rabin.hh"
 #include <functional>
-#include <math.h>
-#include <stdlib.h>
+#include <cmath>
+#include <cstdlib>
 #include <vector>
 
 namespace genie {

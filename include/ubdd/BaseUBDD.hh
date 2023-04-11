@@ -128,7 +128,7 @@ namespace genie {
          * @param ivars
          * @return iterator for ubbds miniterms
          */
-        virtual UBDDMintermIterator *generateMintermIterator(std::vector<size_t> &ivars) const = 0;// todo const or no const?
+        virtual UBDDMintermIterator *generateMintermIterator(std::vector<size_t> &ivars) const = 0;
 
         virtual SubUBDD complement(SubUBDD &symbolicSet,
                                    std::vector<size_t> nofGridPoints,

@@ -1,6 +1,9 @@
-//
-// Created by rychh on 23.09.22.
-//
+/** @file ParallelRabinRecurse.hh
+*  Contains a parallel implementation of RabinRecurse
+*
+*  @date 23.09.2022 (in progress)
+*  @author Mateusz Rychlicki
+*/
 
 #pragma once
 #include "ubdd/SylvanUBDD.hh"
@@ -33,9 +36,6 @@ namespace genie {
                 const_arg_recursive_rabin<SylvanUBDD> *, arg_const,
                 nconst_arg_recursive_rabin<SylvanUBDD> *, arg_nconst) {
         /* initialize a vector for storing the winning domain computed in each thread */
-        // /* debug */
-        // fp->print_rabin_info(*controller, "end", 1);
-        // /* debug ends */
         std::vector<SylvanUBDD> Y;
         std::vector<SylvanUBDD *> C;
         int dupa = arg_const->pairs.size();
@@ -57,26 +57,19 @@ namespace genie {
 
         /* synchronize all the additional threads */
         for (size_t i = arg_const->pairs.size() - 1; i >= 1; i--)
-            Y[i] = SylvanUBDD(sylvan::BDD(sylvan::bdd_refs_sync(SYNC(RabinRecurseForLoop).bdd_.GetBDD())));// todo check if this work properly
+            Y[i] = SylvanUBDD(sylvan::BDD(sylvan::bdd_refs_sync(SYNC(RabinRecurseForLoop).bdd_.GetBDD())));
 
         /* dereference the refs pushed during the call operation */
         sylvan::bdd_refs_pop(1);
 
         /* compute the union of all the winning domains and the controllers computed by the different worker threads */
         SylvanUBDD U = fp->base_.zero();
-        // /* debug */
-        // fp->print_rabin_info(*C[0], "end", 1);
-        // fp->print_rabin_info(*controller, "end", 1);
-        // /* debug ends */
         for (size_t i = 0; i < arg_const->pairs.size(); i++) {
             U |= Y[i];
             SylvanUBDD c = *C[i];
             SylvanUBDD N = c & (!(controller->existAbstract(fp->CubeNotState())));
             *controller |= N;
         }
-        // /* debug */
-        // fp->print_rabin_info(*controller, "end", 1);
-        // /* debug ends */
 
         return U;
     }
@@ -96,8 +89,8 @@ namespace genie {
         const int depth = arg_const->depth;
         const std::vector<rabin_pair_<SylvanUBDD>> pairs = arg_const->pairs;
         const SylvanUBDD initial_seed = arg_const->initial_seed;
-        SylvanUBDD seqR = arg_nconst->seqR; // & fp->tr_; // todo diff
-        SylvanUBDD right = arg_nconst->right; // & fp->tr_; // todo diff
+        SylvanUBDD seqR = arg_nconst->seqR; // & fp->tr_;
+        SylvanUBDD right = arg_nconst->right; // & fp->tr_;
         /* the original scheme from piterman pnueli paper */
         auto hist_Y = arg_nconst->hist_Y;
         auto hist_X = arg_nconst->hist_X;
@@ -120,14 +113,6 @@ namespace genie {
         remPairs.erase(remPairs.begin() + i);
 
         const int verbose = arg_const->verbose;
-//        if (verbose >= 2) { // todo diff
-//            fp->printTabs(3 * depth - 1);
-//            std::cout << "\n Current rabin pair: {";
-//            fp->print_bdd_info(G, fp->preVars_);
-//            std::cout << "}, {";
-//            fp->print_bdd_info(!nR & fp->nodes_, fp->preVars_);
-//            std::cout << "}\n";
-//        }
         if (verbose >= 2) {
             fp->printTabs(3 * depth - 1);
             std::cout << "Remaining pairs " << pairs.size() << "\n\n";
@@ -150,7 +135,7 @@ namespace genie {
         }
 
         for (int j = 0;
-             Y.existAbstract(fp->CubeNotState()) != YY.existAbstract(fp->CubeNotState()); j++) { // todo diff
+             Y.existAbstract(fp->CubeNotState()) != YY.existAbstract(fp->CubeNotState()); j++) {
             Y = YY;
             if (accl_on)
                 indexY->push_back(j);
@@ -158,7 +143,7 @@ namespace genie {
             SylvanUBDD term1 = (right | (seqR & (nR & (G & fp->cpre(Y)))));
 
             /* reset the local copy of the controller to the most recently added state-input pairs */
-            SylvanUBDD N = term1 & (!(controller->existAbstract(fp->CubeNotState()))); // todo diff
+            SylvanUBDD N = term1 & (!(controller->existAbstract(fp->CubeNotState())));
             C = *controller | N;
 
             /////////////////////////  INITIALISING BDDS in XX
@@ -177,21 +162,15 @@ namespace genie {
             }
 
             for (int k = 0; X.existAbstract(fp->CubeNotState()) !=
-                            XX.existAbstract(fp->CubeNotState()); k++) { // todo diff
+                            XX.existAbstract(fp->CubeNotState()); k++) {
                 X = XX;
                 if (accl_on)
                     indexX->push_back(k);
                 fp->print_rabin_info(X, "X", verbose, k, depth);
                 SylvanUBDD term2 = (term1 | (seqR & (nR & fp->apre(Y, X))));
                 /* add the recently added state-input pairs to the controller */
-                N = term2 & (!(C.existAbstract(fp->CubeNotState()))); // todo diff
-                // /* debug */
-                // fp->print_rabin_info(C, "end", 1);
-                // /* debug ends */
+                N = term2 & (!(C.existAbstract(fp->CubeNotState())));
                 C |= N;
-                // /* debug */
-                // fp->print_rabin_info(C, "end", 1);
-                // /* debug ends */
                 if (remPairs.empty()) {
                     XX = term2;
                 } else {
@@ -203,20 +182,14 @@ namespace genie {
                             initial_seed,
                             verbose};
                     nconst_arg_recursive_rabin<SylvanUBDD> arg_nconst_new = {
-                            (seqR & nR), //.existAbstract(fp->CubeNotState()), // todo diff
-                            term2, //.existAbstract(fp->CubeNotState()), // todo diff
+                            (seqR & nR),
+                            term2,
                             indexRP,
                             indexY,
                             indexX,
                             hist_Y,
                             hist_X};
-                    // /* debug */
-                    // fp->print_rabin_info(C, "end", 1);
-                    // /* debug ends */
                     XX = CALL(RabinRecurseInit, fp, &C, &arg_const_new, &arg_nconst_new);
-                    // /* debug */
-                    // fp->print_rabin_info(C, "end", 1);
-                    // /* debug ends */
                 }
                 if (accl_on)
                     indexX->pop_back();
@@ -225,7 +198,7 @@ namespace genie {
             YY = XX;
             /////////////////////////  UPDATING BDDS in XX
 
-            if (accl_on) { // todo diff * fp->cubeOther_) * fp->tr_
+            if (accl_on) {
                 if (accl_on && fp->check_threshold(*indexY, M - 1) && fp->check_threshold(*indexX, M - 1)) {
                     if ((*hist_X)[depth - 1]
                         [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
@@ -244,12 +217,9 @@ namespace genie {
         }
 
         *controller = C;
-        // /* debug */
-        // fp->print_rabin_info(*controller, "end", 1);
-        // /* debug ends */
 
         /////////////////////////  UPDATING BDDS in YY
-        if (accl_on) { // todo diff * fp->cubeOther_) * fp->tr_
+        if (accl_on) {
             if (accl_on && fp->check_threshold(*indexY, M - 1) && fp->check_threshold(*indexX, M - 1)) {
 
                 // if ((YY.existAbstract(fp->CubeNotState()) * fp->tr_) <= (*hist_Y)[depth - 1]
@@ -269,7 +239,6 @@ namespace genie {
 
         if (accl_on)
             indexRP->pop_back();
-        // YY = YY.existAbstract(fp->CubeNotState()); // todo diff
 
         return YY;
     }
