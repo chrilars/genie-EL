@@ -28,7 +28,10 @@ add_library(genie
         src/ubdd/SylvanUBDDMintermIterator.cpp
         include/lib/BaseRabinAutomaton.hh
         include/lib/BaseFixpoint.hh
-        include/lib/ParallelRabinRecurse.hh)
+        include/lib/ParallelRabinRecurse.hh
+        include/utils/hoa_consumer_build_rabin.hh
+        include/utils/TicToc.hh
+        )
 
 
 #Add an alias so that library can be used inside the build tree, e.g. when testing
