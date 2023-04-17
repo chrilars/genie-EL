@@ -31,7 +31,6 @@ add_library(genie
         include/lib/ParallelRabinRecurse.hh
         include/utils/hoa_consumer_build_rabin.hh
         include/utils/TicToc.hh
-
         )
 
 
