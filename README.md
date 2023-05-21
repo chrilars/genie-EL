@@ -76,3 +76,10 @@ and now documentation can be found in `docs/html/index.html`.
 An example of usage you can find in
 [MascotSDS](https://gitlab.mpi-sws.org/kmallik/mascotsds) or 
 [Fairsyn](https://gitlab.mpi-sws.org/kmallik/fairsyn) repository.
+
+CAV '23 Artifact
+==================
+A draft version of our CAV '23 can be obtained from this
+[link](https://mascot.mpi-sws.org/papers/cav23_toolpaper.pdf),
+while the artefact with virtual machine can be found at this
+[link](https://zenodo.org/record/7877791#.ZExTJZFBxH4). 
