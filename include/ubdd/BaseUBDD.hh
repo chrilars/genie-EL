@@ -9,6 +9,7 @@
 
 #include "UBDDMintermIterator.hh"
 #include <cstdio>
+#include <cstdint>
 #include <string>
 #include <vector>
 
