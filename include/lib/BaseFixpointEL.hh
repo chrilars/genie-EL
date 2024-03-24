@@ -222,8 +222,8 @@ namespace genie {
             auto indexX = rrVars.indexX;
             auto indexRP = rrVars.indexRP;
 
-            UBDD U = fp->base_.zero();
-            for (size_t i = 0; i < pairs.size(); i++) {
+            UBDD U = fp->base_.zero(); // zero or one, depends on losing or winning
+            for (size_t i = 0; i < pairs.size(); i++) { // Assumes children because of the two simultaneous iterations, needs to be changed
                 if (verbose == 2) {
                     fp->printTabs(3 * depth - 1);
                     std::cout << "Remaining pairs " << pairs.size() << "\n\n";
@@ -237,7 +237,7 @@ namespace genie {
                 /* initialize a local copy for the controller */
                 UBDD C = fp->base_.zero();
 
-                /* initialize the sets for the nu fixed point */
+                /* initialize the sets for the nu fixed point */ // if node in zielonka tree winning: else:
                 UBDD Y = fp->base_.zero();
                 UBDD YY;
                 if (accl_on && check_threshold(*indexY, M - 1) && check_threshold(*indexX, M - 1)) {
@@ -267,7 +267,7 @@ namespace genie {
                     fp->print_rabin_info(Y, "Y", verbose, j, depth);
 
                     UBDD term1;
-                    term1 = right | (seqR & nR & G & fp->cpre(Y));
+                    term1 = right | (seqR & nR & G & fp->cpre(Y)); // Do term1 calc later
                     /* reset the local copy of the controller to the most recently added state-input pairs */
                     UBDD N = term1 & (!(controller.existAbstract(fp->CubeNotState())));
                     C = controller | N;
@@ -304,10 +304,10 @@ namespace genie {
                         /* add the recently added state-input pairs to the controller */
                         N = term2 & (!(C.existAbstract(fp->CubeNotState())));
                         C |= N;
-                        if (remPairs.empty()) {
+                        if (remPairs.empty()) { // if leaf in zielonka
                             XX = term2;
                         } else {
-                            genie::const_arg_recursive_rabin<UBDD> arg_const_new = {
+                            genie::const_arg_recursive_rabin<UBDD> arg_const_new = { // Most things in here not necessary
                                     accl_on,
                                     M, /* the bound on the iteration count for memorizing the BDDs from the past iterations */
                                     depth + 1,
@@ -322,7 +322,7 @@ namespace genie {
                                     indexX,
                                     hist_Y,
                                     hist_X};
-                            XX = SequentialRabinRecurse(fp, C, arg_const_new, arg_nconst_new);
+                            XX = SequentialRabinRecurse(fp, C, arg_const_new, arg_nconst_new); // need to pass along current node in zielonka
                         }
                         if (accl_on)
                             indexX->pop_back();
@@ -345,7 +345,7 @@ namespace genie {
                         indexY->pop_back();
                     }
                 }
-                U |= YY;
+                U |= YY; // Union or intersection depending on losing or winning
                 controller = C;
                 if (accl_on) {
                     if (check_threshold(*indexY, M - 1) && check_threshold(*indexX, M - 1)) {
