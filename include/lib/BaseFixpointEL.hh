@@ -167,6 +167,26 @@ namespace genie {
         }
 
 
+        /*
+        ELSeq(term1,zielonka_tree,t (node in zielonka tree)){
+            if t is winning:
+                X = V
+                XX = emptyset
+            else:
+                X = emptyset
+                XX = V
+            
+            while X != XX:
+                if leaf:
+                    return leaf and term1
+                else:
+                    if t winning:
+                        for s in R(t):
+                            intersection recurse(term1,ZT,s)
+                    else:
+                        union recurse(term1,ZT,s)
+        }
+        */
         static UBDD SequentialRabinRecurse(BaseFixpoint<UBDD> *fp,
                                            UBDD &controller,
                                            const_arg_recursive_rabin<UBDD> rrConst,
@@ -187,7 +207,15 @@ namespace genie {
             auto indexX = rrVars.indexX;
             auto indexRP = rrVars.indexRP;
 
-            UBDD U = fp->base_.zero(); // zero or one, depends on losing or winning
+            // Temp variables as placeholders
+            bool winning = false; // To be replaced by check on current Zielonka node
+
+            UBDD U; // zero or one, depends on losing or winning
+            if (winning):
+                U = fp->base_.one();
+            else:
+                U = fp->base_.zero();
+
             for (size_t i = 0; i < pairs.size(); i++) { // Assumes children because of the two simultaneous iterations, needs to be changed
                 if (verbose == 2) {
                     fp->printTabs(3 * depth - 1);
