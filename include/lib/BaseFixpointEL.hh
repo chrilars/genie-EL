@@ -109,33 +109,6 @@ namespace genie {
             /* the exact scheme as per the piterman paper */
             auto *hist_Y = new std::vector<std::vector<std::vector<std::vector<UBDD>>>>;
             auto *hist_X = new std::vector<std::vector<std::vector<std::vector<UBDD>>>>;
-            if (accl_on) {
-                /* if acceleration is on, then populate hist_Y and hist_X with the respective initial values */
-                /* the FIRST index is related to the depth, which is at most nrp+1 (the outer layer does not participate in the caching operation) */
-                for (size_t i = 0; i < nrp; i++) {
-                    std::vector<std::vector<std::vector<UBDD>>> x, y;
-                    /* the actual depth of the fixpoint variable, where the outermost variables have depth 0 */
-                    size_t npos = i + 1;
-                    /* the SECOND index is the lexicographic position of the rabin pair subsequence 1...npos */
-                    for (size_t j = 0; j < factorial(nrp) / factorial(nrp - npos); j++) {
-                        //            for (size_t j=0; j<pow(nrp,npos); j++) {
-                        std::vector<std::vector<UBDD>> xx, yy;
-                        /* the THIRD index is the value of the sequence 0...npos-1 of the respective variables (Y sequence for hist_Y and X sequence for hist_X) */
-                        for (size_t k = 0; k < M; k++) {
-                            /* the FOURTH index for hist_Y is the value of the sequence 0...npos-1 of the X variables */
-                            std::vector<UBDD> yyy(pow(M, npos), top);
-                            yy.push_back(yyy);
-                            /* the FOURTH index for hist_X is the value of the sequence 0...npos of the Y variables */
-                            std::vector<UBDD> xxx(pow(M, npos + 1), bot);
-                            xx.push_back(xxx);
-                        }
-                        y.push_back(yy);
-                        x.push_back(xx);
-                    }
-                    hist_Y->push_back(y);
-                    hist_X->push_back(x);
-                }
-            }
 
             /* create variables for remembering the current indices of the fixpoint variables and the indices of the rabin pairs */
             auto *indexY = new std::vector<size_t>;
@@ -149,8 +122,6 @@ namespace genie {
             for (int i = 0; Y.existAbstract(CubeNotState()) != YY.existAbstract(CubeNotState()); i++) {
                 Y = YY;
 
-                if (accl_on)
-                    indexY->push_back(i);
                 print_rabin_info(Y, "Y", verbose, i);
 
                 /* reset the controller */
@@ -161,8 +132,6 @@ namespace genie {
                 for (int k = 0; X.existAbstract(CubeNotState()) != XX.existAbstract(CubeNotState()); k++) {
                     X = XX;
 
-                    if (accl_on)
-                        indexX->push_back(k);
 
                     print_rabin_info(X, "X", verbose, k);
 
@@ -188,12 +157,8 @@ namespace genie {
                                                                        hist_X};
                     //                    XX = RUN(RabinRecurse, this, &C, &arg_const_new, &arg_nconst_new);
                     XX = RR(this, C, arg_const_new, arg_nconst_new);
-                    if (accl_on)
-                        indexX->pop_back();
                 }
                 YY = X;
-                if (accl_on)
-                    indexY->pop_back();
             }
             /* the winning strategy is the set of controlled edges whose source belong to the system */
 
@@ -228,8 +193,6 @@ namespace genie {
                     fp->printTabs(3 * depth - 1);
                     std::cout << "Remaining pairs " << pairs.size() << "\n\n";
                 }
-                if (accl_on)
-                    indexRP->push_back(pairs[i].rabin_index_);
                 UBDD G = pairs[i].G_;
                 UBDD nR = pairs[i].nR_;
                 std::vector<rabin_pair_<UBDD>> remPairs = pairs;
@@ -239,31 +202,10 @@ namespace genie {
 
                 /* initialize the sets for the nu fixed point */ // if node in zielonka tree winning: else:
                 UBDD Y = fp->base_.zero();
-                UBDD YY;
-                if (accl_on && check_threshold(*indexY, M - 1) && check_threshold(*indexX, M - 1)) {
-                    //        YY = (*hist_Y)
-                    //        [fp->lexi_order(*indexRP,fp->fp->RabinPairs_.size()-1)]
-                    //        [fp->to_dec(M,fp->pad_zeros(*indexX,remPairs.size()+1))]
-                    //        [depth-1]
-                    //        [std::min((*indexY)[0],M-1)];
-                    //        YY = (*hist_Y)[fp->lexi_order(*indexRP,fp->fp->RabinPairs_.size()-1)][fp->to_dec(M,fp->pad_zeros(*indexX,remPairs.size()+1))][depth-1];
-                    YY = (*hist_Y)[depth - 1]
-                    [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
-                    [std::min((*indexY)[0], M - 1)]
-                    [fp->to_dec(M, *indexX)];
-                } else {
-                    YY = initial_seed;
-                }
+                UBDD YY = initial_seed;
 
-                //            if (accl_on && check_threshold(*indexX,M-1)) {
-                //                YY = (*hist_Y)[lexi_order(*indexRP,fp->RabinPairs_.size()-1)][to_dec(M,pad_zeros(*indexX,remPairs.size()+1))][depth];
-                //            } else {
-                //                YY = initial_seed;
-                //            }
                 for (int j = 0; Y.existAbstract(fp->CubeNotState()) != YY.existAbstract(fp->CubeNotState()); j++) {
                     Y = YY;
-                    if (accl_on)
-                        indexY->push_back(j);
                     fp->print_rabin_info(Y, "Y", verbose, j, depth);
 
                     UBDD term1;
@@ -273,31 +215,11 @@ namespace genie {
                     C = controller | N;
                     /* initialize the sets for the mu fixed point */
                     UBDD X = fp->base_.one();
-                    UBDD XX;
-                    if (accl_on && check_threshold(*indexY, M - 1) && check_threshold(*indexX, M - 1)) {
-                        //            XX=(*hist_X)
-                        //            [fp->lexi_order(*indexRP,fp->fp->RabinPairs_.size()-1)]
-                        //            [fp->to_dec(M,fp->pad_zeros(*indexY,remPairs.size()))]
-                        //            [depth-1]
-                        //            [std::min((*indexX)[0],M-1)];
-                        //            XX=(*hist_X)[fp->lexi_order(*indexRP,fp->fp->RabinPairs_.size()-1)][fp->to_dec(M,fp->pad_zeros(*indexY,remPairs.size()))][depth-1];
-                        XX = (*hist_X)[depth - 1]
-                        [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
-                        [std::min((*indexX)[0], M - 1)]
-                        [fp->to_dec(M, *indexY)];
-                    } else {
-                        XX = fp->base_.zero();
-                    }
+                    UBDD XX = fp->base_.zero();
 
-                    //                if (accl_on && check_threshold(*indexY,M-1)) {
-                    //                    XX=(*hist_X)[lexi_order(*indexRP,fp->RabinPairs_.size()-1)][to_dec(M,pad_zeros(*indexY,remPairs.size()))][depth];
-                    //                } else {
-                    //                    XX = base_.zero();
-                    //                }
                     for (int k = 0; X.existAbstract(fp->CubeNotState()) != XX.existAbstract(fp->CubeNotState()); k++) {
                         X = XX;
-                        if (accl_on)
-                            indexX->push_back(k);
+
                         fp->print_rabin_info(X, "X", verbose, k, depth);
                         UBDD term2;
                         term2 = term1 | (seqR & nR & fp->apre(Y, X));
@@ -324,46 +246,11 @@ namespace genie {
                                     hist_X};
                             XX = SequentialRabinRecurse(fp, C, arg_const_new, arg_nconst_new); // need to pass along current node in zielonka
                         }
-                        if (accl_on)
-                            indexX->pop_back();
                     }
                     YY = XX;
-                    if (accl_on) {
-                        if (check_threshold(*indexY, M - 1) && check_threshold(*indexX, M - 1)) {
-                            if ((*hist_X)[depth - 1]
-                                [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
-                                [std::min((*indexX)[0] + 1, M - 1)]
-                                [fp->to_dec(M, *indexY)] <= (XX.existAbstract(fp->cubePost_))) {
-                                (*hist_X)[depth - 1]
-                                [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
-                                [std::min((*indexX)[0] + 1, M - 1)]
-                                [fp->to_dec(M, *indexY)] = (XX.existAbstract(fp->cubePost_));
-                            }
-
-                            //                        (*hist_X)[lexi_order(*indexRP,fp->RabinPairs_.size()-1)][to_dec(M,pad_zeros(*indexY,remPairs.size()))][depth]=X;
-                        }
-                        indexY->pop_back();
-                    }
                 }
                 U |= YY; // Union or intersection depending on losing or winning
                 controller = C;
-                if (accl_on) {
-                    if (check_threshold(*indexY, M - 1) && check_threshold(*indexX, M - 1)) {
-                        if ((YY.existAbstract(fp->cubePost_)) <= (*hist_Y)[depth - 1]
-                        [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
-                        [std::min((*indexY)[0] + 1, M - 1)]
-                        [fp->to_dec(M, *indexX)]) {
-                            (*hist_Y)[depth - 1]
-                            [fp->findRank(fp->RabinPairs_.size(), *indexRP)]
-                            [std::min((*indexY)[0] + 1, M - 1)]
-                            [fp->to_dec(M, *indexX)] = (YY.existAbstract(fp->cubePost_));
-                        }
-
-                        //                    (*hist_Y)[lexi_order(*indexRP,fp->RabinPairs_.size()-1)][to_dec(M,pad_zeros(*indexX,remPairs.size()+1))][depth]=Y;
-                    }
-                }
-                if (accl_on)
-                    indexRP->pop_back();
             }
             return U;
         }
