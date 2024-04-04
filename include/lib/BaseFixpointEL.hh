@@ -208,11 +208,8 @@ namespace genie {
             auto indexX = rrVars.indexX;
             auto indexRP = rrVars.indexRP;
 
-            // Temp variables as placeholders
-            bool winning = false; // To be replaced by check on current Zielonka node
-
             UBDD U, Y, YY; // zero or one, depends on losing or winning, U == X_s
-            if (winning):
+            if (t->winning):
                 Y = fp->base_.one();
                 YY = fp->base_.zero();
             else:
