@@ -216,11 +216,8 @@ namespace genie {
             else:
                 U = fp->base_.zero();
 
+            // if R(s) != empty_set ? (And else will likely only contain return or some small stuff since cpre in this?)
             for (size_t i = 0; i < pairs.size(); i++) { // Assumes children because of the two simultaneous iterations, needs to be changed
-                if (verbose == 2) {
-                    fp->printTabs(3 * depth - 1);
-                    std::cout << "Remaining pairs " << pairs.size() << "\n\n";
-                }
                 UBDD G = pairs[i].G_;
                 UBDD nR = pairs[i].nR_;
                 std::vector<rabin_pair_<UBDD>> remPairs = pairs;
@@ -232,7 +229,7 @@ namespace genie {
                 UBDD Y = fp->base_.zero();
                 UBDD YY = initial_seed;
 
-                for (int j = 0; Y.existAbstract(fp->CubeNotState()) != YY.existAbstract(fp->CubeNotState()); j++) {
+                for (int j = 0; Y.existAbstract(fp->CubeNotState()) != YY.existAbstract(fp->CubeNotState()); j++) { // while X_s != W  (Keep only one of these)
                     Y = YY;
                     fp->print_rabin_info(Y, "Y", verbose, j, depth);
 
@@ -242,17 +239,17 @@ namespace genie {
                     UBDD N = term1 & (!(controller.existAbstract(fp->CubeNotState())));
                     C = controller | N;
                     /* initialize the sets for the mu fixed point */
-                    UBDD X = fp->base_.one();
-                    UBDD XX = fp->base_.zero();
+                    UBDD X = fp->base_.one(); // Replace with U (== X_s) 
+                    UBDD XX = fp->base_.zero(); // == 
 
-                    for (int k = 0; X.existAbstract(fp->CubeNotState()) != XX.existAbstract(fp->CubeNotState()); k++) {
+                    for (int k = 0; X.existAbstract(fp->CubeNotState()) != XX.existAbstract(fp->CubeNotState()); k++) { // while X_s != W (Keep only one of these)
                         X = XX;
 
                         fp->print_rabin_info(X, "X", verbose, k, depth);
                         UBDD term2;
-                        term2 = term1 | (seqR & nR & fp->apre(Y, X));
+                        term2 = term1 | (seqR & nR & fp->apre(Y, X)); // Do we only need term1?
                         /* add the recently added state-input pairs to the controller */
-                        N = term2 & (!(C.existAbstract(fp->CubeNotState())));
+                        N = term2 & (!(C.existAbstract(fp->CubeNotState()))); // For us (since no apre): term1 & ...
                         C |= N;
                         if (remPairs.empty()) { // if leaf in zielonka (if R(s) = empty_set)
                             XX = term2;
@@ -277,7 +274,10 @@ namespace genie {
                     }
                     YY = XX;
                 }
-                U |= YY; // Union or intersection depending on losing or winning
+                if (winning): // Union or intersection depending on losing or winning
+                    U &= YY;
+                else:
+                    U |= YY; 
                 controller = C;
             }
             return U;
