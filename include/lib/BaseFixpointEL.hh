@@ -94,6 +94,7 @@ namespace genie {
          * @param initial_seed  - initial seed for warm starting the nu fixpoints (for example the under-approximation fixpoint can be warm-started from the result of the over-approximation fixpoint)
          * @param verbose   - the verbosity level (0-2, default=0)
          */
+        // Delete Rabin
         UBDD Rabin(const bool accl_on,
                    const size_t M, /* the bound on the iteration count for memorizing the BDDs from the past iterations */
                    const UBDD &initial_seed,
@@ -119,7 +120,7 @@ namespace genie {
             /* initialize the sets for the nu fixed point */
             UBDD Y = base_.zero();
             UBDD YY = initial_seed;
-            for (int i = 0; Y.existAbstract(CubeNotState()) != YY.existAbstract(CubeNotState()); i++) {
+            for (int i = 0; Y.existAbstract(CubeNotState()) != YY.existAbstract(CubeNotState()); i++) { // X_s != W?
                 Y = YY;
 
                 print_rabin_info(Y, "Y", verbose, i);
@@ -129,14 +130,14 @@ namespace genie {
                 /* initialize the sets for the mu fixed point */
                 UBDD X = base_.one();
                 UBDD XX = base_.zero();
-                for (int k = 0; X.existAbstract(CubeNotState()) != XX.existAbstract(CubeNotState()); k++) {
+                for (int k = 0; X.existAbstract(CubeNotState()) != XX.existAbstract(CubeNotState()); k++) { // X_s != W?
                     X = XX;
 
 
                     print_rabin_info(X, "X", verbose, k);
 
                     UBDD term;
-                    term = apre(Y, X);
+                    term = apre(Y, X); // We don't want apre, so term == cpre
                     /* the state-input pairs added by the outermost loop get the smallest rank */
                     UBDD N = term & (!(C.existAbstract(CubeNotState())));
                     C |= N;
@@ -187,7 +188,7 @@ namespace genie {
                         union recurse(term1,ZT,s)
         }
         */
-        static UBDD SequentialRabinRecurse(BaseFixpoint<UBDD> *fp,
+        static UBDD SequentialELRecurse(BaseFixpoint<UBDD> *fp, // add zielonka tree and zielonka node as parameters
                                            UBDD &controller,
                                            const_arg_recursive_rabin<UBDD> rrConst,
                                            nconst_arg_recursive_rabin<UBDD> rrVars) {
@@ -210,77 +211,61 @@ namespace genie {
             // Temp variables as placeholders
             bool winning = false; // To be replaced by check on current Zielonka node
 
-            UBDD U; // zero or one, depends on losing or winning, U == X_s
+            UBDD U, Y, YY; // zero or one, depends on losing or winning, U == X_s
             if (winning):
-                U = fp->base_.one();
+                Y = fp->base_.one();
+                YY = fp->base_.zero();
             else:
-                U = fp->base_.zero();
+                Y = fp->base_.zero();
+                YY = fp->base_.one();
 
-            // if R(s) != empty_set ? (And else will likely only contain return or some small stuff since cpre in this?)
-            for (size_t i = 0; i < pairs.size(); i++) { // Assumes children because of the two simultaneous iterations, needs to be changed
-                UBDD G = pairs[i].G_;
-                UBDD nR = pairs[i].nR_;
-                std::vector<rabin_pair_<UBDD>> remPairs = pairs;
-                remPairs.erase(remPairs.begin() + i);
-                /* initialize a local copy for the controller */
-                UBDD C = fp->base_.zero();
-
-                /* initialize the sets for the nu fixed point */ // if node in zielonka tree winning: else:
-                UBDD Y = fp->base_.zero();
-                UBDD YY = initial_seed;
-
-                for (int j = 0; Y.existAbstract(fp->CubeNotState()) != YY.existAbstract(fp->CubeNotState()); j++) { // while X_s != W  (Keep only one of these)
-                    Y = YY;
-                    fp->print_rabin_info(Y, "Y", verbose, j, depth);
-
-                    UBDD term1;
-                    term1 = right | (seqR & nR & G & fp->cpre(Y)); // Do term1 calc later
-                    /* reset the local copy of the controller to the most recently added state-input pairs */
-                    UBDD N = term1 & (!(controller.existAbstract(fp->CubeNotState())));
-                    C = controller | N;
-                    /* initialize the sets for the mu fixed point */
-                    UBDD X = fp->base_.one(); // Replace with U (== X_s) 
-                    UBDD XX = fp->base_.zero(); // == 
-
-                    for (int k = 0; X.existAbstract(fp->CubeNotState()) != XX.existAbstract(fp->CubeNotState()); k++) { // while X_s != W (Keep only one of these)
-                        X = XX;
-
-                        fp->print_rabin_info(X, "X", verbose, k, depth);
-                        UBDD term2;
-                        term2 = term1 | (seqR & nR & fp->apre(Y, X)); // Do we only need term1?
-                        /* add the recently added state-input pairs to the controller */
-                        N = term2 & (!(C.existAbstract(fp->CubeNotState()))); // For us (since no apre): term1 & ...
-                        C |= N;
-                        if (remPairs.empty()) { // if leaf in zielonka (if R(s) = empty_set)
-                            XX = term2;
-                        } else {
-                            genie::const_arg_recursive_rabin<UBDD> arg_const_new = { // Most things in here not necessary
-                                    accl_on,
-                                    M, /* the bound on the iteration count for memorizing the BDDs from the past iterations */
-                                    depth + 1,
-                                    remPairs,
-                                    initial_seed,
-                                    verbose};
-                            genie::nconst_arg_recursive_rabin<UBDD> arg_nconst_new = {
-                                    seqR & nR,
-                                    term2,
-                                    indexRP,
-                                    indexY,
-                                    indexX,
-                                    hist_Y,
-                                    hist_X};
-                            XX = SequentialRabinRecurse(fp, C, arg_const_new, arg_nconst_new); // need to pass along current node in zielonka
+            for (int j = 0; Y.existAbstract(fp->CubeNotState()) != YY.existAbstract(fp->CubeNotState()); j++) { // while X_s != W  (Keep only one of these)
+                Y = YY;
+                fp->print_rabin_info(Y, "Y", verbose, j, depth);
+                /* reset the local copy of the controller to the most recently added state-input pairs */
+                fp->print_rabin_info(X, "X", verbose, k, depth);
+                if (t->children.empty()) { // if leaf in zielonka (if R(s) = empty_set?)
+                    YY = right; //return old term
+                } 
+                else {
+                    for (auto s : t->children) { //Iterate over direct children of t
+                        UBDD term1 = fp->base_.one();
+                        for (auto r : t->label){ // for color in root-t
+                            term1 &= !COLOR // bdd for current color
                         }
+                        UBDD term2 = fp->base_.zero();
+                        for (colors IN t-s){
+                            diff = t->child_differences[d];
+                            term2 |= diff;
+                        }
+                        UBDD term3;
+                        term3 = right | (term1 & term2 & fp->cpre(YY));
+                    
+                        genie::const_arg_recursive_rabin<UBDD> arg_const_new = { // Most things in here not necessary
+                                accl_on, // remove
+                                M, // remove/* the bound on the iteration count for memorizing the BDDs from the past iterations */
+                                depth + 1, //remove
+                                s, // current child, previously rempairs
+                                initial_seed, // Can be removed, current implementation uses base_.one() instead
+                                verbose};
+                        genie::nconst_arg_recursive_rabin<UBDD> arg_nconst_new = {
+                                seqR & nR, // remove
+                                term3,
+                                indexRP, // remove
+                                indexY, // remove
+                                indexX, // remove
+                                hist_Y, // remove
+                                hist_X}; //remove
+                        U = SequentialELRecurse(fp, C, arg_const_new, arg_nconst_new); // need to pass along current node in zielonka
                     }
-                    YY = XX;
                 }
-                if (winning): // Union or intersection depending on losing or winning
-                    U &= YY;
-                else:
-                    U |= YY; 
-                controller = C;
             }
-            return U;
+            if (t->winning)
+                YY &= U;
+            else
+                YY |= U;
+
+            return YY;
         }
 
         /**
