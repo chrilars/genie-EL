@@ -193,7 +193,7 @@ namespace genie {
                                            nconst_arg_recursive_rabin<UBDD> rrVars) {
             /* initialize the final solution to be returned in the end */
             /* unpack the inputs */
-            const bool accl_on = rrConst.accl_on;
+            const bool accl_on = rrConst.accl_on; // Unimportant
             const size_t M = rrConst.M; /* the bound on the iteration count for memorizing the BDDs from the past iterations */
             const int depth = rrConst.depth;
             const int verbose = rrConst.verbose;
@@ -210,7 +210,7 @@ namespace genie {
             // Temp variables as placeholders
             bool winning = false; // To be replaced by check on current Zielonka node
 
-            UBDD U; // zero or one, depends on losing or winning
+            UBDD U; // zero or one, depends on losing or winning, U == X_s
             if (winning):
                 U = fp->base_.one();
             else:
@@ -254,7 +254,7 @@ namespace genie {
                         /* add the recently added state-input pairs to the controller */
                         N = term2 & (!(C.existAbstract(fp->CubeNotState())));
                         C |= N;
-                        if (remPairs.empty()) { // if leaf in zielonka
+                        if (remPairs.empty()) { // if leaf in zielonka (if R(s) = empty_set)
                             XX = term2;
                         } else {
                             genie::const_arg_recursive_rabin<UBDD> arg_const_new = { // Most things in here not necessary
