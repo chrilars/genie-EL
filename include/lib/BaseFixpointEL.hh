@@ -15,29 +15,6 @@
 
 
 namespace genie {
-    template<class UBDD>
-    struct const_arg_recursive_rabin {
-        const bool accl_on;
-        const size_t M; /* the bound on the iteration count for memorizing the BDDs from the past iterations */
-        const int depth;
-        const std::vector<genie::rabin_pair_<UBDD>> pairs;
-        const UBDD initial_seed;
-        const int verbose;
-    };
-
-    template<class UBDD>
-    struct nconst_arg_recursive_rabin {
-        UBDD seqR;
-        UBDD right;
-        std::vector<size_t> *indexRP;
-        std::vector<size_t> *indexY;
-        std::vector<size_t> *indexX;
-
-        //////////////////// for acceleration
-        std::vector<std::vector<std::vector<std::vector<UBDD>>>> *hist_Y;
-        std::vector<std::vector<std::vector<std::vector<UBDD>>>> *hist_X;
-    };
-
     /**
      * @brief base class for the fixed point computation for the Rabin specification
      *
@@ -188,27 +165,14 @@ namespace genie {
                         union recurse(term1,ZT,s)
         }
         */
-        static UBDD SequentialELRecurse(BaseFixpoint<UBDD> *fp, // add zielonka tree and zielonka node as parameters
-                                           UBDD &controller,
-                                           const_arg_recursive_rabin<UBDD> rrConst,
-                                           nconst_arg_recursive_rabin<UBDD> rrVars) {
-            /* initialize the final solution to be returned in the end */
-            /* unpack the inputs */
-            const bool accl_on = rrConst.accl_on; // Unimportant
-            const size_t M = rrConst.M; /* the bound on the iteration count for memorizing the BDDs from the past iterations */
-            const int depth = rrConst.depth;
-            const int verbose = rrConst.verbose;
+        UBDD EmersonLei(BaseFixpoint<UBDD> *fp, // add zielonka tree and zielonka node as parameters
+                                           UBDD &controller, // replace with zielonkatree?
+                                           ZielonkaTreeNode t,
+                                           UBDD term) {
             auto pairs = rrConst.pairs;
-            auto initial_seed = rrConst.initial_seed;
-            auto seqR = rrVars.seqR;
-            auto right = rrVars.right;
-            auto hist_Y = rrVars.hist_Y;
-            auto hist_X = rrVars.hist_X;
-            auto indexY = rrVars.indexY;
-            auto indexX = rrVars.indexX;
-            auto indexRP = rrVars.indexRP;
+            auto right = term;
 
-            UBDD U, Y, YY; // zero or one, depends on losing or winning, U == X_s
+            UBDD U, Y, YY; // U, X_s, W
             if (t->winning):
                 Y = fp->base_.one();
                 YY = fp->base_.zero();
@@ -216,12 +180,11 @@ namespace genie {
                 Y = fp->base_.zero();
                 YY = fp->base_.one();
 
-            for (int j = 0; Y.existAbstract(fp->CubeNotState()) != YY.existAbstract(fp->CubeNotState()); j++) { // while X_s != W  (Keep only one of these)
+            for (int j = 0; Y.existAbstract(fp->CubeNotState()) != YY.existAbstract(fp->CubeNotState()); j++) { // X_s != W
                 Y = YY;
                 fp->print_rabin_info(Y, "Y", verbose, j, depth);
-                /* reset the local copy of the controller to the most recently added state-input pairs */
                 fp->print_rabin_info(X, "X", verbose, k, depth);
-                if (t->children.empty()) { // if leaf in zielonka (if R(s) = empty_set?)
+                if (t->children.empty()) { // if t is leaf
                     YY = right; //return old term
                 } 
                 else {
@@ -238,22 +201,7 @@ namespace genie {
                         UBDD term3;
                         term3 = right | (term1 & term2 & fp->cpre(YY));
                     
-                        genie::const_arg_recursive_rabin<UBDD> arg_const_new = { // Most things in here not necessary
-                                accl_on, // remove
-                                M, // remove/* the bound on the iteration count for memorizing the BDDs from the past iterations */
-                                depth + 1, //remove
-                                s, // current child, previously rempairs
-                                initial_seed, // Can be removed, current implementation uses base_.one() instead
-                                verbose};
-                        genie::nconst_arg_recursive_rabin<UBDD> arg_nconst_new = {
-                                seqR & nR, // remove
-                                term3,
-                                indexRP, // remove
-                                indexY, // remove
-                                indexX, // remove
-                                hist_Y, // remove
-                                hist_X}; //remove
-                        U = SequentialELRecurse(fp, C, arg_const_new, arg_nconst_new); // need to pass along current node in zielonka
+                        U = EmersonLei(fp, C, s, term3); // need to pass along current node in zielonka
                     }
                 }
             }
