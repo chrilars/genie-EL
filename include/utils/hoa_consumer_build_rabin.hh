@@ -11,9 +11,10 @@
 #include <limits>
 #include <map>
 #include <stack>
+#include <array>
 
-#include "hoa_consumer.hh"
-#include "hoa_parser.hh"
+#include "/usr/local/include/cpphoafparser/consumer/hoa_consumer.hh"
+#include "/usr/local/include/cpphoafparser/parser/hoa_parser.hh"
 #include "cstring"
 
 #define UNUSED(x) (void)(x)

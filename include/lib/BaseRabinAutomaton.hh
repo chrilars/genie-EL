@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "utils/hoa_consumer_build_rabin.hh"
+#include "../utils/hoa_consumer_build_rabin.hh"
 #include <functional>
 #include <cmath>
 #include <cstdlib>

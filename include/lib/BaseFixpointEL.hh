@@ -64,86 +64,6 @@ namespace genie {
                                       int iteration = 0,
                                       int depth = 0) = 0;
 
-        /**
-         * @brief computes the fair adversarial rabin winning domain
-         * @param accl_on   - true/false setting the accelerated fixpoint on/off
-         * @param M         - the bound on the iteration count for memorizing the BDDs from the past iterations
-         * @param initial_seed  - initial seed for warm starting the nu fixpoints (for example the under-approximation fixpoint can be warm-started from the result of the over-approximation fixpoint)
-         * @param verbose   - the verbosity level (0-2, default=0)
-         */
-        // Delete Rabin
-        UBDD Rabin(const bool accl_on,
-                   const size_t M, /* the bound on the iteration count for memorizing the BDDs from the past iterations */
-                   const UBDD &initial_seed,
-                   const int verbose,
-                   std::function<UBDD(BaseFixpoint<UBDD> *, UBDD &, const_arg_recursive_rabin<UBDD>,
-                                      nconst_arg_recursive_rabin<UBDD>)> RR = SequentialRabinRecurse) {
-            /* copy the rabin pairs */
-            std::vector<rabin_pair_<UBDD>> pairs = RabinPairs_;
-            size_t nrp = pairs.size(); /* number of rabin pairs */
-            /* initialize a pair of trivial bdd-s */
-            UBDD top = initial_seed;
-            UBDD bot = base_.zero();
-            /* the exact scheme as per the piterman paper */
-            auto *hist_Y = new std::vector<std::vector<std::vector<std::vector<UBDD>>>>;
-            auto *hist_X = new std::vector<std::vector<std::vector<std::vector<UBDD>>>>;
-
-            /* create variables for remembering the current indices of the fixpoint variables and the indices of the rabin pairs */
-            auto *indexY = new std::vector<size_t>;
-            auto *indexX = new std::vector<size_t>;
-            auto *indexRP = new std::vector<size_t>;
-            /* the controller */
-            UBDD C = base_.zero();
-            /* initialize the sets for the nu fixed point */
-            UBDD Y = base_.zero();
-            UBDD YY = initial_seed;
-            for (int i = 0; Y.existAbstract(CubeNotState()) != YY.existAbstract(CubeNotState()); i++) { // X_s != W?
-                Y = YY;
-
-                print_rabin_info(Y, "Y", verbose, i);
-
-                /* reset the controller */
-                C = base_.zero();
-                /* initialize the sets for the mu fixed point */
-                UBDD X = base_.one();
-                UBDD XX = base_.zero();
-                for (int k = 0; X.existAbstract(CubeNotState()) != XX.existAbstract(CubeNotState()); k++) { // X_s != W?
-                    X = XX;
-
-
-                    print_rabin_info(X, "X", verbose, k);
-
-                    UBDD term;
-                    term = apre(Y, X); // We don't want apre, so term == cpre
-                    /* the state-input pairs added by the outermost loop get the smallest rank */
-                    UBDD N = term & (!(C.existAbstract(CubeNotState())));
-                    C |= N;
-                    /* recursively solve the rest of the fp */
-                    const_arg_recursive_rabin<UBDD> arg_const_new = {
-                            accl_on,
-                            M, /* the bound on the iteration count for memorizing the BDDs from the past iterations */
-                            1, /* depth of the next recursion level */
-                            pairs,
-                            initial_seed,
-                            verbose};
-                    nconst_arg_recursive_rabin<UBDD> arg_nconst_new = {base_.one(),
-                                                                       term.existAbstract(CubeNotState()),
-                                                                       indexRP,
-                                                                       indexY,
-                                                                       indexX,
-                                                                       hist_Y,
-                                                                       hist_X};
-                    //                    XX = RUN(RabinRecurse, this, &C, &arg_const_new, &arg_nconst_new);
-                    XX = RR(this, C, arg_const_new, arg_nconst_new);
-                }
-                YY = X;
-            }
-            /* the winning strategy is the set of controlled edges whose source belong to the system */
-
-            print_rabin_info(C, "end", verbose);
-            return C;
-        }
-
 
         /*
         ELSeq(term1,zielonka_tree,t (node in zielonka tree)){
@@ -174,12 +94,21 @@ namespace genie {
             return converted;
         }
 
+        // Temp struct for compilation
+        struct ZielonkaTreeNode
+        {
+            bool winning;
+        };
+        
+
         UBDD EmersonLei(BaseFixpoint<UBDD> *fp, // add zielonka tree and zielonka node as parameters
                                            UBDD &controller, // replace with zielonkatree?
-                                           ZielonkaTreeNode t,
+                                           ZielonkaTreeNode *t,
                                            UBDD term) {
-            auto pairs = rrConst.pairs;
             auto right = term;
+
+            // Placeholder variables
+            bool winning = true;
 
             UBDD U, Y, YY; // U, X_s, W
             if (t->winning) {
@@ -192,8 +121,6 @@ namespace genie {
 
             for (int j = 0; Y.existAbstract(fp->CubeNotState()) != YY.existAbstract(fp->CubeNotState()); j++) { // X_s != W
                 Y = YY;
-                fp->print_rabin_info(Y, "Y", verbose, j, depth);
-                fp->print_rabin_info(X, "X", verbose, k, depth);
                 if (t->children.empty()) { // if t is leaf
                     YY = right; //return old term
                 }
@@ -203,18 +130,18 @@ namespace genie {
                         for (auto r : t->label){ // for color in root-t
                             // include setToBdd from implementation of FairSyn or write own, also on 7 lines down
                             UBDD colors = setToBdd(to_UBDD_preprocess(r));
-                            term1 &= !colors // bdd for current color
+                            term1 &= !colors; // bdd for current color
                         }
                         UBDD term2 = fp->base_.zero();
                         for (const auto& c : label_difference(t, s)){
-                            diff = t->child_differences[d];
+                            std::vector<bool> diff = t->child_differences[s];
                             UBDD diffUBDD = setToBdd(to_UBDD_preprocess(diff));
                             term2 |= diffUBDD;
                         }
                         UBDD term3;
                         term3 = right | (term1 & term2 & fp->cpre(YY));
 
-                        U = EmersonLei(fp, C, s, term3); // need to pass along current node in zielonka
+                        U = EmersonLei(fp, controller, s, term3); // need to pass along current node in zielonka
                     }
                 }
             }
