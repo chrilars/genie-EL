@@ -107,9 +107,6 @@ namespace genie {
                                            UBDD term) {
             auto right = term;
 
-            // Placeholder variables
-            bool winning = true;
-
             UBDD U, Y, YY; // U, X_s, W
             if (t->winning) {
                 Y = fp->base_.one();
