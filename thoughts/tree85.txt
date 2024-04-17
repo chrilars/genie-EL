@@ -1,0 +1,86 @@
+a, b, c, d, e, f, g, h, from: 0, order: 1
+a, b,    d, e, f, g, h, from: 1, order: 2
+   b, c, d, e, f, g, h, from: 1, order: 3
+a, b,    d, e, f, g,    from: 2, order: 4
+a, b,    d, e,    g, h, from: 2, order: 5
+a, b,       e, f, g, h, from: 2, order: 6
+      c, d, e, f, g, h, from: 3, order: 7
+   b, c, d, e,    g, h, from: 3, order: 8
+   b, c, d, e, f, g,    from: 3, order: 9
+a, b,    d, e, f,       from: 4, order: 10
+a, b,    d,       g, h, from: 5, order: 11
+   b,       e, f, g, h, from: 6, order: 12
+         d, e, f, g, h, from: 7, order: 13
+   b, c, d,       g, h, from: 8, order: 14
+   b, c, d, e, f,       from: 9, order: 15
+a, b,       e, f,       from: 10, order: 16
+a, b,    d, e,          from: 10, order: 17
+a, b,             g, h, from: 11, order: 18
+a, b,    d,       g,    from: 11, order: 19
+   b,       e,    g, h, from: 12, order: 20
+            e, f, g, h, from: 12, order: 21
+   b,       e, f, g,    from: 12, order: 22
+         d, e,    g, h, from: 13, order: 23
+            e, f, g, h, from: 13, order: 24
+         d, e, f, g,    from: 13, order: 25
+   b, c, d,       g,    from: 14, order: 26
+      c, d,       g, h, from: 14, order: 27
+   b, c, d, e,          from: 15, order: 28
+      c, d, e, f,       from: 15, order: 29
+   b,       e, f,       from: 16, order: 30
+a, b,    d,             from: 17, order: 31
+   b,             g, h, from: 18, order: 32
+a, b,    d,             from: 19, order: 33
+   b,             g, h, from: 20, order: 34
+   b,       e, f,       from: 22, order: 35
+         d,       g, h, from: 23, order: 36
+         d, e, f,       from: 25, order: 37
+   b, c, d,             from: 26, order: 38
+         d,       g, h, from: 27, order: 39
+   b, c, d,             from: 28, order: 40
+         d, e, f,       from: 29, order: 41
+   b,       e,          from: 30, order: 42
+            e, f,       from: 30, order: 43
+a, b,                   from: 31, order: 44
+   b,             g,    from: 32, order: 45
+                  g, h, from: 32, order: 46
+a, b,                   from: 33, order: 47
+   b,             g,    from: 34, order: 48
+                  g, h, from: 34, order: 49
+   b,       e,          from: 35, order: 50
+            e, f,       from: 35, order: 51
+         d,       g,    from: 36, order: 52
+                  g, h, from: 36, order: 53
+         d, e,          from: 37, order: 54
+            e, f,       from: 37, order: 55
+      c, d,             from: 38, order: 56
+         d,       g,    from: 39, order: 57
+                  g, h, from: 39, order: 58
+      c, d,             from: 40, order: 59
+         d, e,          from: 41, order: 60
+            e, f,       from: 41, order: 61
+   b,                   from: 42, order: 62
+   b,                   from: 44, order: 63
+   b,                   from: 45, order: 64
+   b,                   from: 47, order: 65
+   b,                   from: 48, order: 66
+   b,                   from: 50, order: 67
+         d,             from: 52, order: 68
+         d,             from: 54, order: 69
+         d,             from: 56, order: 70
+         d,             from: 57, order: 71
+         d,             from: 59, order: 72
+         d,             from: 60, order: 73
+                        from: 62, order: 74
+                        from: 63, order: 75
+                        from: 64, order: 76
+                        from: 65, order: 77
+                        from: 66, order: 78
+                        from: 67, order: 79
+                        from: 68, order: 80
+                        from: 69, order: 81
+                        from: 70, order: 82
+                        from: 71, order: 83
+                        from: 72, order: 84
+                        from: 73, order: 85
+
