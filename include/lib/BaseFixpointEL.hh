@@ -165,6 +165,15 @@ namespace genie {
                         union recurse(term1,ZT,s)
         }
         */
+
+        std::vector<size_t> to_UBDD_preprocess(const std::vector<bool>& label) {
+            std::vector<size_t> converted;
+            for (size_t i = 0; i < label.size(); ++i) {
+                if (label[i]) converted.push_back(i);
+            }
+            return converted;
+        }
+
         UBDD EmersonLei(BaseFixpoint<UBDD> *fp, // add zielonka tree and zielonka node as parameters
                                            UBDD &controller, // replace with zielonkatree?
                                            ZielonkaTreeNode t,
@@ -187,11 +196,12 @@ namespace genie {
                 fp->print_rabin_info(X, "X", verbose, k, depth);
                 if (t->children.empty()) { // if t is leaf
                     YY = right; //return old term
-                } 
+                }
                 else {
                     for (auto s : t->children) { //Iterate over direct children of t
                         UBDD term1 = fp->base_.one();
                         for (auto r : t->label){ // for color in root-t
+                            // include setToBdd from implementation of FairSyn or write own, also on 7 lines down
                             UBDD colors = setToBdd(to_UBDD_preprocess(r));
                             term1 &= !colors // bdd for current color
                         }
@@ -203,7 +213,7 @@ namespace genie {
                         }
                         UBDD term3;
                         term3 = right | (term1 & term2 & fp->cpre(YY));
-                    
+
                         U = EmersonLei(fp, C, s, term3); // need to pass along current node in zielonka
                     }
                 }
