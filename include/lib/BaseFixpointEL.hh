@@ -173,12 +173,13 @@ namespace genie {
             auto right = term;
 
             UBDD U, Y, YY; // U, X_s, W
-            if (t->winning):
+            if (t->winning) {
                 Y = fp->base_.one();
                 YY = fp->base_.zero();
-            else:
+            } else {
                 Y = fp->base_.zero();
                 YY = fp->base_.one();
+            }
 
             for (int j = 0; Y.existAbstract(fp->CubeNotState()) != YY.existAbstract(fp->CubeNotState()); j++) { // X_s != W
                 Y = YY;
@@ -191,12 +192,14 @@ namespace genie {
                     for (auto s : t->children) { //Iterate over direct children of t
                         UBDD term1 = fp->base_.one();
                         for (auto r : t->label){ // for color in root-t
-                            term1 &= !COLOR // bdd for current color
+                            UBDD colors = setToBdd(to_UBDD_preprocess(r));
+                            term1 &= !colors // bdd for current color
                         }
                         UBDD term2 = fp->base_.zero();
-                        for (colors IN t-s){
+                        for (const auto& c : label_difference(t, s)){
                             diff = t->child_differences[d];
-                            term2 |= diff;
+                            UBDD diffUBDD = setToBdd(to_UBDD_preprocess(diff));
+                            term2 |= diffUBDD;
                         }
                         UBDD term3;
                         term3 = right | (term1 & term2 & fp->cpre(YY));
