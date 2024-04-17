@@ -13,6 +13,9 @@
 #include <sylvan_obj.hpp>
 #include <vector>
 
+#include "../../thoughts/ZielonkaTree.hh"
+#include "../../thoughts/ELHelpers.hh"
+
 
 namespace genie {
     /**
@@ -94,16 +97,9 @@ namespace genie {
             return converted;
         }
 
-        // Temp struct for compilation
-        struct ZielonkaTreeNode
-        {
-            bool winning;
-        };
-        
-
         UBDD EmersonLei(BaseFixpoint<UBDD> *fp, // add zielonka tree and zielonka node as parameters
                                            UBDD &controller, // replace with zielonkatree?
-                                           ZielonkaTreeNode *t,
+                                           ZielonkaNode *t,
                                            UBDD term) {
             auto right = term;
 
@@ -130,8 +126,10 @@ namespace genie {
                             term1 &= !colors; // bdd for current color
                         }
                         UBDD term2 = fp->base_.zero();
-                        for (const auto& c : label_difference(t, s)){
-                            std::vector<bool> diff = t->child_differences[s];
+                        std::vector<bool> t_p,s_p; // Placeholders for label_difference input
+                        int s_p2; // placeholder for child_difference index
+                        for (const auto& c : ELHelpers::label_difference(t_p, s_p)){
+                            std::vector<bool> diff = t->child_differences[s_p2];
                             UBDD diffUBDD = setToBdd(to_UBDD_preprocess(diff));
                             term2 |= diffUBDD;
                         }
