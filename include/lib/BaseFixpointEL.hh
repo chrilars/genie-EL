@@ -122,7 +122,7 @@ namespace genie {
                     for (auto s : t->children) { //Iterate over direct children of t
                         UBDD term1 = fp->base_.one();
                         for (size_t i = 0; i < t->label.size(); ++i){ // label(root) - label(t) == not(label(t))
-                            if (t->label[i])
+                            if (!(t->label[i]))
                                 term1 &= fp->base_.one() - colors[i]; // term1 = term1 & !bdd(c),  !c == V \ c
                         }
                         UBDD term2 = fp->base_.zero();
