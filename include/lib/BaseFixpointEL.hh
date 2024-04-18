@@ -97,8 +97,8 @@ namespace genie {
             return converted;
         }
 
-        UBDD EmersonLei(BaseFixpoint<UBDD> *fp, // add zielonka tree and zielonka node as parameters
-                                           UBDD &controller, // replace with zielonkatree?
+        UBDD EmersonLei(BaseFixpoint<UBDD> *fp,
+                                           std::vector<UBDD> colors,
                                            ZielonkaNode *t,
                                            UBDD term) {
             auto right = term;
@@ -112,6 +112,7 @@ namespace genie {
                 YY = fp->base_.one();
             }
 
+
             for (int j = 0; Y.existAbstract(fp->CubeNotState()) != YY.existAbstract(fp->CubeNotState()); j++) { // X_s != W
                 Y = YY;
                 if (t->children.empty()) { // if t is leaf
@@ -120,23 +121,20 @@ namespace genie {
                 else {
                     for (auto s : t->children) { //Iterate over direct children of t
                         UBDD term1 = fp->base_.one();
-                        for (auto r : t->label){ // for color in root-t
-                            // include setToBdd from implementation of FairSyn or write own, also on 7 lines down
-                            UBDD colors = setToBdd(to_UBDD_preprocess(r));
-                            term1 &= !colors; // bdd for current color
+                        for (size_t i = 0; i < t->label.size(); ++i){ // label(root) - label(t) == not(label(t))
+                            if (t->label[i])
+                                term1 &= fp->base_.one() - colors[i]; // term1 = term1 & !bdd(c),  !c == V \ c
                         }
                         UBDD term2 = fp->base_.zero();
-                        std::vector<bool> t_p,s_p; // Placeholders for label_difference input
-                        int s_p2; // placeholder for child_difference index
-                        for (const auto& c : ELHelpers::label_difference(t_p, s_p)){
-                            std::vector<bool> diff = t->child_differences[s_p2];
-                            UBDD diffUBDD = setToBdd(to_UBDD_preprocess(diff));
-                            term2 |= diffUBDD;
+                        std::vector<bool> diffst = ELHelpers::label_difference(t->label, s->label); // Difference between t and s
+                        for (size_t i = 0; i < diffst.size(); ++i){ // c = set of all game nodes that see c
+                            if (diffst[i])
+                                term2 |= colors[i]; // term2 = term2 | NodesThatSee(c)
                         }
                         UBDD term3;
                         term3 = right | (term1 & term2 & fp->cpre(YY));
 
-                        U = EmersonLei(fp, controller, s, term3); // need to pass along current node in zielonka
+                        U = EmersonLei(fp, colors, s, term3);
                     }
                 }
             }
