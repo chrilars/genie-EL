@@ -27,14 +27,12 @@ void printTokens(std::vector<std::string> input){
 // op (!,&,|) | a | ( | )
 std::vector<std::string> tokenize(std::string input){
     std::vector<std::string> result;
-    int inputSize = input.size();
-    
     std::regex inf_re("Inf");
     std::regex fin_re("Fin");
     input = std::regex_replace(input, inf_re, "");
     input = std::regex_replace(input, fin_re, "!");
 
-    for (int i=0; i<inputSize; i++){
+    for (int i=0; i<input.size(); i++){
         std::string s = "";
         char inp = input[i];
         if (inp == ' ')
@@ -43,7 +41,7 @@ std::vector<std::string> tokenize(std::string input){
         {
             s += inp;
             i++;
-            for (i; i<inputSize; i++){
+            for (i; i<input.size(); i++){
                 inp = input[i];
                 if (!isdigit(inp))
                     break;

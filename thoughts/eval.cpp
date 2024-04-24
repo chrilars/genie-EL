@@ -16,7 +16,7 @@ int main() {
     //printTokens(s);
     //printTokens(s2);
 
-    std::vector<bool> colors = {false, false, true, false};
+    std::vector<bool> colors = {false, false, false, true, false, true, false, false};
     std::cout << postfixEval(s2, colors) << std::endl;
 
     return 0;
