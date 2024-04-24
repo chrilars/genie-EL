@@ -13,8 +13,8 @@
 #include <sylvan_obj.hpp>
 #include <vector>
 
-#include "../../thoughts/ZielonkaTree.hh"
-#include "../../thoughts/ELHelpers.hh"
+#include "ZielonkaTree.hh"
+#include "ELHelpers.hh"
 
 namespace genie {
     template<class UBDD>

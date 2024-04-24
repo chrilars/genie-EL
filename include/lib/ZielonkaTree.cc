@@ -16,7 +16,7 @@ bool cmp_descending_count_true(const std::vector<bool>& a, const std::vector<boo
 
 // Private
 size_t leaves = 0;
-size_t nodes = 0;
+size_t total_nodes = 0;
 void ZielonkaTree::generate() {
     //std::cout << "generating... \n";
     std::queue<ZielonkaNode*> q;
@@ -29,7 +29,7 @@ void ZielonkaTree::generate() {
         seen_from_parent.clear();
         ZielonkaNode* current = q.front();
         q.pop();
-        nodes++;
+        total_nodes++;
         for (size_t i = 0; i < ps.size(); ++i) {
             std::vector<bool> color_set = ps[i];
             if (!ELHelpers::proper_subset(color_set, current->label))
@@ -210,7 +210,7 @@ ZielonkaTree::ZielonkaTree(size_t colors) {
     generate_parity();
     //graphZielonkaTree();
     std::cout << "leaves: "<< leaves << '\n';
-    std::cout << "nodes: " << nodes  << '\n';
+    std::cout << "nodes: " << total_nodes  << '\n';
     //displayZielonkaTree();
     //graphZielonkaTree();
 }
