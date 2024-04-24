@@ -1,8 +1,18 @@
 #pragma once
 
-#include <iostream>
-#include <vector>
 #include <algorithm>
+#include <iostream>
+#include <iterator>
+#include <regex>
+#include <vector>
+
+// INPUT ALPHABET
+// a | !a | (a) | a&a | a|a
+// (a = Inf(a), !a = Fin(a))
+//
+// INPUT EXAMPLE
+// 0 & !1 | (1 | 2)
+// Numbers represent variable indices, 0 -> variable 0.
 
 // Debug function for printing tokens in vector<string>
 void printTokens(std::vector<std::string> input){
@@ -18,6 +28,11 @@ void printTokens(std::vector<std::string> input){
 std::vector<std::string> tokenize(std::string input){
     std::vector<std::string> result;
     int inputSize = input.size();
+    
+    std::regex inf_re("Inf");
+    std::regex fin_re("Fin");
+    input = std::regex_replace(input, inf_re, "");
+    input = std::regex_replace(input, fin_re, "!");
 
     for (int i=0; i<inputSize; i++){
         std::string s = "";
