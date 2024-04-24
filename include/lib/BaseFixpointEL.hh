@@ -32,6 +32,7 @@ namespace genie {
         UBDD cubePost_;                             /**< cubes with post variables; used in the existential abstraction  */
         UBDD cubeOther_;                            /**< cubes with other variables (outside the pre and the post variables) on which the transitions possibly depend */
         std::vector<rabin_pair_<UBDD>> RabinPairs_; /**< vector of the rabin pairs */
+        std::vector<UBDD> colors;                   /**< vector of UBDDs of nodes which see color_i, 0<=i<=C */
         UBDD nodes_;                                /**< stores the nodes in a BDD */
         UBDD sys_nodes_;                            /**< stores the system nodes in a BDD */
         UBDD env_nodes_;                            /**< stores the environment nodes in a BDD */
@@ -124,6 +125,7 @@ namespace genie {
                         for (size_t i = 0; i < t->label.size(); ++i){ // label(root) - label(t) == not(label(t))
                             if (!(t->label[i]))
                                 term1 &= fp->base_.one() - colors[i]; // term1 = term1 & !bdd(c),  !c == V \ c
+                                                                      // percompute the complements instead of doing during the runtime of the function
                         }
                         UBDD term2 = fp->base_.zero();
                         std::vector<bool> diffst = ELHelpers::label_difference(t->label, s->label); // Difference between t and s
