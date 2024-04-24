@@ -212,7 +212,7 @@ ZielonkaTree::ZielonkaTree(size_t colors) {
     std::cout << "leaves: "<< leaves << '\n';
     std::cout << "nodes: " << total_nodes  << '\n';
     //displayZielonkaTree();
-    //graphZielonkaTree();
+    graphZielonkaTree();
 }
 
 
