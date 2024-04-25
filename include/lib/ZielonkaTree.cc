@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <iostream>
+#include <fstream>
 #include <stdexcept>
 #include <vector>
 #include <queue>
@@ -92,7 +93,10 @@ void ZielonkaTree::generate_parity() {
     }
 }
 
-void ZielonkaTree::generate_phi(std::string condition){
+void ZielonkaTree::generate_phi(char* conditionFile){
+    std::ifstream ifs(conditionFile);
+    std::string condition((std::istreambuf_iterator<char>(ifs)),
+                          (std::istreambuf_iterator<char>()));
     this->phi = infix2postfix(tokenize(condition));
 }
 
@@ -106,7 +110,7 @@ std::string label_to_string(std::vector<bool> label) {
     return s;
 }
 
-bool ZielonkaTree::eval_condition(std::vector<bool> colors) {
+bool ZielonkaTree::evaluate_phi(std::vector<bool> colors) {
     return eval_postfix(this->phi, colors);
 }
 
@@ -197,8 +201,8 @@ void ZielonkaTree::graphZielonkaTree() {
 }
 
 // Public
-ZielonkaTree::ZielonkaTree(std::string condition, size_t colors) {
-    generate_phi(condition);
+ZielonkaTree::ZielonkaTree(char* conditionFile, size_t colors) {
+    generate_phi(conditionFile);
     std::vector<bool> label(colors, true);
     root = new ZielonkaNode {
         .children  = {},
@@ -208,7 +212,7 @@ ZielonkaTree::ZielonkaTree(std::string condition, size_t colors) {
         .label = label,
         .level = 1,
         .order = 1,
-        .winning = eval_condition(label)
+        .winning = evaluate_phi(label)
     };
     //generate();
     generate_parity();
