@@ -42,7 +42,7 @@ void ZielonkaTree::generate() {
                 }
             }
             if (seen) continue;
-            if (eval_condition(color_set) != current->winning) {
+            if (evaluate_phi(color_set) != current->winning) {
                 ZielonkaNode *child_zn = new ZielonkaNode {
                     .children = {},
                     .child_differences = {},
@@ -97,7 +97,7 @@ void ZielonkaTree::generate_phi(char* conditionFile){
     std::ifstream ifs(conditionFile);
     std::string condition((std::istreambuf_iterator<char>(ifs)),
                           (std::istreambuf_iterator<char>()));
-    this->phi = infix2postfix(tokenize(condition));
+    phi = infix2postfix(tokenize(condition));
 }
 
 std::string label_to_string(std::vector<bool> label) {
@@ -111,7 +111,7 @@ std::string label_to_string(std::vector<bool> label) {
 }
 
 bool ZielonkaTree::evaluate_phi(std::vector<bool> colors) {
-    return eval_postfix(this->phi, colors);
+    return eval_postfix(phi, colors);
 }
 
 void ZielonkaTree::displayZielonkaTree() {
