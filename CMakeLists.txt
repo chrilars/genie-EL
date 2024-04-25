@@ -35,6 +35,7 @@ add_library(genie
         include/lib/structures.hh
         include/lib/ZielonkaTree.cc
         include/lib/ELHelpers.hh
+        include/lib/condition_evaluation.hh
         )
 
 
