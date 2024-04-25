@@ -13,11 +13,11 @@ int main() {
     std::vector<std::string> s = tokenize(test5);
     std::vector<std::string> s2 = infix2postfix(s);
 
-    //printTokens(s);
-    //printTokens(s2);
+    //print_tokens(s);
+    //print_tokens(s2);
 
     std::vector<bool> colors = {false, false, false, true, false, true, false, false};
-    std::cout << postfixEval(s2, colors) << std::endl;
+    std::cout << eval_postfix(s2, colors) << std::endl;
 
     return 0;
 }

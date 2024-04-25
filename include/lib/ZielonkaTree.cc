@@ -7,7 +7,6 @@
 #include <stdexcept>
 #include <vector>
 #include <queue>
-#include "condition_evaluator.hh"
 
 
 bool cmp_descending_count_true(const std::vector<bool>& a, const std::vector<bool>& b) {
@@ -93,6 +92,10 @@ void ZielonkaTree::generate_parity() {
     }
 }
 
+void ZielonkaTree::generate_phi(std::string condition){
+    this->phi = infix2postfix(tokenize(condition));
+}
+
 std::string label_to_string(std::vector<bool> label) {
     std::string s;
     for (size_t i = 0; i < label.size(); ++i) {
@@ -104,7 +107,7 @@ std::string label_to_string(std::vector<bool> label) {
 }
 
 bool ZielonkaTree::eval_condition(std::vector<bool> colors) {
-    return condition_evaluator(colors);
+    return eval_postfix(this->phi, colors);
 }
 
 void ZielonkaTree::displayZielonkaTree() {
@@ -194,7 +197,8 @@ void ZielonkaTree::graphZielonkaTree() {
 }
 
 // Public
-ZielonkaTree::ZielonkaTree(size_t colors) {
+ZielonkaTree::ZielonkaTree(std::string condition, size_t colors) {
+    generate_phi(condition);
     std::vector<bool> label(colors, true);
     root = new ZielonkaNode {
         .children  = {},

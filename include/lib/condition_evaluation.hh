@@ -13,7 +13,7 @@
 // Numbers represent variable indices, 0 -> variable 0.
 
 // Debug function for printing tokens in vector<string>
-void printTokens(std::vector<std::string> input){
+void print_tokens(std::vector<std::string> input){
     std::cout << "[";
     for (std::string i : input){
         std::cout << i << ", ";
@@ -119,7 +119,7 @@ std::vector<std::string> infix2postfix(std::vector<std::string> tokens){
     return outputStack;
 }
 
-bool postfixEval (std::vector<std::string> postfix, std::vector<bool> colors){
+bool eval_postfix (std::vector<std::string> postfix, std::vector<bool> colors){
     std::reverse(postfix.begin(), postfix.end());
     std::vector<bool> resStack;
 
