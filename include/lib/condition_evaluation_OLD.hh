@@ -13,7 +13,7 @@
 // Numbers represent variable indices, 0 -> variable 0.
 
 // Debug function for printing tokens in vector<string>
-inline void print_tokens(std::vector<std::string> input){
+void print_tokens(std::vector<std::string> input){
     std::cout << "[";
     for (std::string i : input){
         std::cout << i << ", ";
@@ -23,14 +23,14 @@ inline void print_tokens(std::vector<std::string> input){
 
 // Tokenize input string to following alphabet:
 // op (!,&,|) | a | ( | )
-inline std::vector<std::string> tokenize(std::string input){
+std::vector<std::string> tokenize(std::string input){
     std::vector<std::string> result;
     std::regex inf_re("Inf");
     std::regex fin_re("Fin");
     input = std::regex_replace(input, inf_re, "");
     input = std::regex_replace(input, fin_re, "!");
 
-    for (size_t i=0; i<input.size(); i++){
+    for (int i=0; i<input.size(); i++){
         std::string s = "";
         char inp = input[i];
         if (inp == ' ')
@@ -39,7 +39,7 @@ inline std::vector<std::string> tokenize(std::string input){
         {
             s += inp;
             i++;
-            for (; i<input.size(); i++){
+            for (i; i<input.size(); i++){
                 inp = input[i];
                 if (!isdigit(inp))
                     break;
@@ -56,7 +56,7 @@ inline std::vector<std::string> tokenize(std::string input){
 }
 
 // Helper for infix2postfix
-inline bool isNumber(std::string s){
+bool isNumber(std::string s){
     for (char c : s){
         if (!isdigit(c))
             return false;
@@ -65,14 +65,14 @@ inline bool isNumber(std::string s){
 }
 
 // Helper for infix2postfix
-inline bool isOperator(std::string s){
+bool isOperator(std::string s){
     if (s == "&" || s == "|" || s == "!")
         return true;
     return false;
 }
 
 // Takes tokenized input string (in infix) and translates to postfix
-inline std::vector<std::string> infix2postfix(std::vector<std::string> tokens){
+std::vector<std::string> infix2postfix(std::vector<std::string> tokens){
     std::vector<std::string> opStack;
     std::vector<std::string> outputStack;
 
@@ -119,7 +119,7 @@ inline std::vector<std::string> infix2postfix(std::vector<std::string> tokens){
     return outputStack;
 }
 
-inline bool eval_postfix (std::vector<std::string> postfix, std::vector<bool> colors){
+bool eval_postfix (std::vector<std::string> postfix, std::vector<bool> colors){
     std::reverse(postfix.begin(), postfix.end());
     std::vector<bool> resStack;
 

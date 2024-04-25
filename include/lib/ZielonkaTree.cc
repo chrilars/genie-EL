@@ -214,8 +214,8 @@ ZielonkaTree::ZielonkaTree(char* conditionFile, size_t colors) {
         .order = 1,
         .winning = evaluate_phi(label)
     };
-    //generate();
-    generate_parity();
+    generate();
+    //generate_parity();
     //graphZielonkaTree();
     std::cout << "leaves: "<< leaves << '\n';
     std::cout << "nodes: " << total_nodes  << '\n';
