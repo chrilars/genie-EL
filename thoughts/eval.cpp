@@ -1,4 +1,4 @@
-#include "condition_evaluation.hh"
+#include "../include/lib/condition_evaluation.hh"
 
 // Test file for condition_evaluation.hh
 int main() {
