@@ -93,7 +93,7 @@ void ZielonkaTree::generate_parity() {
     }
 }
 
-void ZielonkaTree::generate_phi(char* conditionFile){
+void ZielonkaTree::generate_phi(const char* conditionFile){
     std::ifstream ifs(conditionFile);
     std::string condition((std::istreambuf_iterator<char>(ifs)),
                           (std::istreambuf_iterator<char>()));
@@ -201,7 +201,7 @@ void ZielonkaTree::graphZielonkaTree() {
 }
 
 // Public
-ZielonkaTree::ZielonkaTree(char* conditionFile, size_t colors) {
+ZielonkaTree::ZielonkaTree(const char* conditionFile, size_t colors) {
     generate_phi(conditionFile);
     std::vector<bool> label(colors, true);
     root = new ZielonkaNode {

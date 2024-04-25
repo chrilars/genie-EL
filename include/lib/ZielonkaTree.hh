@@ -14,13 +14,13 @@ private:
     // Private methods
     void generate();
     void generate_parity();
-    void generate_phi(char*);
+    void generate_phi(const char*);
     bool evaluate_phi(std::vector<bool>);
     void displayZielonkaTree();
     void graphZielonkaTree();
 
 public:
-    ZielonkaTree(char*, size_t);
+    ZielonkaTree(const char*, size_t);
     ~ZielonkaTree() {};
 
     ZielonkaNode* get_root();
