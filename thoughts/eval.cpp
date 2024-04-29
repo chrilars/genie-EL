@@ -11,14 +11,15 @@ int main() {
     std::string test6 = "!0 & (1 | 2)";
     std::string test7 = "(!0|1|2|3|4|5|6|7|8)&(!2|3|4|5|6|7|8)&(!4|5|6|7|8)&(!6|7|8)&(!8|9)";
     std::string test8 = "(0&(!1)&(!2)&(!3)&(!4)&(!5)&(!6)&(!7)&(!8))|(2&(!3)&(!4)&(!5)&(!6)&(!7)&(!8))|(4&(!5)&(!6)&(!7)&(!8))|(6&(!7)&(!8))|(8)";
+    std::string test9 = "(0 & !1 & !2 & !3 & !4 & !5 & !6 & !7 & !8) | (2 & !3 & !4 & !5 & !6 & !7 & !8) | (4 & !5 & !6 & !7 & !8) | (6 & !7 & !8) | (8)";
 
-    std::vector<std::string> s = tokenize(test8);
+    std::vector<std::string> s = tokenize(test9);
     std::vector<std::string> s2 = infix2postfix(s);
 
     print_tokens(s);
     print_tokens(s2);
 
-    std::vector<bool> colors = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    std::vector<bool> colors = {1, 1, 1, 1, 1, 1, 1, 1, 1};
     std::cout << eval_postfix(s2, colors) << std::endl;
 
     return 0;

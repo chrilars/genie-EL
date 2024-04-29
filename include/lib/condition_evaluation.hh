@@ -81,7 +81,7 @@ inline std::vector<std::string> infix2postfix(std::vector<std::string> tokens){
             if (opStack.empty())
                 opStack.push_back(s);
             else{
-                if (opStack.back() == "("){
+                if (opStack.back() == "(" || s == "!"){
                     opStack.push_back(s);
                     continue;
                 }
@@ -93,6 +93,10 @@ inline std::vector<std::string> infix2postfix(std::vector<std::string> tokens){
         }
         else if (isNumber(s)){
             outputStack.push_back(s);
+            if (opStack.back() == "!"){
+                outputStack.push_back(opStack.back());
+                opStack.pop_back();
+            }
         }
         else if (s == "("){
             opStack.push_back(s);
