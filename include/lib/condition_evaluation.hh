@@ -77,6 +77,7 @@ inline std::vector<std::string> infix2postfix(std::vector<std::string> tokens){
     std::vector<std::string> outputStack;
 
     for (std::string s : tokens){
+        std::cout << s << std::endl;
         if (isOperator(s)){
             if (opStack.empty())
                 opStack.push_back(s);
@@ -93,9 +94,11 @@ inline std::vector<std::string> infix2postfix(std::vector<std::string> tokens){
         }
         else if (isNumber(s)){
             outputStack.push_back(s);
-            if (opStack.back() == "!"){
+            if (!opStack.empty()){
+                if (opStack.back() == "!"){
                 outputStack.push_back(opStack.back());
                 opStack.pop_back();
+            }
             }
         }
         else if (s == "("){
