@@ -77,7 +77,6 @@ inline std::vector<std::string> infix2postfix(std::vector<std::string> tokens){
     std::vector<std::string> outputStack;
 
     for (std::string s : tokens){
-        std::cout << s << std::endl;
         if (isOperator(s)){
             if (opStack.empty())
                 opStack.push_back(s);

@@ -54,7 +54,7 @@ namespace genie {
         UBDD cubePost_;                             /**< cubes with post variables; used in the existential abstraction  */
         UBDD cubeOther_;                            /**< cubes with other variables (outside the pre and the post variables) on which the transitions possibly depend */
         std::vector<rabin_pair_<UBDD>> RabinPairs_; /**< vector of the rabin pairs */
-        std::vector<UBDD> colors;                   /**< vector of UBDDs of nodes which see color_i, 0<=i<=C */
+        std::vector<UBDD> color_UBDDs;              /**< vector of UBDDs of nodes which see color_i, 0<=i<=C */
         UBDD nodes_;                                /**< stores the nodes in a BDD */
         UBDD sys_nodes_;                            /**< stores the system nodes in a BDD */
         UBDD env_nodes_;                            /**< stores the environment nodes in a BDD */
@@ -371,55 +371,110 @@ namespace genie {
             return U;
         }
 
-        UBDD EmersonLei(/*BaseFixpoint<UBDD> *fp,*/
-                        std::vector<UBDD> colors,
-                        ZielonkaNode *t,
+        UBDD EmersonLei(ZielonkaNode *t,
                         UBDD term) {
             auto right = term;
 
             UBDD U, Y, YY; // U, X_s, W
             if (t->winning) {
-                Y = base_.one();
-                YY = base_.zero();
-            } else {
                 Y = base_.zero();
                 YY = base_.one();
+            } else {
+                Y = base_.one();
+                YY = base_.zero();
             }
 
+            UBDD term1 = base_.one();
+            for (size_t i = 0; i < t->label.size(); ++i){ // label(root) - label(t) == not(label(t))
+                if (!(t->label[i]))
+                    term1 &= (color_UBDDs[color_UBDDs.size()/2 + i]);
+                    //term1 &= (!color_UBDDs[i]) & nodes_; // term1 = term1 & !bdd(c),  !c == V \ c
+                                                          // percompute the complements instead of doing during the runtime of the function
+            }
 
             for (int j = 0; Y.existAbstract(CubeNotState()) != YY.existAbstract(CubeNotState()); j++) { // X_s != W
                 Y = YY;
+                //U = base_.zero();
                 if (t->children.empty()) { // if t is leaf
-                    YY = right; //return old term
+                    YY = right | term1 & cpre(Y); //return old term
                 }
                 else {
+                    if (t->winning)
+                        YY = base_.one();
+                    else
+                        YY = base_.zero();
+
                     for (auto s : t->children) { //Iterate over direct children of t
-                        UBDD term1 = base_.one();
-                        for (size_t i = 0; i < t->label.size(); ++i){ // label(root) - label(t) == not(label(t))
-                            if (!(t->label[i]))
-                                term1 &= base_.one() - colors[i]; // term1 = term1 & !bdd(c),  !c == V \ c
-                                                                      // percompute the complements instead of doing during the runtime of the function
-                        }
                         UBDD term2 = base_.zero();
                         std::vector<bool> diffst = ELHelpers::label_difference(t->label, s->label); // Difference between t and s
                         for (size_t i = 0; i < diffst.size(); ++i){ // c = set of all game nodes that see c
                             if (diffst[i])
-                                term2 |= colors[i]; // term2 = term2 | NodesThatSee(c)
+                                term2 |= color_UBDDs[i]; // term2 = term2 | NodesThatSee(c)
                         }
                         UBDD term3;
-                        term3 = right | (term1 & term2 & cpre(YY));
+                        term3 = right | (term1 & term2 & cpre(Y));
+                        U = EmersonLei(/*colors,*/ s, term3);
 
-                        U = EmersonLei(colors, s, term3);
+                        if (t->winning) {
+                            YY &= U;
+                        } else {
+                            YY |= U;
+                        }
                     }
                 }
             }
-            if (t->winning)
-                YY &= U;
-            else
-                YY |= U;
-
             return YY;
         }
+
+       // UBDD EmersonLei(/*BaseFixpoint<UBDD> *fp,*/
+       //                 std::vector<UBDD> colors,
+       //                 ZielonkaNode *t,
+       //                 UBDD term) {
+       //     auto right = term;
+
+       //     UBDD U, Y, YY; // U, X_s, W
+       //     if (t->winning) {
+       //         Y = base_.one();
+       //         YY = base_.zero();
+       //     } else {
+       //         Y = base_.zero();
+       //         YY = base_.one();
+       //     }
+
+
+       //     for (int j = 0; Y.existAbstract(CubeNotState()) != YY.existAbstract(CubeNotState()); j++) { // X_s != W
+       //         Y = YY;
+       //         if (t->children.empty()) { // if t is leaf
+       //             YY = right; //return old term
+       //         }
+       //         else {
+       //             for (auto s : t->children) { //Iterate over direct children of t
+       //                 UBDD term1 = base_.one();
+       //                 for (size_t i = 0; i < t->label.size(); ++i){ // label(root) - label(t) == not(label(t))
+       //                     if (!(t->label[i]))
+       //                         term1 &= base_.one() - colors[i]; // term1 = term1 & !bdd(c),  !c == V \ c
+       //                                                               // percompute the complements instead of doing during the runtime of the function
+       //                 }
+       //                 UBDD term2 = base_.zero();
+       //                 std::vector<bool> diffst = ELHelpers::label_difference(t->label, s->label); // Difference between t and s
+       //                 for (size_t i = 0; i < diffst.size(); ++i){ // c = set of all game nodes that see c
+       //                     if (diffst[i])
+       //                         term2 |= colors[i]; // term2 = term2 | NodesThatSee(c)
+       //                 }
+       //                 UBDD term3;
+       //                 term3 = right | (term1 & term2 & cpre(YY));
+
+       //                 U = EmersonLei(colors, s, term3);
+       //             }
+       //         }
+       //     }
+       //     if (t->winning)
+       //         YY &= U;
+       //     else
+       //         YY |= U;
+
+       //     return YY;
+       // }
 
        // UBDD EmersonLei(/*BaseFixpoint<UBDD> *fp,*/
        //                 std::vector<UBDD> colors,
