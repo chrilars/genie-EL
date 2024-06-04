@@ -243,28 +243,6 @@ ZielonkaTree::ZielonkaTree(const char* conditionFile, size_t colors) {
 ZielonkaNode* ZielonkaTree::get_root() { return root; }
 
 
-ZielonkaNode* ZielonkaTree::leads_to(ZielonkaNode *s, ZielonkaNode *t) {
-    // Find s_t: child of s which leads to t
-    // (bottom up) start at t and go through parents until s is found
-    // then take the last visited
-    // TODO, Only works if they are on a straight path, not sure if this is the case (might not be actually)
-    size_t low_level = s->level;
-    size_t target_order = s->order;
-    ZielonkaNode *last_visited = t;
-    ZielonkaNode *current = t;
-    while (current->level >= low_level) {
-        if (current->order == target_order) {
-            return last_visited;
-        } else {
-            last_visited = current;
-            if (current->parent == nullptr) {
-                throw std::runtime_error("Could not find parent ZielonkaNode, gone above root!");
-            }
-            current = current->parent;
-        }
-    }
-    throw std::runtime_error("Could not find parent ZielonkaNode, lowest level surpassed!");
-}
 
 
 //template <class UBDD>

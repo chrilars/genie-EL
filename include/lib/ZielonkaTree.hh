@@ -24,6 +24,5 @@ public:
     ~ZielonkaTree() {};
 
     ZielonkaNode* get_root();
-    ZielonkaNode* leads_to(ZielonkaNode*, ZielonkaNode*);
 };
 

@@ -388,8 +388,8 @@ namespace genie {
             for (size_t i = 0; i < t->label.size(); ++i){ // label(root) - label(t) == not(label(t))
                 if (!(t->label[i]))
                     term1 &= (color_UBDDs[color_UBDDs.size()/2 + i]);
-                    //term1 &= (!color_UBDDs[i]) & nodes_; // term1 = term1 & !bdd(c),  !c == V \ c
-                                                          // percompute the complements instead of doing during the runtime of the function
+                    // term1 = term1 & !bdd(c),  !c == V \ c
+                    // percompute the complements instead of doing during the runtime of the function
             }
 
             for (int j = 0; Y.existAbstract(CubeNotState()) != YY.existAbstract(CubeNotState()); j++) { // X_s != W
@@ -413,7 +413,7 @@ namespace genie {
                         }
                         UBDD term3;
                         term3 = right | (term1 & term2 & cpre(Y));
-                        U = EmersonLei(/*colors,*/ s, term3);
+                        U = EmersonLei(s, term3);
 
                         if (t->winning) {
                             YY &= U;
@@ -425,106 +425,6 @@ namespace genie {
             }
             return YY;
         }
-
-       // UBDD EmersonLei(/*BaseFixpoint<UBDD> *fp,*/
-       //                 std::vector<UBDD> colors,
-       //                 ZielonkaNode *t,
-       //                 UBDD term) {
-       //     auto right = term;
-
-       //     UBDD U, Y, YY; // U, X_s, W
-       //     if (t->winning) {
-       //         Y = base_.one();
-       //         YY = base_.zero();
-       //     } else {
-       //         Y = base_.zero();
-       //         YY = base_.one();
-       //     }
-
-
-       //     for (int j = 0; Y.existAbstract(CubeNotState()) != YY.existAbstract(CubeNotState()); j++) { // X_s != W
-       //         Y = YY;
-       //         if (t->children.empty()) { // if t is leaf
-       //             YY = right; //return old term
-       //         }
-       //         else {
-       //             for (auto s : t->children) { //Iterate over direct children of t
-       //                 UBDD term1 = base_.one();
-       //                 for (size_t i = 0; i < t->label.size(); ++i){ // label(root) - label(t) == not(label(t))
-       //                     if (!(t->label[i]))
-       //                         term1 &= base_.one() - colors[i]; // term1 = term1 & !bdd(c),  !c == V \ c
-       //                                                               // percompute the complements instead of doing during the runtime of the function
-       //                 }
-       //                 UBDD term2 = base_.zero();
-       //                 std::vector<bool> diffst = ELHelpers::label_difference(t->label, s->label); // Difference between t and s
-       //                 for (size_t i = 0; i < diffst.size(); ++i){ // c = set of all game nodes that see c
-       //                     if (diffst[i])
-       //                         term2 |= colors[i]; // term2 = term2 | NodesThatSee(c)
-       //                 }
-       //                 UBDD term3;
-       //                 term3 = right | (term1 & term2 & cpre(YY));
-
-       //                 U = EmersonLei(colors, s, term3);
-       //             }
-       //         }
-       //     }
-       //     if (t->winning)
-       //         YY &= U;
-       //     else
-       //         YY |= U;
-
-       //     return YY;
-       // }
-
-       // UBDD EmersonLei(/*BaseFixpoint<UBDD> *fp,*/
-       //                 std::vector<UBDD> colors,
-       //                 ZielonkaNode *t,
-       //                 UBDD term) {
-       //     auto right = term;
-
-       //     UBDD U, Y, YY; // U, X_s, W
-       //     if (t->winning) {
-       //         Y = fp->base_.one();
-       //         YY = fp->base_.zero();
-       //     } else {
-       //         Y = fp->base_.zero();
-       //         YY = fp->base_.one();
-       //     }
-
-
-       //     for (int j = 0; Y.existAbstract(fp->CubeNotState()) != YY.existAbstract(fp->CubeNotState()); j++) { // X_s != W
-       //         Y = YY;
-       //         if (t->children.empty()) { // if t is leaf
-       //             YY = right; //return old term
-       //         }
-       //         else {
-       //             for (auto s : t->children) { //Iterate over direct children of t
-       //                 UBDD term1 = fp->base_.one();
-       //                 for (size_t i = 0; i < t->label.size(); ++i){ // label(root) - label(t) == not(label(t))
-       //                     if (!(t->label[i]))
-       //                         term1 &= fp->base_.one() - colors[i]; // term1 = term1 & !bdd(c),  !c == V \ c
-       //                                                               // percompute the complements instead of doing during the runtime of the function
-       //                 }
-       //                 UBDD term2 = fp->base_.zero();
-       //                 std::vector<bool> diffst = ELHelpers::label_difference(t->label, s->label); // Difference between t and s
-       //                 for (size_t i = 0; i < diffst.size(); ++i){ // c = set of all game nodes that see c
-       //                     if (diffst[i])
-       //                         term2 |= colors[i]; // term2 = term2 | NodesThatSee(c)
-       //                 }
-       //                 UBDD term3;
-       //                 term3 = right | (term1 & term2 & fp->cpre(YY));
-
-       //                 U = EmersonLei(fp, colors, s, term3);
-       //             }
-       //         }
-       //     }
-       //     if (t->winning)
-       //         YY &= U;
-       //     else
-       //         YY |= U;
-
-       //     return YY;
-       // }
 
         /**
          *  @brief used to print n number of tabs on the standard I/O during printing the results
