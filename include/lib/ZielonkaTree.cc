@@ -97,6 +97,12 @@ void ZielonkaTree::generate_phi(const char* conditionFile){
     std::ifstream ifs(conditionFile);
     std::string condition((std::istreambuf_iterator<char>(ifs)),
                           (std::istreambuf_iterator<char>()));
+
+    if (condition.empty()){
+        std::cout << "Condition empty, exiting..." << std::endl;
+        exit(1);
+    }
+
     phi = infix2postfix(tokenize(condition));
 }
 
